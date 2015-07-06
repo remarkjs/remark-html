@@ -11,7 +11,8 @@
     "mdast"
   ],
   "dependencies": {
-    "jonschlinkert/repeat-string": "^1.5.2"
+    "jonschlinkert/repeat-string": "^1.5.2",
+    "wooorm/mdast-util-visit": "^0.1.1"
   },
   "repository": "wooorm/mdast-html",
   "scripts": [

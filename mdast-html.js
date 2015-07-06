@@ -67,7 +67,7 @@ module.exports = plugin;
  * Dependencies.
  */
 
-var visit = require('./visit.js');
+var visit = require('mdast-util-visit');
 var util = require('./util.js');
 var h = require('./h.js');
 
@@ -116,41 +116,6 @@ function failsafe(node, definition, context) {
     }
 
     return '';
-}
-
-/**
- * Gather a link definition.  Stores `node` on the context
- * object at `definitions`.
- *
- * @example
- *   addDefinition({
- *       'identifier': 'foo',
- *       'link': 'http://example.com',
- *       'title': 'Example Domain'
- *   });
- *
- * @param {Node} node - Node to add.
- * @this {HTMLCompiler}
- */
-function addDefinition(node) {
-    this.definitions.push(node);
-}
-
-/**
- * Gather a link definition.  Stores `node` on the context
- * object at `definitions`.
- *
- * @example
- *   addFootnoteDefinition({
- *       'identifier': 'foo',
- *       'children': [],
- *   });
- *
- * @param {Node} node - Node to add.
- * @this {HTMLCompiler}
- */
-function addFootnoteDefinition(node) {
-    this.footnotes.push(node);
 }
 
 /**
@@ -207,44 +172,6 @@ function generateFootnotes() {
 }
 
 /**
- * Get a link definition with the same identifier as
- * `identifier`.
- *
- * @example
- *   getDefinition('foo'); // {}
- *
- *   addDefinition({
- *       'identifier': 'foo',
- *       'link': 'http://example.com',
- *       'title': 'Example Domain'
- *   });
- *
- *   getDefinition('foo');
- *   // {
- *   //     'identifier': 'foo',
- *   //     'link': 'http://example.com',
- *   //     'title': 'Example Domain'
- *   // }
- *
- * @param {string} identifier
- * @return {Node?}
- * @this {HTMLCompiler}
- */
-function getDefinition(identifier) {
-    var definitions = this.definitions;
-    var length = definitions.length;
-    var index = -1;
-
-    while (++index < length) {
-        if (definitions[index].identifier === identifier) {
-            return definitions[index];
-        }
-    }
-
-    return {};
-}
-
-/**
  * Stringify the children of `node`.
  *
  * @example
@@ -268,13 +195,26 @@ function all(parent) {
     var index = -1;
     var length = nodes.length;
     var value;
+    var prev;
 
     while (++index < length) {
         value = self.visit(nodes[index], parent);
 
         if (value) {
+            if (
+                prev &&
+                (
+                    prev.type === 'break' ||
+                    (prev.type === 'escape' && prev.value === '\n')
+                )
+            ) {
+                value = util.trimLeft(value);
+            }
+
             values.push(value);
         }
+
+        prev = nodes[index];
     }
 
     return values;
@@ -306,14 +246,24 @@ function all(parent) {
  */
 function root(node) {
     var self = this;
+    var definitions = {};
+    var footnotes = [];
+    var result;
 
-    self.definitions = [];
-    self.footnotes = [];
+    self.definitions = definitions;
+    self.footnotes = footnotes;
 
-    visit(node, 'definition', addDefinition, self);
-    visit(node, 'footnoteDefinition', addFootnoteDefinition, self);
+    visit(node, 'definition', function (definition) {
+        definitions[definition.identifier.toUpperCase()] = definition;
+    });
 
-    return self.all(node).join('\n') + '\n' + self.generateFootnotes();
+    visit(node, 'footnoteDefinition', function (definition) {
+        footnotes.push(definition);
+    });
+
+    result = self.all(node).join('\n');
+
+    return (result ? result + '\n' : '') + self.generateFootnotes();
 }
 
 /**
@@ -382,7 +332,7 @@ function footnote(node) {
 
     identifier = String(identifier);
 
-    addFootnoteDefinition.call(self, {
+    self.footnotes.push({
         'type': 'footnoteDefinition',
         'identifier': identifier,
         'children': node.children,
@@ -755,7 +705,7 @@ function footnoteReference(node) {
  */
 function linkReference(node) {
     var self = this;
-    var def = self.getDefinition(node.identifier);
+    var def = self.definitions[node.identifier.toUpperCase()] || {};
 
     return failsafe(node, def, self) || h(self, node, 'a', {
         'href': util.normalizeURI(def.link || ''),
@@ -778,7 +728,7 @@ function linkReference(node) {
  */
 function imageReference(node) {
     var self = this;
-    var def = self.getDefinition(node.identifier);
+    var def = self.definitions[node.identifier.toUpperCase()] || {};
 
     return failsafe(node, def, self) || h(self, node, 'img', {
         'src': util.normalizeURI(def.link || ''),
@@ -879,7 +829,6 @@ function ignore() {
 
 visitors.all = all;
 visitors.generateFootnotes = generateFootnotes;
-visitors.getDefinition = getDefinition;
 
 /*
  * Ignored nodes.
@@ -923,7 +872,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"./util.js":4,"./visit.js":5}],3:[function(require,module,exports){
+},{"./h.js":3,"./util.js":4,"mdast-util-visit":5}],3:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1189,6 +1138,7 @@ function normalizeURI(uri) {
 var util = {};
 
 util.trim = trim;
+util.trimLeft = trimLeft;
 util.trimLines = trimLines;
 util.collapse = collapse;
 util.normalizeURI = normalizeURI;
@@ -1197,36 +1147,110 @@ util.detab = detab;
 module.exports = util;
 
 },{"repeat-string":6}],5:[function(require,module,exports){
+/**
+ * @author Titus Wormer
+ * @copyright 2015 Titus Wormer. All rights reserved.
+ * @module mdast-util-visit
+ * @fileoverview Utility to recursively walk over mdast nodes.
+ */
+
 'use strict';
+
+/**
+ * Walk forwards.
+ *
+ * @param {Array.<*>} values - Things to iterate over,
+ *   forwards.
+ * @param {function(*, number): boolean} callback - Function
+ *   to invoke.
+ * @return {boolean} - False if iteration stopped.
+ */
+function forwards(values, callback) {
+    var index = -1;
+    var length = values.length;
+
+    while (++index < length) {
+        if (callback(values[index], index) === false) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Walk backwards.
+ *
+ * @param {Array.<*>} values - Things to iterate over,
+ *   backwards.
+ * @param {function(*, number): boolean} callback - Function
+ *   to invoke.
+ * @return {boolean} - False if iteration stopped.
+ */
+function backwards(values, callback) {
+    var index = values.length;
+    var length = -1;
+
+    while (--index > length) {
+        if (callback(values[index], index) === false) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 /**
  * Visit.
  *
- * @param {Node} tree - Node to search.
- * @param {string} type - Type of nodes to search invoke
- *   `callback` with.
- * @param {function(node)} callback - Callback invoked
- *   with nodes matching `type`.
- * @param {Object} context - Object to call `callback`
- *   with.
+ * @param {Node} tree - Root node
+ * @param {string} [type] - Node type.
+ * @param {function(node): boolean?} callback - Invoked
+ *   with each found node.  Can return `false` to stop.
+ * @param {boolean} [reverse] - By default, `visit` will
+ *   walk forwards, when `reverse` is `true`, `visit`
+ *   walks backwards.
  */
-function visit(tree, type, callback, context) {
+function visit(tree, type, callback, reverse) {
+    var iterate;
+    var one;
+    var all;
+
+    if (typeof type === 'function') {
+        reverse = callback;
+        callback = type;
+        type = null;
+    }
+
+    iterate = reverse ? backwards : forwards;
+
+    /**
+     * Visit `children` in `parent`.
+     */
+    all = function (children, parent) {
+        return iterate(children, function (child, index) {
+            return child && one(child, index, parent);
+        });
+    };
+
     /**
      * Visit a single node.
      */
-    function one(node) {
-        if (node.type === type) {
-            callback.call(context, node);
+    one = function (node, index, parent) {
+        var result;
+
+        index = index || (parent ? 0 : null);
+
+        if (!type || node.type === type) {
+            result = callback(node, index, parent || null);
         }
 
-        var children = node.children;
-        var index = -1;
-        var length = children ? children.length : 0;
-
-        while (++index < length) {
-            one(children[index]);
+        if (node.children && result !== false) {
+            return all(node.children, node);
         }
-    }
+
+        return result;
+    };
 
     one(tree);
 }
