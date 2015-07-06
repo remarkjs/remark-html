@@ -67,6 +67,7 @@ module.exports = plugin;
  * Dependencies.
  */
 
+var trim = require('trim');
 var visit = require('mdast-util-visit');
 var util = require('./util.js');
 var h = require('./h.js');
@@ -208,7 +209,7 @@ function all(parent) {
                     (prev.type === 'escape' && prev.value === '\n')
                 )
             ) {
-                value = util.trimLeft(value);
+                value = trim.left(value);
             }
 
             values.push(value);
@@ -461,7 +462,7 @@ function heading(node) {
  * @this {HTMLCompiler}
  */
 function paragraph(node) {
-    return h(this, node, 'p', util.trim(
+    return h(this, node, 'p', trim(
         util.detab(this.all(node).join(''))
     ), false);
 }
@@ -872,7 +873,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"./util.js":4,"mdast-util-visit":5}],3:[function(require,module,exports){
+},{"./h.js":3,"./util.js":4,"mdast-util-visit":5,"trim":7}],3:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1007,53 +1008,6 @@ var repeat = require('repeat-string');
 var TAB_SIZE = 4;
 var WHITE_SPACE_COLLAPSABLE_LINE = /[ \t]*\n+[ \t]*/g;
 var WHITE_SPACE_COLLAPSABLE = /[ \t\n]+/g;
-var WHITE_SPACE_INITIAL = /^[ \t\n]+/g;
-var WHITE_SPACE_FINAL = /[ \t\n]+$/g;
-
-/**
- * Remove initial white space from `value`.
- *
- * @example
- *   trimLeft(' foo'); // 'foo'
- *
- *   trimLeft('\n\tfoo'); // 'foo'
- *
- * @param {string} value - Content to trim.
- * @return {string} - Trimmed `value`.
- */
-function trimLeft(value) {
-    return String(value).replace(WHITE_SPACE_INITIAL, '');
-}
-
-/**
- * Remove final white space from `value`.
- *
- * @example
- *   trimRight('foo '); // 'foo'
- *
- *   trimRight('foo\t\n'); // 'foo'
- *
- * @param {string} value - Content to trim.
- * @return {string} - Trimmed `value`.
- */
-function trimRight(value) {
-    return String(value).replace(WHITE_SPACE_FINAL, '');
-}
-
-/**
- * Remove initial and final white space from `value`.
- *
- * @example
- *   trim(' foo '); // 'foo'
- *
- *   trim('\n foo\t\n'); // 'foo'
- *
- * @param {string} value - Content to trim.
- * @return {string} - Trimmed `value`.
- */
-function trim(value) {
-    return trimRight(trimLeft(value));
-}
 
 /**
  * Remove initial and final spaces and tabs in each line in
@@ -1137,8 +1091,6 @@ function normalizeURI(uri) {
 
 var util = {};
 
-util.trim = trim;
-util.trimLeft = trimLeft;
 util.trimLines = trimLines;
 util.collapse = collapse;
 util.normalizeURI = normalizeURI;
@@ -1328,6 +1280,22 @@ function repeat(str, num) {
 
 var res = '';
 var cache;
+
+},{}],7:[function(require,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
+}
+
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
+};
+
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
 
 },{}]},{},[1])(1)
 });
