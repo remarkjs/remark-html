@@ -11,8 +11,8 @@
     "mdast"
   ],
   "dependencies": {
+    "wooorm/detab": "^1.0.0",
     "wooorm/mdast-util-visit": "^0.1.1",
-    "jonschlinkert/repeat-string": "^1.5.2",
     "component/trim": "^0.0.1"
   },
   "repository": "wooorm/mdast-html",

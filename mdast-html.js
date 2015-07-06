@@ -68,6 +68,7 @@ module.exports = plugin;
  */
 
 var trim = require('trim');
+var detab = require('detab');
 var visit = require('mdast-util-visit');
 var util = require('./util.js');
 var h = require('./h.js');
@@ -462,9 +463,7 @@ function heading(node) {
  * @this {HTMLCompiler}
  */
 function paragraph(node) {
-    return h(this, node, 'p', trim(
-        util.detab(this.all(node).join(''))
-    ), false);
+    return h(this, node, 'p', trim(detab(this.all(node).join(''))), false);
 }
 
 /**
@@ -481,7 +480,7 @@ function paragraph(node) {
  */
 function code(node) {
     var self = this;
-    var value = node.value ? util.detab(node.value + '\n') : '';
+    var value = node.value ? detab(node.value + '\n') : '';
     var language = node.lang && node.lang.match(FIRST_WORD);
 
     return h(self, node, 'pre', h(self, node, 'code', {
@@ -873,7 +872,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"./util.js":4,"mdast-util-visit":5,"trim":7}],3:[function(require,module,exports){
+},{"./h.js":3,"./util.js":4,"detab":5,"mdast-util-visit":6,"trim":8}],3:[function(require,module,exports){
 'use strict';
 
 /*
@@ -996,16 +995,9 @@ module.exports = h;
 'use strict';
 
 /*
- * Dependencies.
- */
-
-var repeat = require('repeat-string');
-
-/*
  * Constants.
  */
 
-var TAB_SIZE = 4;
 var WHITE_SPACE_COLLAPSABLE_LINE = /[ \t]*\n+[ \t]*/g;
 var WHITE_SPACE_COLLAPSABLE = /[ \t\n]+/g;
 
@@ -1037,35 +1029,6 @@ function collapse(value) {
 }
 
 /**
- * Remove tabs from indented content.
- *
- * @example
- *   detab('  \tbar'); // '    bar'
- *
- * @param {string} value - Content with tabs.
- * @return {string} - Cleaned `value`.
- */
-function detab(value) {
-    var length = value.length;
-    var characters = value.split('');
-    var index = -1;
-    var column = -1;
-    var character;
-
-    while (++index < length) {
-        character = characters[index];
-        column++;
-
-        if (character === '\t') {
-            column += characters[index];
-            characters[index] = repeat(' ', TAB_SIZE - (column % TAB_SIZE));
-        }
-    }
-
-    return characters.join('');
-}
-
-/**
  * Normalize `uri`.
  *
  * This only works when both `encodeURI` and `decodeURI`
@@ -1094,11 +1057,76 @@ var util = {};
 util.trimLines = trimLines;
 util.collapse = collapse;
 util.normalizeURI = normalizeURI;
-util.detab = detab;
 
 module.exports = util;
 
-},{"repeat-string":6}],5:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+'use strict';
+
+/*
+ * Dependencies.
+ */
+
+var repeat = require('repeat-string');
+
+/*
+ * Constants.
+ */
+
+var TAB = '\t';
+var NEWLINE = '\n';
+var SPACE = ' ';
+
+/**
+ * Replace tabs with spaces, being smart about which
+ * column the tab is at and which size should be used.
+ *
+ * @example
+ *   detab('\tfoo\nbar\tbaz'); // '    foo\nbar baz'
+ *   detab('\tfoo\nbar\tbaz', 2); // '  foo\nbar baz'
+ *   detab('\tfoo\nbar\tbaz', 8); // '        foo\nbar     baz'
+ *
+ * @param {string} value - Value with tabs.
+ * @param {number?} [size=4] - Tab-size.
+ * @return {string} - Value without tabs.
+ */
+function detab(value, size) {
+    var string = typeof value === 'string';
+    var length = string && value.length;
+    var characters = string && value.split('');
+    var index = -1;
+    var column = -1;
+    var tabSize = size || 4;
+    var character;
+    var add;
+
+    if (!string) {
+        throw new Error('detab expected string');
+    }
+
+    while (++index < length) {
+        character = characters[index];
+        column++;
+
+        if (character === TAB) {
+            add = tabSize - (column % tabSize);
+            characters[index] = repeat(SPACE, add);
+            column += add - 1;
+        } else if (character === NEWLINE) {
+            column = -1;
+        }
+    }
+
+    return characters.join('');
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = detab;
+
+},{"repeat-string":7}],6:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.
@@ -1213,7 +1241,7 @@ function visit(tree, type, callback, reverse) {
 
 module.exports = visit;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -1281,7 +1309,7 @@ function repeat(str, num) {
 var res = '';
 var cache;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 exports = module.exports = trim;
 
