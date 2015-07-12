@@ -69,6 +69,7 @@ module.exports = plugin;
 
 var trim = require('trim');
 var detab = require('detab');
+var collapse = require('collapse-white-space');
 var visit = require('mdast-util-visit');
 var util = require('./util.js');
 var h = require('./h.js');
@@ -582,7 +583,7 @@ function rule(node) {
  * @this {HTMLCompiler}
  */
 function inlineCode(node) {
-    return h(this, node, 'code', util.collapse(this.encode(node.value)));
+    return h(this, node, 'code', collapse(this.encode(node.value)));
 }
 
 /**
@@ -872,7 +873,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"./util.js":4,"detab":5,"mdast-util-visit":6,"trim":8}],3:[function(require,module,exports){
+},{"./h.js":3,"./util.js":4,"collapse-white-space":5,"detab":6,"mdast-util-visit":7,"trim":9}],3:[function(require,module,exports){
 'use strict';
 
 /*
@@ -999,7 +1000,6 @@ module.exports = h;
  */
 
 var WHITE_SPACE_COLLAPSABLE_LINE = /[ \t]*\n+[ \t]*/g;
-var WHITE_SPACE_COLLAPSABLE = /[ \t\n]+/g;
 
 /**
  * Remove initial and final spaces and tabs in each line in
@@ -1013,19 +1013,6 @@ var WHITE_SPACE_COLLAPSABLE = /[ \t\n]+/g;
  */
 function trimLines(value) {
     return String(value).replace(WHITE_SPACE_COLLAPSABLE_LINE, '\n');
-}
-
-/**
- * Collapse multiple spaces, tabs, and newlines.
- *
- * @example
- *   collapse(' \t\nbar \nbaz\t'); // ' bar baz '
- *
- * @param {string} value - Content to trim.
- * @return {string} - Trimmed `value`.
- */
-function collapse(value) {
-    return String(value).replace(WHITE_SPACE_COLLAPSABLE, ' ');
 }
 
 /**
@@ -1055,12 +1042,41 @@ function normalizeURI(uri) {
 var util = {};
 
 util.trimLines = trimLines;
-util.collapse = collapse;
 util.normalizeURI = normalizeURI;
 
 module.exports = util;
 
 },{}],5:[function(require,module,exports){
+'use strict';
+
+/*
+ * Constants.
+ */
+
+var WHITE_SPACE_COLLAPSABLE = /\s+/g;
+var SPACE = ' ';
+
+/**
+ * Replace multiple white-space characters with a single space.
+ *
+ * @example
+ *   collapse(' \t\nbar \nbaz\t'); // ' bar baz '
+ *
+ * @param {string} value - Value with uncollapsed white-space,
+ *   coerced to string.
+ * @return {string} - Value with collapsed white-space.
+ */
+function collapse(value) {
+    return String(value).replace(WHITE_SPACE_COLLAPSABLE, SPACE);
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = collapse;
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1093,10 +1109,10 @@ var SPACE = ' ';
 function detab(value, size) {
     var string = typeof value === 'string';
     var length = string && value.length;
-    var characters = string && value.split('');
     var index = -1;
     var column = -1;
     var tabSize = size || 4;
+    var result = '';
     var character;
     var add;
 
@@ -1105,19 +1121,25 @@ function detab(value, size) {
     }
 
     while (++index < length) {
-        character = characters[index];
-        column++;
+        character = value.charAt(index);
 
         if (character === TAB) {
-            add = tabSize - (column % tabSize);
-            characters[index] = repeat(SPACE, add);
-            column += add - 1;
-        } else if (character === NEWLINE) {
-            column = -1;
+            add = tabSize - ((column + 1) % tabSize);
+            result += repeat(SPACE, add);
+            column += add;
+            continue;
         }
+
+        if (character === NEWLINE) {
+            column = -1;
+        } else {
+            column++;
+        }
+
+        result += character;
     }
 
-    return characters.join('');
+    return result;
 }
 
 /*
@@ -1126,7 +1148,7 @@ function detab(value, size) {
 
 module.exports = detab;
 
-},{"repeat-string":7}],6:[function(require,module,exports){
+},{"repeat-string":8}],7:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.
@@ -1241,7 +1263,7 @@ function visit(tree, type, callback, reverse) {
 
 module.exports = visit;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -1309,7 +1331,7 @@ function repeat(str, num) {
 var res = '';
 var cache;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 exports = module.exports = trim;
 

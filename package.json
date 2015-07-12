@@ -11,9 +11,12 @@
     "mdast"
   ],
   "dependencies": {
+    "collapse-white-space": "^1.0.0",
     "detab": "^1.0.0",
     "mdast-util-visit": "^0.1.1",
-    "trim": "0.0.1"
+    "normalize-uri": "^1.0.0",
+    "trim": "0.0.1",
+    "trim-lines": "^1.0.0"
   },
   "repository": {
     "type": "git",

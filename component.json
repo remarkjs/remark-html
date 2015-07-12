@@ -11,9 +11,12 @@
     "mdast"
   ],
   "dependencies": {
+    "wooorm/collapse-white-space": "^1.0.0",
     "wooorm/detab": "^1.0.0",
     "wooorm/mdast-util-visit": "^0.1.1",
-    "component/trim": "^0.0.1"
+    "wooorm/normalize-uri": "^1.0.0",
+    "component/trim": "^0.0.1",
+    "wooorm/trim-lines": "^1.0.0"
   },
   "repository": "wooorm/mdast-html",
   "scripts": [
