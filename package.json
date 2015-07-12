@@ -31,9 +31,6 @@
     "lib/",
     "LICENSE"
   ],
-  "peerDependencies": {
-    "mdast": ">=0.26.0"
-  },
   "devDependencies": {
     "browserify": "^10.0.0",
     "commonmark.json": "^0.20.0",
