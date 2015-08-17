@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+1.0.0 / 2015-08-17
+==================
+
+*   Update dependencies, dev-dependencies ([7c498ea](https://github.com/wooorm/mdast-html/commit/7c498ea))
+
 0.1.1 / 2015-07-12
 ==================
 
