@@ -1,4 +1,4 @@
-# mdast-html [![Build Status](https://img.shields.io/travis/wooorm/mdast-html.svg?style=flat)](https://travis-ci.org/wooorm/mdast-html) [![Coverage Status](https://img.shields.io/coveralls/wooorm/mdast-html.svg?style=flat)](https://coveralls.io/r/wooorm/mdast-html?branch=master)
+# mdast-html [![Build Status](https://img.shields.io/travis/wooorm/mdast-html.svg)](https://travis-ci.org/wooorm/mdast-html) [![Coverage Status](https://img.shields.io/codecov/c/github/wooorm/mdast-html.svg)](https://codecov.io/github/wooorm/mdast-html)
 
 **mdast-html** compiles markdown to HTML.  Built on [**mdast**](https://github.com/wooorm/mdast),
 an extensively tested and pluggable parser.
