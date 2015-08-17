@@ -1,9 +1,11 @@
 {
+  "output": true,
   "plugins": [
     "lint",
     "github",
     "toc",
-    "yaml-config"
+    "comment-config",
+    "validate-links"
   ],
   "settings": {
     "bullet": "*"
