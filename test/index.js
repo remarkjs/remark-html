@@ -15,7 +15,7 @@ var toc = require('mdast-toc');
 var github = require('mdast-github');
 var commentConfig = require('mdast-comment-config');
 var commonmark = require('commonmark.json');
-var File = require('mdast/lib/file');
+var toVFile = require('to-vfile');
 var html = require('..');
 
 /*
@@ -34,28 +34,6 @@ var ignoreCommonMarkException = !('CMARK' in global.process.env);
 var read = fs.readFileSync;
 var exists = fs.existsSync;
 var join = path.join;
-var basename = path.basename;
-var extname = path.extname;
-var dirname = path.dirname;
-
-/**
- * Create a `File` from a `filePath`.
- *
- * @param {string} filePath
- * @return {File}
- */
-function toFile(filePath, contents) {
-    var extension = extname(filePath);
-    var directory = dirname(filePath);
-    var name = basename(filePath, extension);
-
-    return new File({
-        'directory': directory,
-        'filename': name,
-        'extension': extension.slice(1),
-        'contents': contents
-    });
-}
 
 /*
  * Constants.
@@ -156,7 +134,7 @@ var integrations = fs.readdirSync(INTEGRATION_ROOT);
 /**
  * Check if `filePath` is hidden.
  *
- * @param {string} filePath
+ * @param {string} filePath - Path to file.
  * @return {boolean} - Whether or not `filePath` is hidden.
  */
 function isHidden(filePath) {
@@ -189,7 +167,7 @@ commonmark.forEach(function (test, position) {
 /**
  * Shortcut to process.
  *
- * @param {File} file
+ * @param {VFile} file - Virtual file.
  * @return {string}
  */
 function process(file, config) {
@@ -199,19 +177,17 @@ function process(file, config) {
 /**
  * Assert two strings.
  *
- * @param {string} actual
- * @param {string} expected
- * @param {boolean?} [silent]
+ * @param {string} actual - Value.
+ * @param {string} expected - Fixture.
+ * @param {boolean?} [silent] - Whether to return the
+ *   error.
  * @return {Error?} - When silent and not equal.
  * @throws {Error} - When not silent and not equal.
  */
 function assertion(actual, expected, silent) {
     try {
-        assert(actual === expected);
+        assert.equal(actual, expected);
     } catch (exception) {
-        exception.expected = expected;
-        exception.actual = actual;
-
         if (silent) {
             return exception;
         }
@@ -239,7 +215,7 @@ describe('mdast-html()', function () {
 /**
  * Describe a fixture.
  *
- * @param {string} fixture
+ * @param {string} fixture - Name.
  */
 function describeFixture(fixture) {
     it('should work on `' + fixture + '`', function () {
@@ -247,8 +223,10 @@ function describeFixture(fixture) {
         var output = read(join(filepath, 'output.html'), 'utf-8');
         var input = read(join(filepath, 'input.md'), 'utf-8');
         var config = join(filepath, 'config.json');
-        var file = toFile(fixture + '.md', input);
+        var file = toVFile(fixture + '.md');
         var result;
+
+        file.contents = input;
 
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
         result = process(file, config);
@@ -260,7 +238,7 @@ function describeFixture(fixture) {
 /**
  * Describe an integration.
  *
- * @param {string} integration
+ * @param {string} integration - Name.
  */
 function describeIntegration(integration) {
     it('should work on `' + integration + '`', function () {
@@ -268,8 +246,10 @@ function describeIntegration(integration) {
         var output = read(join(filepath, 'output.html'), 'utf-8');
         var input = read(join(filepath, 'input.md'), 'utf-8');
         var config = join(filepath, 'config.json');
-        var file = toFile(integration + '.md', input);
+        var file = toVFile(integration + '.md');
         var result;
+
+        file.contents = input;
 
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
 
@@ -285,15 +265,18 @@ function describeIntegration(integration) {
 /**
  * Describe a CommonMark test.
  *
- * @param {string} test
- * @param {number} n
+ * @param {Object} test - Test-case.
+ * @param {number} n - Index of test-case.
  */
 function describeCommonMark(test, n) {
     var name = test.section + ' ' + test.relative;
-    var file = toFile(name + '.md', test.markdown);
-    var result = process(file, CMARK_OPTIONS);
+    var file = toVFile(name + '.md');
+    var result;
     var err;
     var fn;
+
+    file.contents = test.markdown;
+    result = process(file, CMARK_OPTIONS);
 
     n = n + 1;
 

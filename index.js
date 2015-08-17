@@ -9,8 +9,8 @@ var compilers = require('./lib/compilers.js');
 /**
  * Attach an HTML compiler.
  *
- * @param {MDAST} mdast
- * @param {Object?} [options]
+ * @param {MDAST} mdast - Instance.
+ * @param {Object?} [options] - Configuration.
  */
 function plugin(mdast, options) {
     var MarkdownCompiler = mdast.Compiler;

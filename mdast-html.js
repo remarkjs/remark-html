@@ -10,8 +10,8 @@ var compilers = require('./lib/compilers.js');
 /**
  * Attach an HTML compiler.
  *
- * @param {MDAST} mdast
- * @param {Object?} [options]
+ * @param {MDAST} mdast - Instance.
+ * @param {Object?} [options] - Configuration.
  */
 function plugin(mdast, options) {
     var MarkdownCompiler = mdast.Compiler;
@@ -70,8 +70,9 @@ module.exports = plugin;
 var trim = require('trim');
 var detab = require('detab');
 var collapse = require('collapse-white-space');
-var visit = require('mdast-util-visit');
-var util = require('./util.js');
+var normalizeURI = require('normalize-uri');
+var trimLines = require('trim-lines');
+var visit = require('unist-util-visit');
 var h = require('./h.js');
 
 /*
@@ -103,8 +104,9 @@ var visitors = {};
  *   }, {}); // '[foo]'
  *
  * @param {Node} node - Node to compile.
- * @param {Node?} definition
- * @param {HTMLCompiler} context
+ * @param {Node?} definition - Definition node, when
+ *   existing.
+ * @param {HTMLCompiler} context - Instance.
  * @return {string?} - If without definition, returns a
  *   string, returns nothing otherwise.
  */
@@ -187,7 +189,7 @@ function generateFootnotes() {
  *     ]
  *   }); // 'foo'
  *
- * @param {Node} parent
+ * @param {Node} parent - Parent to visit.
  * @return {Array.<string>}
  * @this {HTMLCompiler}
  */
@@ -662,7 +664,7 @@ function hardBreak(node) {
  */
 function link(node) {
     return h(this, node, 'a', {
-        'href': util.normalizeURI(node.href),
+        'href': normalizeURI(node.href),
         'title': node.title
     }, this.all(node).join(''));
 }
@@ -709,7 +711,7 @@ function linkReference(node) {
     var def = self.definitions[node.identifier.toUpperCase()] || {};
 
     return failsafe(node, def, self) || h(self, node, 'a', {
-        'href': util.normalizeURI(def.link || ''),
+        'href': normalizeURI(def.link || ''),
         'title': def.title
     }, self.all(node).join(''));
 }
@@ -732,7 +734,7 @@ function imageReference(node) {
     var def = self.definitions[node.identifier.toUpperCase()] || {};
 
     return failsafe(node, def, self) || h(self, node, 'img', {
-        'src': util.normalizeURI(def.link || ''),
+        'src': normalizeURI(def.link || ''),
         'alt': node.alt || '',
         'title': def.title
     });
@@ -752,7 +754,7 @@ function imageReference(node) {
  */
 function image(node) {
     return h(this, node, 'img', {
-        'src': util.normalizeURI(node.src),
+        'src': normalizeURI(node.src),
         'alt': node.alt || '',
         'title': node.title
     });
@@ -792,7 +794,7 @@ function strikethrough(node) {
  * @this {HTMLCompiler}
  */
 function text(node) {
-    return util.trimLines(this.encode(node.value));
+    return trimLines(this.encode(node.value));
 }
 
 /**
@@ -873,7 +875,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"./util.js":4,"collapse-white-space":5,"detab":6,"mdast-util-visit":7,"trim":9}],3:[function(require,module,exports){
+},{"./h.js":3,"collapse-white-space":4,"detab":5,"normalize-uri":7,"trim":9,"trim-lines":8,"unist-util-visit":10}],3:[function(require,module,exports){
 'use strict';
 
 /*
@@ -941,7 +943,7 @@ function toAttributes(attributes, encode, node) {
  *     'id': 'foo'
  *   }) // '<br id="foo">'
  *
- * @param {HTMLCompiler} context
+ * @param {HTMLCompiler} context - Context compiler.
  * @param {Node} node - mdast node.  If `node` has an
  *   `attributes` hash, its properties are also stringified
  *   as HTML attributes on the resulting node.
@@ -999,60 +1001,6 @@ module.exports = h;
  * Constants.
  */
 
-var WHITE_SPACE_COLLAPSABLE_LINE = /[ \t]*\n+[ \t]*/g;
-
-/**
- * Remove initial and final spaces and tabs in each line in
- * `value`.
- *
- * @example
- *   trimLines(' foo\n bar \nbaz'); // 'foo\nbar\nbaz'
- *
- * @param {string} value - Content to trim.
- * @return {string} - Trimmed `value`.
- */
-function trimLines(value) {
-    return String(value).replace(WHITE_SPACE_COLLAPSABLE_LINE, '\n');
-}
-
-/**
- * Normalize `uri`.
- *
- * This only works when both `encodeURI` and `decodeURI`
- * are available.
- *
- * @example
- *   normalizeURI('foo bar'); // 'foo%20bar'
- *
- * @param {string} uri - URI to normalize.
- * @return {string} - Normalized uri.
- */
-function normalizeURI(uri) {
-    try {
-        uri = encodeURI(decodeURI(uri));
-    } catch (exception) { /* empty */ }
-
-    return uri;
-}
-
-/*
- * Expose.
- */
-
-var util = {};
-
-util.trimLines = trimLines;
-util.normalizeURI = normalizeURI;
-
-module.exports = util;
-
-},{}],5:[function(require,module,exports){
-'use strict';
-
-/*
- * Constants.
- */
-
 var WHITE_SPACE_COLLAPSABLE = /\s+/g;
 var SPACE = ' ';
 
@@ -1076,7 +1024,7 @@ function collapse(value) {
 
 module.exports = collapse;
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1148,12 +1096,159 @@ function detab(value, size) {
 
 module.exports = detab;
 
-},{"repeat-string":8}],7:[function(require,module,exports){
+},{"repeat-string":6}],6:[function(require,module,exports){
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+'use strict';
+
+/**
+ * Expose `repeat`
+ */
+
+module.exports = repeat;
+
+/**
+ * Repeat the given `string` the specified `number`
+ * of times.
+ *
+ * **Example:**
+ *
+ * ```js
+ * var repeat = require('repeat-string');
+ * repeat('A', 5);
+ * //=> AAAAA
+ * ```
+ *
+ * @param {String} `string` The string to repeat
+ * @param {Number} `number` The number of times to repeat the string
+ * @return {String} Repeated string
+ * @api public
+ */
+
+function repeat(str, num) {
+  if (typeof str !== 'string') {
+    throw new TypeError('repeat-string expects a string.');
+  }
+
+  if (num === 1) return str;
+  if (num === 2) return str + str;
+
+  var max = str.length * num;
+  if (cache !== str || typeof cache === 'undefined') {
+    cache = str;
+    res = '';
+  }
+
+  while (max > res.length && num > 0) {
+    if (num & 1) {
+      res += str;
+    }
+
+    num >>= 1;
+    if (!num) break;
+    str += str;
+  }
+
+  return res.substr(0, max);
+}
+
+/**
+ * Results cache
+ */
+
+var res = '';
+var cache;
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+/**
+ * Normalize `uri`. This only works when both `encodeURI`
+ * and `decodeURI` are available, and when
+ * decoding/encoding fails, just returns `uri`.
+ *
+ * @example
+ *   normalizeURI('foo bar'); // 'foo%20bar'
+ *   normalizeURI('foo%20bar'); // 'foo%20bar'
+ *
+ * @param {string} uri - Value with and/or without
+ *   encoded, entities.
+ * @return {string} - Encoded URI (when encoding succeeds,
+ * or `uri`).
+ */
+function normalizeURI(uri) {
+    try {
+        uri = encodeURI(decodeURI(uri));
+    } catch (exception) { /* empty */ }
+
+    return uri;
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = normalizeURI;
+
+},{}],8:[function(require,module,exports){
+'use strict';
+
+/*
+ * Constants.
+ */
+
+var WHITE_SPACE_COLLAPSABLE_LINE = /[ \t]*\n+[ \t]*/g;
+var LINE = '\n';
+
+/**
+ * Remove initial and final spaces and tabs at the
+ * line breaks in `value`. Does not trim initial and
+ * final spaces and tabs of the value itself.
+ *
+ * @example
+ *   trimLines(' foo\t\n\n bar \n\tbaz '); // ' foo\nbar\nbaz '
+ *
+ * @param {string} value - Value with untrimmed line breaks,
+ *   coerced to string.
+ * @return {string} - Value with trimmed line breaks.
+ */
+function trimLines(value) {
+    return String(value).replace(WHITE_SPACE_COLLAPSABLE_LINE, LINE);
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = trimLines;
+
+},{}],9:[function(require,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
+}
+
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
+};
+
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
+
+},{}],10:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.
- * @module mdast-util-visit
- * @fileoverview Utility to recursively walk over mdast nodes.
+ * @module unist:util:visit
+ * @fileoverview Utility to recursively walk over unist nodes.
  */
 
 'use strict';
@@ -1262,90 +1357,6 @@ function visit(tree, type, callback, reverse) {
  */
 
 module.exports = visit;
-
-},{}],8:[function(require,module,exports){
-/*!
- * repeat-string <https://github.com/jonschlinkert/repeat-string>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT License.
- */
-
-'use strict';
-
-/**
- * Expose `repeat`
- */
-
-module.exports = repeat;
-
-/**
- * Repeat the given `string` the specified `number`
- * of times.
- *
- * **Example:**
- *
- * ```js
- * var repeat = require('repeat-string');
- * repeat('A', 5);
- * //=> AAAAA
- * ```
- *
- * @param {String} `string` The string to repeat
- * @param {Number} `number` The number of times to repeat the string
- * @return {String} Repeated string
- * @api public
- */
-
-function repeat(str, num) {
-  if (typeof str !== 'string') {
-    throw new TypeError('repeat-string expects a string.');
-  }
-
-  if (num === 1) return str;
-  if (num === 2) return str + str;
-
-  var max = str.length * num;
-  if (cache !== str || typeof cache === 'undefined') {
-    cache = str;
-    res = '';
-  }
-
-  while (max > res.length && num > 0) {
-    if (num & 1) {
-      res += str;
-    }
-
-    num >>= 1;
-    if (!num) break;
-    str += str;
-  }
-
-  return res.substr(0, max);
-}
-
-/**
- * Results cache
- */
-
-var res = '';
-var cache;
-
-},{}],9:[function(require,module,exports){
-
-exports = module.exports = trim;
-
-function trim(str){
-  return str.replace(/^\s*|\s*$/g, '');
-}
-
-exports.left = function(str){
-  return str.replace(/^\s*/, '');
-};
-
-exports.right = function(str){
-  return str.replace(/\s*$/, '');
-};
 
 },{}]},{},[1])(1)
 });
