@@ -13,10 +13,11 @@
   "dependencies": {
     "collapse-white-space": "^1.0.0",
     "detab": "^1.0.0",
-    "unist-util-visit": "^1.0.0",
     "normalize-uri": "^1.0.0",
+    "object-assign": "^4.0.1",
     "trim": "0.0.1",
-    "trim-lines": "^1.0.0"
+    "trim-lines": "^1.0.0",
+    "unist-util-visit": "^1.0.0"
   },
   "repository": "wooorm/mdast-html",
   "author": "Titus Wormer <tituswormer@gmail.com>",

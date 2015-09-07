@@ -218,6 +218,78 @@ describe('mdast-html()', function () {
             html(mdast());
         });
     });
+
+    it('should patch and merge attributes', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                ast.children[0].children[0].data = {
+                    'htmlAttributes': {
+                        'title': 'overwrite'
+                    }
+                };
+            }
+        }).use(html);
+
+        assert.strictEqual(
+            processor.process('![hello](example.jpg "overwritten")'),
+            '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n'
+        );
+    });
+
+    it('should overwrite a tag-name', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                ast.children[0].children[0].data = {
+                    'htmlName': 'b'
+                };
+            }
+        }).use(html);
+
+        assert.strictEqual(
+            processor.process('**Bold!**'),
+            '<p><b>Bold!</b></p>\n'
+        );
+    });
+
+    it('should overwrite content', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                var code = ast.children[0].children[0];
+
+                code.data = {
+                    'htmlContent': '<span class="token">' +
+                        code.value +
+                        '</span>'
+                };
+            }
+        }).use(html);
+
+        assert.strictEqual(
+            processor.process('`var`'),
+            '<p><code><span class="token">var</span></code></p>\n'
+        );
+    });
+
+    it('should not overwrite content in `sanitize` mode', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                var code = ast.children[0].children[0];
+
+                code.data = {
+                    'htmlContent': '<span class="token">' +
+                        code.value +
+                        '</span>'
+                };
+            }
+        }).use(html, {
+            'sanitize': true
+        });
+
+        assert.strictEqual(
+            processor.process('`var`'),
+            '<p><code>var</code></p>\n'
+        );
+    });
 });
 
 /**

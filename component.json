@@ -16,7 +16,8 @@
     "wooorm/unist-util-visit": "^1.0.0",
     "wooorm/normalize-uri": "^1.0.0",
     "component/trim": "^0.0.1",
-    "wooorm/trim-lines": "^1.0.0"
+    "wooorm/trim-lines": "^1.0.0",
+    "sindresorhus/object-assign": "^4.0.1"
   },
   "repository": "wooorm/mdast-html",
   "scripts": [

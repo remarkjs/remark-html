@@ -164,9 +164,37 @@ real world. Read more on some of the reasoning in
 *   ...and [more](https://github.com/wooorm/mdast/blob/master/doc/plugins.md#list-of-plugins).
 
 All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/nodes.md)
-can be compiled to HTML.  In addition, **mdast-html** looks for an
-`attributes` object on each node it compiles and adds the found properties
-as HTML attributes on the compiled tag.
+can be compiled to HTML.  In addition, **mdast-html** can be told how to
+compile markdown nodes through three `data` properties:
+
+*   `htmlName` — Tag-name to compile as;
+*   `htmlContent` — HTML content to add (instead of `children` and `value`);
+*   `htmlAttributes` — Map of attributes to add.
+
+For example, the following node:
+
+```json
+{
+  "type": "emphasis",
+  "data": {
+    "htmlName": "i",
+    "htmlAttributes": {
+      "id": "foo"
+    },
+    "htmlContent": "bar"
+  },
+  "children": [{
+    "type": "text",
+    "value": "baz",
+  }]
+}
+```
+
+...would yield:
+
+```markdown
+<i id="foo">bar</i>
+```
 
 ## License
 

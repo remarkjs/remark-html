@@ -44,7 +44,9 @@ function plugin(mdast, options) {
      * Extensible constructor.
      */
     function HTMLCompiler(file) {
-        file.extension = 'html';
+        file.move({
+            'extension': 'html'
+        });
 
         MarkdownCompiler.apply(this, [file, options]);
     }
@@ -155,7 +157,6 @@ function generateFootnotes() {
     var index = -1;
     var results = [];
     var def;
-    var content;
 
     if (!length) {
         return '';
@@ -166,14 +167,18 @@ function generateFootnotes() {
 
         results[index] = self.listItem({
             'type': 'listItem',
-            'attributes': {
-                'id': 'fn-' + def.identifier
+            'data': {
+                'htmlAttributes': {
+                    'id': 'fn-' + def.identifier
+                }
             },
             'children': def.children.concat({
                 'type': 'link',
                 'href': '#fnref-' + def.identifier,
-                'attributes': {
-                    'class': 'footnote-backref'
+                'data': {
+                    'htmlAttributes': {
+                        'class': 'footnote-backref'
+                    }
                 },
                 'children': [{
                     'type': 'text',
@@ -184,12 +189,20 @@ function generateFootnotes() {
         }, {});
     }
 
-    content = h(self, null, 'hr') + '\n' +
-        h(self, null, 'ol', results.join('\n'), true);
-
-    return h(self, null, 'div', {
-        'class': 'footnotes'
-    }, content, true) + '\n';
+    return h(self, null, {
+        'name': 'div',
+        'attributes': {
+            'class': 'footnotes'
+        },
+        'content': h(self, null, {
+                'name': 'hr'
+            }) +
+            '\n' +
+            h(self, null, {
+                'name': 'ol',
+                'content': results.join('\n')
+            }, null, true)
+    }, null, true) + '\n';
 }
 
 /**
@@ -310,7 +323,10 @@ function root(node) {
  * @this {HTMLCompiler}
  */
 function blockquote(node) {
-    return h(this, node, 'blockquote', this.all(node).join('\n'), true);
+    return h(this, node, {
+        'name': 'blockquote',
+        'content': this.all(node).join('\n')
+    }, node.data, true);
 }
 
 /**
@@ -397,9 +413,13 @@ function footnote(node) {
  * @this {HTMLCompiler}
  */
 function list(node) {
-    return h(this, node, node.ordered ? 'ol' : 'ul', {
-        'start': node.start !== 1 ? node.start : null
-    }, this.all(node).join('\n'), true);
+    return h(this, node, {
+        'name': node.ordered ? 'ol' : 'ul',
+        'attributes': {
+            'start': node.start !== 1 ? node.start : null
+        },
+        'content': this.all(node).join('\n')
+    }, node.data, true);
 }
 
 /**
@@ -428,7 +448,6 @@ function list(node) {
  * @this {HTMLCompiler}
  */
 function listItem(node, parent) {
-    var item = node;
     var single;
     var result;
 
@@ -436,10 +455,13 @@ function listItem(node, parent) {
         node.children.length === 1 &&
         node.children[0].children;
 
-    result = this.all(single ? item.children[0] : item)
+    result = this.all(single ? node.children[0] : node)
         .join(single ? '' : '\n');
 
-    return h(this, node, 'li', result, !single);
+    return h(this, node, {
+        'name': 'li',
+        'content': result
+    }, node.data, !single);
 }
 
 /**
@@ -461,7 +483,10 @@ function listItem(node, parent) {
  * @this {HTMLCompiler}
  */
 function heading(node) {
-    return h(this, node, 'h' + node.depth, this.all(node).join(''));
+    return h(this, node, {
+        'name': 'h' + node.depth,
+        'content': this.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -482,7 +507,10 @@ function heading(node) {
  * @this {HTMLCompiler}
  */
 function paragraph(node) {
-    return h(this, node, 'p', trim(detab(this.all(node).join(''))), false);
+    return h(this, node, {
+        'name': 'p',
+        'content': trim(detab(this.all(node).join('')))
+    }, node.data);
 }
 
 /**
@@ -502,9 +530,16 @@ function code(node) {
     var value = node.value ? detab(node.value + '\n') : '';
     var language = node.lang && node.lang.match(FIRST_WORD);
 
-    return h(self, node, 'pre', h(self, node, 'code', {
-        'class': language ? 'language-' + language[0] : null
-    }, self.encode(value), false), false);
+    return h(self, node, {
+        'name': 'pre',
+        'content': h(self, node, {
+            'name': 'code',
+            'attributes': {
+                'class': language ? 'language-' + language[0] : null
+            },
+            'content': self.encode(value)
+        }, node.data)
+    });
 }
 
 /**
@@ -535,6 +570,7 @@ function table(node) {
     var row;
     var out;
     var name;
+    var cell;
 
     while (index--) {
         pos = alignLength;
@@ -543,19 +579,34 @@ function table(node) {
         name = index === 0 ? 'th' : 'td';
 
         while (pos--) {
-            out[pos] = h(self, row[pos], name, {
-                'align': align[pos]
-            }, row[pos] ? self.all(row[pos]).join('\n') : '');
+            cell = row[pos];
+            out[pos] = h(self, cell, {
+                'name': name,
+                'attributes': {
+                    'align': align[pos]
+                },
+                'content': cell ? self.all(cell).join('\n') : ''
+            }, cell && cell.data);
         }
 
-        result[index] = h(self, rows[index], 'tr', out.join('\n'), true);
+        result[index] = h(self, rows[index], {
+            'name': 'tr',
+            'content': out.join('\n')
+        }, rows[index], true);
     }
 
-    return h(self, node, 'table',
-        h(self, node, 'thead', result[0], true) + '\n' +
-        h(self, node, 'tbody', result.slice(1).join('\n'), true),
-        true
-    );
+    return h(self, node, {
+        'name': 'table',
+        'content': h(self, node, {
+                'name': 'thead',
+                'content': result[0]
+            }, null, true) +
+            '\n' +
+            h(self, node, {
+                'name': 'tbody',
+                'content': result.slice(1).join('\n')
+            }, null, true)
+    }, node.data, true);
 }
 
 /**
@@ -585,7 +636,9 @@ function html(node) {
  * @this {HTMLCompiler}
  */
 function rule(node) {
-    return h(this, node, 'hr');
+    return h(this, node, {
+        'name': 'hr'
+    }, node.data);
 }
 
 /**
@@ -601,7 +654,10 @@ function rule(node) {
  * @this {HTMLCompiler}
  */
 function inlineCode(node) {
-    return h(this, node, 'code', collapse(this.encode(node.value)));
+    return h(this, node, {
+        'name': 'code',
+        'content': collapse(this.encode(node.value))
+    }, node.data);
 }
 
 /**
@@ -622,7 +678,10 @@ function inlineCode(node) {
  * @this {HTMLCompiler}
  */
 function strong(node) {
-    return h(this, node, 'strong', this.all(node).join(''));
+    return h(this, node, {
+        'name': 'strong',
+        'content': this.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -643,7 +702,10 @@ function strong(node) {
  * @this {HTMLCompiler}
  */
 function emphasis(node) {
-    return h(this, node, 'em', this.all(node).join(''));
+    return h(this, node, {
+        'name': 'em',
+        'content': this.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -657,7 +719,9 @@ function emphasis(node) {
  * @this {HTMLCompiler}
  */
 function hardBreak(node) {
-    return h(this, node, 'br') + '\n';
+    return h(this, node, {
+        'name': 'br'
+    }, node.data) + '\n';
 }
 
 /**
@@ -679,10 +743,14 @@ function hardBreak(node) {
  * @this {HTMLCompiler}
  */
 function link(node) {
-    return h(this, node, 'a', {
-        'href': normalizeURI(node.href),
-        'title': node.title
-    }, this.all(node).join(''));
+    return h(this, node, {
+        'name': 'a',
+        'attributes': {
+            'href': normalizeURI(node.href),
+            'title': node.title
+        },
+        'content': this.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -701,12 +769,20 @@ function link(node) {
 function footnoteReference(node) {
     var identifier = node.identifier;
 
-    return h(this, node, 'sup', {
-        'id': 'fnref-' + identifier
-    }, h(this, node, 'a', {
-        'href': '#fn-' + identifier,
-        'class': 'footnote-ref'
-    }, identifier));
+    return h(this, node, {
+        'name': 'sup',
+        'attributes': {
+            'id': 'fnref-' + identifier
+        },
+        'content': h(this, node, {
+            'name': 'a',
+            'attributes': {
+                'href': '#fn-' + identifier,
+                'class': 'footnote-ref'
+            },
+            'content': identifier
+        })
+    }, node.data);
 }
 
 /**
@@ -726,10 +802,14 @@ function linkReference(node) {
     var self = this;
     var def = self.definitions[node.identifier.toUpperCase()] || {};
 
-    return failsafe(node, def, self) || h(self, node, 'a', {
-        'href': normalizeURI(def.link || ''),
-        'title': def.title
-    }, self.all(node).join(''));
+    return failsafe(node, def, self) || h(self, node, {
+        'name': 'a',
+        'attributes': {
+            'href': normalizeURI(def.link || ''),
+            'title': def.title
+        },
+        'content': self.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -749,11 +829,14 @@ function imageReference(node) {
     var self = this;
     var def = self.definitions[node.identifier.toUpperCase()] || {};
 
-    return failsafe(node, def, self) || h(self, node, 'img', {
-        'src': normalizeURI(def.link || ''),
-        'alt': node.alt || '',
-        'title': def.title
-    });
+    return failsafe(node, def, self) || h(self, node, {
+        'name': 'img',
+        'attributes': {
+            'src': normalizeURI(def.link || ''),
+            'alt': node.alt || '',
+            'title': def.title
+        }
+    }, node.data);
 }
 
 /**
@@ -769,11 +852,14 @@ function imageReference(node) {
  * @this {HTMLCompiler}
  */
 function image(node) {
-    return h(this, node, 'img', {
-        'src': normalizeURI(node.src),
-        'alt': node.alt || '',
-        'title': node.title
-    });
+    return h(this, node, {
+        'name': 'img',
+        'attributes': {
+            'src': normalizeURI(node.src),
+            'alt': node.alt || '',
+            'title': node.title
+        }
+    }, node.data);
 }
 
 /**
@@ -794,7 +880,10 @@ function image(node) {
  * @this {HTMLCompiler}
  */
 function strikethrough(node) {
-    return h(this, node, 'del', this.all(node).join(''));
+    return h(this, node, {
+        'name': 'del',
+        'content': this.all(node).join('')
+    }, node.data);
 }
 
 /**
@@ -891,7 +980,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"collapse-white-space":4,"detab":5,"normalize-uri":7,"trim":9,"trim-lines":8,"unist-util-visit":10}],3:[function(require,module,exports){
+},{"./h.js":3,"collapse-white-space":4,"detab":5,"normalize-uri":7,"trim":10,"trim-lines":9,"unist-util-visit":11}],3:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -904,6 +993,12 @@ module.exports = visitors;
  */
 
 'use strict';
+
+/*
+ * Dependencies.
+ */
+
+var assign = require('object-assign');
 
 /*
  * Constants.
@@ -939,14 +1034,12 @@ function toAttributes(attributes, encode, node) {
     var key;
     var value;
 
-    if (attributes) {
-        for (key in attributes) {
-            value = attributes[key];
+    for (key in attributes) {
+        value = attributes[key];
 
-            if (value !== null && value !== undefined) {
-                value = encode(String(value || EMPTY), node);
-                parameters.push(key + EQUALS + QUOTE + value + QUOTE);
-            }
+        if (value !== null && value !== undefined) {
+            value = encode(String(value || EMPTY), node);
+            parameters.push(key + EQUALS + QUOTE + value + QUOTE);
         }
     }
 
@@ -971,47 +1064,54 @@ function toAttributes(attributes, encode, node) {
  *   }) // '<br id="foo">'
  *
  * @param {HTMLCompiler} context - Context compiler.
- * @param {Node} node - mdast node.  If `node` has an
- *   `attributes` hash, its properties are also stringified
- *   as HTML attributes on the resulting node.
- * @param {string} name - Tag name to compile as.
- * @param {Object?} [attributes] - Attributes to add to the
- *   resulting node.
- * @param {string?} [children] - HTML to insert inside
- *   the resulting node.
+ * @param {Node} node - mdast node. Used for positions
+ *   on errors.
+ * @param {Object?} [defaults] - Default HTML configuration.
+ * @param {Object?} [defaults.attributes] - Default Attributes.
+ * @param {Object?} [defaults.content] - Default content.
+ * @param {Object?} [defaults.name] - Default tag-name.
+ * @param {Object?} [data] - Node configuration.
+ * @param {Object?} [data.htmlAttributes] - HTML Attributes.
+ * @param {Object?} [data.htmlContent] - Content of element.
+ * @param {Object?} [data.htmlName] - Tag-name.
  * @param {boolean} [loose] - Whether to add an initial and
  *   a trailing newline character inside the opening and
  *   closing tags.
  * @return {string} - HTML representation of `node`, based
  *   on the given options.
  */
-function h(context, node, name, attributes, children, loose) {
-    var closing = CLOSING.indexOf(name) !== -1;
+function h(context, node, defaults, data, loose) {
+    var name;
     var value;
     var parameters;
+    var content;
 
-    if (typeof children !== 'string' && typeof attributes === 'string') {
-        loose = children;
-        children = attributes;
-        attributes = null;
+    if (!data) {
+        data = {};
     }
 
-    parameters = toAttributes(attributes, context.encode, node);
+    name = context.encode(data.htmlName || defaults.name);
+
+    if (data.htmlContent && !context.options.sanitize) {
+        content = data.htmlContent;
+    } else {
+        content = defaults.content || EMPTY;
+    }
+
+    parameters = toAttributes(
+        assign({}, defaults.attributes, data.htmlAttributes
+    ), context.encode, node);
 
     value = LT + name + (parameters ? SPACE + parameters : EMPTY);
 
-    parameters = node && toAttributes(node.attributes, context.encode, node);
-
-    value += parameters ? SPACE + parameters : EMPTY;
-
-    if (closing) {
+    if (CLOSING.indexOf(name) !== -1) {
         return value + (context.options.xhtml ? SPACE + SLASH : EMPTY) + GT;
     }
 
     return value + GT +
         (loose ? LINE : EMPTY) +
-        (children || EMPTY) +
-        (loose && children ? LINE : EMPTY) +
+        content +
+        (loose && content ? LINE : EMPTY) +
         LT + SLASH + name + GT;
 }
 
@@ -1021,7 +1121,7 @@ function h(context, node, name, attributes, children, loose) {
 
 module.exports = h;
 
-},{}],4:[function(require,module,exports){
+},{"object-assign":8}],4:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1223,6 +1323,47 @@ function normalizeURI(uri) {
 module.exports = normalizeURI;
 
 },{}],8:[function(require,module,exports){
+/* eslint-disable no-unused-vars */
+'use strict';
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],9:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1254,7 +1395,7 @@ function trimLines(value) {
 
 module.exports = trimLines;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -1270,7 +1411,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.

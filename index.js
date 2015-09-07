@@ -43,7 +43,9 @@ function plugin(mdast, options) {
      * Extensible constructor.
      */
     function HTMLCompiler(file) {
-        file.extension = 'html';
+        file.move({
+            'extension': 'html'
+        });
 
         MarkdownCompiler.apply(this, [file, options]);
     }
