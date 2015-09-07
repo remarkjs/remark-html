@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+1.1.0 / 2015-09-07
+==================
+
+*   Add support for HTML integrations on nodes ([e713382](https://github.com/wooorm/mdast-html/commit/e713382))
+
 1.0.0 / 2015-08-17
 ==================
 
