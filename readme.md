@@ -12,9 +12,8 @@ npm install mdast-html
 ```
 
 **mdast-html** is also available for [bower](http://bower.io/#install-packages),
-[component](https://github.com/componentjs/component), and
-[duo](http://duojs.org/#getting-started), and as an AMD, CommonJS, and globals
-module, [uncompressed](mdast-html.js) and [compressed](mdast-html.min.js).
+and [duo](http://duojs.org/#getting-started), and as an AMD, CommonJS, and
+globals module, [uncompressed](mdast-html.js) and [compressed](mdast-html.min.js).
 
 ## Table of Contents
 
