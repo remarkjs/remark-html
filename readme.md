@@ -160,6 +160,10 @@ real world. Read more on some of the reasoning in
     and [**mdast-yaml-config**](https://github.com/wooorm/mdast-yaml-config),
     which specify how HTML is compiled in the document itself;
 
+*   [**mdast-highlight.js**](https://github.com/ben-eb/mdast-highlight.js) and
+    [**mdast-midas**](https://github.com/ben-eb/mdast-midas) which highlight
+    code-blocks;
+
 *   ...and [more](https://github.com/wooorm/mdast/blob/master/doc/plugins.md#list-of-plugins).
 
 All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/mdastnode.7.md)
