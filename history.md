@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+1.2.0 / 2015-09-09
+==================
+
+*   Add support for compiling unknown nodes ([f3b35fe](https://github.com/wooorm/mdast-html/commit/f3b35fe))
+
 1.1.0 / 2015-09-07
 ==================
 
