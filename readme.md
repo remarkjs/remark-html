@@ -163,9 +163,11 @@ real world. Read more on some of the reasoning in
 
 *   ...and [more](https://github.com/wooorm/mdast/blob/master/doc/plugins.md#list-of-plugins).
 
-All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/nodes.md)
-can be compiled to HTML.  In addition, **mdast-html** can be told how to
-compile markdown nodes through three `data` properties:
+All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/mdastnode.7.md)
+can be compiled to HTML. Unknown **mdast** nodes are compiled to `div` nodes.
+
+In addition, **mdast-html** can be told how to compile nodes through three
+`data` properties:
 
 *   `htmlName` — Tag-name to compile as;
 *   `htmlContent` — HTML content to add (instead of `children` and `value`);

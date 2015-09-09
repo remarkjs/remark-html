@@ -219,6 +219,48 @@ describe('mdast-html()', function () {
         });
     });
 
+    it('should throw when not given a node', function () {
+        assert.throws(function () {
+            mdast.use(html).stringify({
+                'type': 'root',
+                'children': [{
+                    'value': 'baz'
+                }]
+            });
+        }, /Expected node `\[object Object\]`/);
+    });
+
+    it('should stringify unknown nodes', function () {
+        var processor = mdast().use(html);
+
+        assert.strictEqual(processor.stringify({
+            'type': 'alpha'
+        }), '<div></div>');
+
+        assert.strictEqual(processor.stringify({
+            'type': 'alpha',
+            'children': [{
+                'type': 'strong',
+                'children': [{
+                    'type': 'text',
+                    'value': 'bravo'
+                }]
+            }]
+        }), '<div><strong>bravo</strong></div>');
+
+        assert.strictEqual(processor.stringify({
+            'type': 'alpha',
+            'value': 'bravo',
+            'data': {
+                'htmlName': 'section',
+                'htmlAttributes': {
+                    'class': 'charlie'
+                },
+                'htmlContent': 'delta'
+            }
+        }), '<section class="charlie">delta</section>');
+    });
+
     it('should patch and merge attributes', function () {
         var processor = mdast().use(function () {
             return function (ast) {
