@@ -251,6 +251,30 @@ describe('mdast-html()', function () {
         );
     });
 
+    it('should support div elements in modified AST nodes', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                var code = ast.children[0].children[0];
+
+                code.data = {
+                    'htmlContent': '<span class="token">' +
+                        code.value +
+                        '</span>'
+                };
+
+                ast.children[0] = {
+                  type: 'div',
+                  children: [code]
+                }
+            }
+        }).use(html);
+
+        assert.strictEqual(
+            processor.process('`var`'),
+            '<div><code><span class="token">var</span></code></div>\n'
+        );
+    });
+
     it('should overwrite content', function () {
         var processor = mdast().use(function () {
             return function (ast) {
