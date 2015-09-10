@@ -332,6 +332,23 @@ describe('mdast-html()', function () {
             '<p><code>var</code></p>\n'
         );
     });
+
+    it('should NOT overwrite classes on code', function () {
+        var processor = mdast().use(function () {
+            return function (ast) {
+                ast.children[0].data = {
+                    'htmlAttributes': {
+                        'class': 'foo'
+                    }
+                };
+            }
+        }).use(html);
+
+        assert.strictEqual(
+            processor.process('```js\nvar\n```\n'),
+            '<pre><code class="foo language-js">var\n</code></pre>\n'
+        );
+    });
 });
 
 /**

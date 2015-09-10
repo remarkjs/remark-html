@@ -12,7 +12,8 @@
  * Dependencies.
  */
 
-var compilers = require('./lib/compilers.js');
+var compilers = require('./lib/compilers');
+var transformer = require('./lib/transformer');
 
 /**
  * Attach an HTML compiler.
@@ -63,6 +64,8 @@ function plugin(mdast, options) {
     }
 
     mdast.Compiler = HTMLCompiler;
+
+    return transformer;
 }
 
 /*

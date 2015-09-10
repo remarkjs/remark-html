@@ -13,7 +13,8 @@
  * Dependencies.
  */
 
-var compilers = require('./lib/compilers.js');
+var compilers = require('./lib/compilers');
+var transformer = require('./lib/transformer');
 
 /**
  * Attach an HTML compiler.
@@ -64,6 +65,8 @@ function plugin(mdast, options) {
     }
 
     mdast.Compiler = HTMLCompiler;
+
+    return transformer;
 }
 
 /*
@@ -72,7 +75,7 @@ function plugin(mdast, options) {
 
 module.exports = plugin;
 
-},{"./lib/compilers.js":2}],2:[function(require,module,exports){
+},{"./lib/compilers":2,"./lib/transformer":4}],2:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -94,12 +97,6 @@ var normalizeURI = require('normalize-uri');
 var trimLines = require('trim-lines');
 var visit = require('unist-util-visit');
 var h = require('./h.js');
-
-/*
- * Constants.
- */
-
-var FIRST_WORD = /^[^\ \t]+(?=[\ \t]|$)/;
 
 /*
  * Compilers.
@@ -590,15 +587,11 @@ function paragraph(node) {
 function code(node) {
     var self = this;
     var value = node.value ? detab(node.value + '\n') : '';
-    var language = node.lang && node.lang.match(FIRST_WORD);
 
     return h(self, node, {
         'name': 'pre',
         'content': h(self, node, {
             'name': 'code',
-            'attributes': {
-                'class': language ? 'language-' + language[0] : null
-            },
             'content': self.encode(value)
         }, node.data)
     });
@@ -822,7 +815,10 @@ function link(node) {
  *   // If a definition was added previously:
  *   footnoteReference({
  *     identifier: 'foo'
- *   }); // '<sup id="fnref-foo"><a href="#fn-foo">foo</a></sup>'
+ *   });
+ *   // <sup id="fnref-foo">
+ *   //   <a class="footnote-ref" href="#fn-foo">foo</a>
+ *   // </sup>
  *
  * @param {Node} node - Node to compile.
  * @return {string} - Compiled node.
@@ -1044,7 +1040,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"collapse-white-space":4,"detab":5,"normalize-uri":7,"trim":10,"trim-lines":9,"unist-util-visit":11}],3:[function(require,module,exports){
+},{"./h.js":3,"collapse-white-space":5,"detab":6,"normalize-uri":8,"trim":11,"trim-lines":10,"unist-util-visit":12}],3:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -1185,7 +1181,85 @@ function h(context, node, defaults, data, loose) {
 
 module.exports = h;
 
-},{"object-assign":8}],4:[function(require,module,exports){
+},{"object-assign":9}],4:[function(require,module,exports){
+/**
+ * @author Titus Wormer
+ * @copyright 2015 Titus Wormer
+ * @license MIT
+ * @module mdast:html:compilers
+ * @fileoverview Compilers to transform mdast nodes to HTML.
+ */
+
+'use strict';
+
+/*
+ * Dependencies.
+ */
+
+var visit = require('unist-util-visit');
+
+/*
+ * Constants.
+ */
+
+var FIRST_WORD = /^[^\ \t]+(?=[\ \t]|$)/;
+
+/**
+ * Helper to get/set `htmlAttributes`.
+ *
+ * @param {Node} node - Node to get data from.
+ * @return {Object} - Attributes.
+ */
+function getAttributes(node) {
+    var data = node.data || (node.data = {});
+    return data.htmlAttributes || (data.htmlAttributes = {});
+}
+
+/**
+ * Augment a code node.
+ *
+ * @param {Node} node - Code node.
+ */
+function code(node) {
+    var lang = node.lang && node.lang.match(FIRST_WORD);
+    var attrs;
+
+    if (!lang) {
+        return;
+    }
+
+    attrs = getAttributes(node);
+    attrs.class = (attrs.class ? attrs.class + ' ' : '') + 'language-' + lang;
+}
+
+/*
+ * Map of node-type handlers.
+ */
+
+var handlers = {};
+
+handlers.code = code;
+
+/**
+ * Transform `ast`.
+ *
+ * @param {Node} ast - Tree.
+ */
+function transformer(ast) {
+    visit(ast, function (node) {
+        if (node.type in handlers) {
+            handlers[node.type](node);
+        }
+    });
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = transformer;
+
+},{"unist-util-visit":12}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1215,7 +1289,7 @@ function collapse(value) {
 
 module.exports = collapse;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1287,7 +1361,7 @@ function detab(value, size) {
 
 module.exports = detab;
 
-},{"repeat-string":6}],6:[function(require,module,exports){
+},{"repeat-string":7}],7:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -1355,7 +1429,7 @@ function repeat(str, num) {
 var res = '';
 var cache;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1386,7 +1460,7 @@ function normalizeURI(uri) {
 
 module.exports = normalizeURI;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /* eslint-disable no-unused-vars */
 'use strict';
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -1427,7 +1501,7 @@ module.exports = Object.assign || function (target, source) {
 	return to;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 /*
@@ -1459,7 +1533,7 @@ function trimLines(value) {
 
 module.exports = trimLines;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -1475,7 +1549,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer. All rights reserved.
