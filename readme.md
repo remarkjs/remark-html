@@ -164,6 +164,9 @@ real world. Read more on some of the reasoning in
     [**mdast-midas**](https://github.com/ben-eb/mdast-midas) which highlight
     code-blocks;
 
+*   [**mdast-autolink-headings**](https://github.com/ben-eb/mdast-autolink-headings),
+    which generates GitHub style anchors for each of the headings;
+
 *   ...and [more](https://github.com/wooorm/mdast/blob/master/doc/plugins.md#list-of-plugins).
 
 All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/mdastnode.7.md)
