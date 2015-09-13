@@ -2,6 +2,13 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+1.2.1 / 2015-09-13
+==================
+
+*   Fix output of unknown node with multiple children ([a2d6c57](https://github.com/wooorm/mdast-html/commit/a2d6c57))
+*   Add a reference to mdast-autolink-headings ([9a3470c](https://github.com/wooorm/mdast-html/commit/9a3470c))
+*   Fix default class names by moving to transformer ([f2d1a29](https://github.com/wooorm/mdast-html/commit/f2d1a29))
+
 1.2.0 / 2015-09-09
 ==================
 

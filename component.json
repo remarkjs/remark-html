@@ -1,6 +1,6 @@
 {
   "name": "mdast-html",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Compile Markdown to HTML with mdast",
   "license": "MIT",
   "keywords": [
