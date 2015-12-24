@@ -11,7 +11,7 @@ This document highlights the current differences from CommonMark:
 
 2.  **mdast-html** adds two extra entities when compiling to HTML,
     namely, `` ` `` (tick) and `'` (single quote), which are rendered
-    as `&grave;` and `&apos;`. The first has to do with better support
+    as `&#x60;` and `&#x27;`. The first has to do with better support
     for IE8 (a tick can break out of an attribute or comment), the second
     for an optional future option to use single quotes as attribute
     quotes.

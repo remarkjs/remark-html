@@ -225,7 +225,7 @@ function generateFootnotes() {
  * @this {HTMLCompiler}
  */
 function unknown(node) {
-    var content = 'children' in node ? this.all(node) : node.value;
+    var content = 'children' in node ? this.all(node).join('') : node.value;
 
     return h(this, node, {
         'name': 'div',
@@ -294,13 +294,7 @@ function all(parent) {
         value = self.visit(nodes[index], parent);
 
         if (value) {
-            if (
-                prev &&
-                (
-                    prev.type === 'break' ||
-                    (prev.type === 'escape' && prev.value === '\n')
-                )
-            ) {
+            if (prev && prev.type === 'break') {
                 value = trim.left(value);
             }
 
@@ -961,22 +955,6 @@ function text(node) {
 }
 
 /**
- * Stringify escaped text.
- *
- * @example
- *   escape({value: '\n'}); // '<br>\n'
- *
- *   escape({value: '|'}); // '\\|'
- *
- * @param {Node} node - Node to compile.
- * @return {string} - Compiled node.
- * @this {HTMLCompiler}
- */
-function escape(node) {
-    return this[node.value === '\n' ? 'break' : 'text'](node);
-}
-
-/**
  * Return an empty string for nodes which are ignored.
  *
  * @example
@@ -1040,7 +1018,7 @@ visitors.escape = escape;
 
 module.exports = visitors;
 
-},{"./h.js":3,"collapse-white-space":5,"detab":6,"normalize-uri":8,"trim":11,"trim-lines":10,"unist-util-visit":12}],3:[function(require,module,exports){
+},{"./h.js":3,"collapse-white-space":5,"detab":6,"normalize-uri":7,"trim":11,"trim-lines":10,"unist-util-visit":12}],3:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -1181,7 +1159,7 @@ function h(context, node, defaults, data, loose) {
 
 module.exports = h;
 
-},{"object-assign":9}],4:[function(require,module,exports){
+},{"object-assign":8}],4:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
@@ -1361,7 +1339,79 @@ function detab(value, size) {
 
 module.exports = detab;
 
-},{"repeat-string":7}],7:[function(require,module,exports){
+},{"repeat-string":9}],7:[function(require,module,exports){
+'use strict';
+
+/**
+ * Normalize `uri`. This only works when both `encodeURI`
+ * and `decodeURI` are available, and when
+ * decoding/encoding fails, just returns `uri`.
+ *
+ * @example
+ *   normalizeURI('foo bar'); // 'foo%20bar'
+ *   normalizeURI('foo%20bar'); // 'foo%20bar'
+ *
+ * @param {string} uri - Value with and/or without
+ *   encoded, entities.
+ * @return {string} - Encoded URI (when encoding succeeds,
+ * or `uri`).
+ */
+function normalizeURI(uri) {
+    try {
+        uri = encodeURI(decodeURI(uri));
+    } catch (exception) { /* empty */ }
+
+    return uri;
+}
+
+/*
+ * Expose.
+ */
+
+module.exports = normalizeURI;
+
+},{}],8:[function(require,module,exports){
+/* eslint-disable no-unused-vars */
+'use strict';
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+module.exports = Object.assign || function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (Object.getOwnPropertySymbols) {
+			symbols = Object.getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],9:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -1428,78 +1478,6 @@ function repeat(str, num) {
 
 var res = '';
 var cache;
-
-},{}],8:[function(require,module,exports){
-'use strict';
-
-/**
- * Normalize `uri`. This only works when both `encodeURI`
- * and `decodeURI` are available, and when
- * decoding/encoding fails, just returns `uri`.
- *
- * @example
- *   normalizeURI('foo bar'); // 'foo%20bar'
- *   normalizeURI('foo%20bar'); // 'foo%20bar'
- *
- * @param {string} uri - Value with and/or without
- *   encoded, entities.
- * @return {string} - Encoded URI (when encoding succeeds,
- * or `uri`).
- */
-function normalizeURI(uri) {
-    try {
-        uri = encodeURI(decodeURI(uri));
-    } catch (exception) { /* empty */ }
-
-    return uri;
-}
-
-/*
- * Expose.
- */
-
-module.exports = normalizeURI;
-
-},{}],9:[function(require,module,exports){
-/* eslint-disable no-unused-vars */
-'use strict';
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function toObject(val) {
-	if (val === null || val === undefined) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var to = toObject(target);
-	var symbols;
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = Object(arguments[s]);
-
-		for (var key in from) {
-			if (hasOwnProperty.call(from, key)) {
-				to[key] = from[key];
-			}
-		}
-
-		if (Object.getOwnPropertySymbols) {
-			symbols = Object.getOwnPropertySymbols(from);
-			for (var i = 0; i < symbols.length; i++) {
-				if (propIsEnumerable.call(from, symbols[i])) {
-					to[symbols[i]] = from[symbols[i]];
-				}
-			}
-		}
-	}
-
-	return to;
-};
 
 },{}],10:[function(require,module,exports){
 'use strict';
