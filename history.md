@@ -2,6 +2,13 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+2.0.0 / 2015-12-24
+==================
+
+*   Add temporary warning to `readme.md` ([400cef2](https://github.com/wooorm/remark-html/commit/400cef2))
+*   Rename `mdast-html` > `remark-html` ([5694a9c](https://github.com/wooorm/remark-html/commit/5694a9c))
+*   Refactor for changes in mdast ([57fede3](https://github.com/wooorm/remark-html/commit/57fede3))
+
 1.2.1 / 2015-09-13
 ==================
 
