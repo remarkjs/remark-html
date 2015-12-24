@@ -1,6 +1,6 @@
-# mdast-html [![Build Status](https://img.shields.io/travis/wooorm/mdast-html.svg)](https://travis-ci.org/wooorm/mdast-html) [![Coverage Status](https://img.shields.io/codecov/c/github/wooorm/mdast-html.svg)](https://codecov.io/github/wooorm/mdast-html)
+# remark-html [![Build Status](https://img.shields.io/travis/wooorm/remark-html.svg)](https://travis-ci.org/wooorm/remark-html) [![Coverage Status](https://img.shields.io/codecov/c/github/wooorm/remark-html.svg)](https://codecov.io/github/wooorm/remark-html)
 
-**mdast-html** compiles markdown to HTML.  Built on [**mdast**](https://github.com/wooorm/mdast),
+**remark-html** compiles markdown to HTML.  Built on [**remark**](https://github.com/wooorm/remark),
 an extensively tested and pluggable parser.
 
 ## Installation
@@ -8,12 +8,12 @@ an extensively tested and pluggable parser.
 [npm](https://docs.npmjs.com/cli/install):
 
 ```bash
-npm install mdast-html
+npm install remark-html
 ```
 
-**mdast-html** is also available for [bower](http://bower.io/#install-packages),
+**remark-html** is also available for [bower](http://bower.io/#install-packages),
 and [duo](http://duojs.org/#getting-started), and as an AMD, CommonJS, and
-globals module, [uncompressed](mdast-html.js) and [compressed](mdast-html.min.js).
+globals module, [uncompressed](remark-html.js) and [compressed](remark-html.min.js).
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ globals module, [uncompressed](mdast-html.js) and [compressed](mdast-html.min.js
 
 *   [Programmatic](#programmatic)
 
-    *   [mdast.use(html, options)](#mdastusehtml-options)
+    *   [remark.use(html, options)](#remarkusehtml-options)
 
 *   [Configuration](#configuration)
 
@@ -33,10 +33,10 @@ globals module, [uncompressed](mdast-html.js) and [compressed](mdast-html.min.js
 
 ## Command line
 
-Use **mdast-html** together with **mdast**:
+Use **remark-html** together with **remark**:
 
 ```bash
-npm install --global mdast mdast-html
+npm install --global remark remark-html
 ```
 
 Let’s say `example.md` looks as follows:
@@ -47,10 +47,10 @@ Let’s say `example.md` looks as follows:
 **Alpha**, _bravo_, and ~~Charlie~~.
 ```
 
-Then, run **mdast-html** on `example.md`:
+Then, run **remark-html** on `example.md`:
 
 ```bash
-mdast -u mdast-html example.md -o
+remark -u remark-html example.md -o
 ```
 
 Yields (check out the newly created `example.html` file):
@@ -62,7 +62,7 @@ Yields (check out the newly created `example.html` file):
 
 ## Programmatic
 
-### [mdast](https://github.com/wooorm/mdast#api).[use](https://github.com/wooorm/mdast#mdastuseplugin-options)(html, [options](#configuration))
+### [remark](https://github.com/wooorm/remark#api).[use](https://github.com/wooorm/remark#remarkuseplugin-options)(html, [options](#configuration))
 
 **Parameters**
 
@@ -72,14 +72,14 @@ Yields (check out the newly created `example.html` file):
 Let’s say `example.js` looks as follows:
 
 ```js
-var mdast = require('mdast');
-var html = require('mdast-html');
+var remark = require('remark');
+var html = require('remark-html');
 
 var doc = '# Hello & World\n' +
     '\n' +
     '**Alpha**, _bravo_, and ~~Charlie~~.\n';
 
-var result = mdast().use(html).process(doc);
+var result = remark().use(html).process(doc);
 
 console.log(result);
 /*
@@ -105,14 +105,14 @@ All options, including the `options` object itself, are optional:
 *   `sanitize` (`boolean`, default: `false`)
     — Whether or not to allow the use of HTML inside markdown.
 
-These can passed to `mdast.use()` as a second argument, or on the CLI:
+These can passed to `remark.use()` as a second argument, or on the CLI:
 
 ```bash
-mdast --use 'html=sanitize:false,xhtml:false,entities:"escape"' example.md
+remark --use 'html=sanitize:false,xhtml:false,entities:"escape"' example.md
 ```
 
-You can define these in `.mdastrc` or `package.json` [files](https://github.com/wooorm/mdast/blob/master/doc/mdastrc.5.md)
-too. An example `.mdastrc` file could look as follows:
+You can define these in `.remarkrc` or `package.json` [files](https://github.com/wooorm/remark/blob/master/doc/remarkrc.5.md)
+too. An example `.remarkrc` file could look as follows:
 
 ```json
 {
@@ -129,14 +129,14 @@ too. An example `.mdastrc` file could look as follows:
 }
 ```
 
-Where the object at `plugins.html` are the options for **mdast-html**.
-The object at `settings` determines how **mdast** parses markdown code.
-Read more about the latter on [**mdast**’s readme](https://github.com/wooorm/mdast#mdastprocessvalue-options-done).
+Where the object at `plugins.html` are the options for **remark-html**.
+The object at `settings` determines how **remark** parses markdown code.
+Read more about the latter on [**remark**’s readme](https://github.com/wooorm/remark#remarkprocessvalue-options-done).
 
 ## CommonMark
 
 > You still need to set `commonmark: true` in
-> [**mdast**’s options](https://github.com/wooorm/mdast#mdastprocessvalue-options-done)
+> [**remark**’s options](https://github.com/wooorm/remark#remarkprocessvalue-options-done)
 
 [CommonMark](http://commonmark.org) support is a goal but not (yet) a
 necessity. There are some (roughly 115 of 550, relating to inline
@@ -148,16 +148,16 @@ real world. Read more on some of the reasoning in
 
 ## Integrations
 
-**mdast-html** works great with:
+**remark-html** works great with:
 
-*   [**mdast-toc**](https://github.com/wooorm/mdast-toc), which generates
+*   [**remark-toc**](https://github.com/wooorm/remark-toc), which generates
     tables of contents;
 
-*   [**mdast-github**](https://github.com/wooorm/mdast-github), which generates
-    references to GitHub issues, PRs, users, and more;
+*   [**remark-github**](https://github.com/wooorm/remark-github), which
+    generates references to GitHub issues, PRs, users, and more;
 
-*   [**mdast-comment-config**](https://github.com/wooorm/mdast-comment-config)
-    and [**mdast-yaml-config**](https://github.com/wooorm/mdast-yaml-config),
+*   [**remark-comment-config**](https://github.com/wooorm/remark-comment-config)
+    and [**remark-yaml-config**](https://github.com/wooorm/remark-yaml-config),
     which specify how HTML is compiled in the document itself;
 
 *   [**mdast-highlight.js**](https://github.com/ben-eb/mdast-highlight.js) and
@@ -167,12 +167,12 @@ real world. Read more on some of the reasoning in
 *   [**mdast-autolink-headings**](https://github.com/ben-eb/mdast-autolink-headings),
     which generates GitHub style anchors for each of the headings;
 
-*   ...and [more](https://github.com/wooorm/mdast/blob/master/doc/plugins.md#list-of-plugins).
+*   ...and [more](https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins).
 
-All [**mdast** nodes](https://github.com/wooorm/mdast/blob/master/doc/mdastnode.7.md)
-can be compiled to HTML. Unknown **mdast** nodes are compiled to `div` nodes.
+All [**mdast** nodes](https://github.com/wooorm/mdast) can be compiled to
+HTML. Unknown **mdast** nodes are compiled to `div` nodes.
 
-In addition, **mdast-html** can be told how to compile nodes through three
+In addition, **remark-html** can be told how to compile nodes through three
 `data` properties:
 
 *   `htmlName` — Tag-name to compile as;

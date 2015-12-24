@@ -1,10 +1,10 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.mdastHTML = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.remarkHTML = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html
- * @fileoverview Compile Markdown to HTML with mdast.
+ * @module remark:html
+ * @fileoverview Compile Markdown to HTML with remark.
  */
 
 'use strict';
@@ -19,11 +19,11 @@ var transformer = require('./lib/transformer');
 /**
  * Attach an HTML compiler.
  *
- * @param {MDAST} mdast - Instance.
+ * @param {Remark} remark - Instance.
  * @param {Object?} [options] - Configuration.
  */
-function plugin(mdast, options) {
-    var MarkdownCompiler = mdast.Compiler;
+function plugin(remark, options) {
+    var MarkdownCompiler = remark.Compiler;
     var ancestor = MarkdownCompiler.prototype;
     var proto;
     var key;
@@ -64,7 +64,7 @@ function plugin(mdast, options) {
         proto[key] = compilers[key];
     }
 
-    mdast.Compiler = HTMLCompiler;
+    remark.Compiler = HTMLCompiler;
 
     return transformer;
 }
@@ -80,7 +80,7 @@ module.exports = plugin;
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html:compilers
+ * @module remark:html:compilers
  * @fileoverview Compilers to transform mdast nodes to HTML.
  */
 
@@ -1023,7 +1023,7 @@ module.exports = visitors;
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html:h
+ * @module remark:html:h
  * @fileoverview
  *   Create HTML nodes. Loosely inspired by
  *   https://github.com/Matt-Esch/virtual-dom/blob/master/
@@ -1164,8 +1164,8 @@ module.exports = h;
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html:compilers
- * @fileoverview Compilers to transform mdast nodes to HTML.
+ * @module remark:html:compilers
+ * @fileoverview AST transformer for HTML.
  */
 
 'use strict';

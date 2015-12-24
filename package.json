@@ -1,14 +1,14 @@
 {
-  "name": "mdast-html",
+  "name": "remark-html",
   "version": "1.2.1",
-  "description": "Compile Markdown to HTML with mdast",
+  "description": "Compile Markdown to HTML with remark",
   "license": "MIT",
   "keywords": [
     "markdown",
     "html",
     "stringify",
     "compile",
-    "mdast"
+    "remark"
   ],
   "dependencies": {
     "collapse-white-space": "^1.0.0",
@@ -19,7 +19,7 @@
     "trim-lines": "^1.0.0",
     "unist-util-visit": "^1.0.0"
   },
-  "repository": "wooorm/mdast-html",
+  "repository": "wooorm/remark-html",
   "author": "Titus Wormer <tituswormer@gmail.com>",
   "files": [
     "index.js",
@@ -53,8 +53,8 @@
     "lint": "npm run lint-api && npm run lint-style",
     "make": "npm run lint && npm run test-coverage",
     "build-md": "mdast . --quiet",
-    "build-bundle": "browserify index.js --bare -s mdastHTML > mdast-html.js",
-    "postbuild-bundle": "esmangle mdast-html.js > mdast-html.min.js",
+    "build-bundle": "browserify index.js --bare -s remarkHTML > remark-html.js",
+    "postbuild-bundle": "esmangle remark-html.js > remark-html.min.js",
     "build": "npm run build-md && npm run build-bundle"
   }
 }

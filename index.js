@@ -2,8 +2,8 @@
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html
- * @fileoverview Compile Markdown to HTML with mdast.
+ * @module remark:html
+ * @fileoverview Compile Markdown to HTML with remark.
  */
 
 'use strict';
@@ -18,11 +18,11 @@ var transformer = require('./lib/transformer');
 /**
  * Attach an HTML compiler.
  *
- * @param {MDAST} mdast - Instance.
+ * @param {Remark} remark - Instance.
  * @param {Object?} [options] - Configuration.
  */
-function plugin(mdast, options) {
-    var MarkdownCompiler = mdast.Compiler;
+function plugin(remark, options) {
+    var MarkdownCompiler = remark.Compiler;
     var ancestor = MarkdownCompiler.prototype;
     var proto;
     var key;
@@ -63,7 +63,7 @@ function plugin(mdast, options) {
         proto[key] = compilers[key];
     }
 
-    mdast.Compiler = HTMLCompiler;
+    remark.Compiler = HTMLCompiler;
 
     return transformer;
 }

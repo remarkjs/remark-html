@@ -2,8 +2,8 @@
  * @author Titus Wormer
  * @copyright 2015 Titus Wormer
  * @license MIT
- * @module mdast:html:test
- * @fileoverview Test suite for mdast-html.
+ * @module remark:html:test
+ * @fileoverview Test suite for remark-html.
  */
 
 'use strict';
@@ -208,7 +208,7 @@ function assertion(actual, expected, silent) {
  * Tests.
  */
 
-describe('mdast-html()', function () {
+describe('remark-html()', function () {
     it('should be a function', function () {
         assert(typeof html === 'function');
     });

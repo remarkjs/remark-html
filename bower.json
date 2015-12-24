@@ -1,18 +1,18 @@
 {
-  "name": "mdast-html",
-  "main": "mdast-html.js",
-  "description": "Compile Markdown to HTML with mdast",
+  "name": "remark-html",
+  "main": "remark-html.js",
+  "description": "Compile Markdown to HTML with remark",
   "license": "MIT",
   "keywords": [
     "markdown",
     "html",
     "stringify",
     "compile",
-    "mdast"
+    "remark"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/wooorm/mdast-html.git"
+    "url": "https://github.com/wooorm/remark-html.git"
   },
   "author": {
     "name": "Titus Wormer",
