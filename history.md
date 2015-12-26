@@ -2,7 +2,7 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
-2.0.1 / 2015-12-26
+2.0.2 / 2015-12-26
 ==================
 
 *   Remove distribution files from source ([4832286](https://github.com/wooorm/remark-html/commit/4832286))
