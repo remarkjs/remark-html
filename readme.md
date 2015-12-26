@@ -1,13 +1,5 @@
 # remark-html [![Build Status](https://img.shields.io/travis/wooorm/remark-html.svg)](https://travis-ci.org/wooorm/remark-html) [![Coverage Status](https://img.shields.io/codecov/c/github/wooorm/remark-html.svg)](https://codecov.io/github/wooorm/remark-html)
 
-> :warning: **mdast is currently being renamed to remark** :warning:
->
-> This means all plug-ins and relating projects change too, causing many
-> changes across the ecosystem. Expect the dust to settle in roughly a day.
->
-> See this project at the previous stable commit
-> [c4a51d1](https://github.com/wooorm/remark-github/commit/c4a51d1).
-
 **remark-html** compiles markdown to HTML.  Built on [**remark**](https://github.com/wooorm/remark),
 an extensively tested and pluggable parser.
 

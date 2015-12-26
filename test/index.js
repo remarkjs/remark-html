@@ -17,11 +17,11 @@
 var path = require('path');
 var fs = require('fs');
 var assert = require('assert');
-var mdast = require('mdast');
-var yamlConfig = require('mdast-yaml-config');
-var toc = require('mdast-toc');
-var github = require('mdast-github');
-var commentConfig = require('mdast-comment-config');
+var remark = require('remark');
+var yamlConfig = require('remark-yaml-config');
+var toc = require('remark-toc');
+var github = require('remark-github');
+var commentConfig = require('remark-comment-config');
 var commonmark = require('commonmark.json');
 var toVFile = require('to-vfile');
 var html = require('..');
@@ -179,7 +179,7 @@ commonmark.forEach(function (test, position) {
  * @return {string}
  */
 function process(file, config) {
-    return mdast.use(html, config).process(file, config);
+    return remark.use(html, config).process(file, config);
 }
 
 /**
@@ -215,13 +215,13 @@ describe('remark-html()', function () {
 
     it('should not throw if not passed options', function () {
         assert.doesNotThrow(function () {
-            html(mdast());
+            html(remark());
         });
     });
 
     it('should throw when not given a node', function () {
         assert.throws(function () {
-            mdast.use(html).stringify({
+            remark.use(html).stringify({
                 'type': 'root',
                 'children': [{
                     'value': 'baz'
@@ -231,7 +231,7 @@ describe('remark-html()', function () {
     });
 
     it('should stringify unknown nodes', function () {
-        var processor = mdast().use(html);
+        var processor = remark().use(html);
 
         assert.strictEqual(processor.stringify({
             'type': 'alpha'
@@ -262,7 +262,7 @@ describe('remark-html()', function () {
     });
 
     it('should patch and merge attributes', function () {
-        var processor = mdast().use(function () {
+        var processor = remark().use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
                     'htmlAttributes': {
@@ -279,7 +279,7 @@ describe('remark-html()', function () {
     });
 
     it('should overwrite a tag-name', function () {
-        var processor = mdast().use(function () {
+        var processor = remark().use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
                     'htmlName': 'b'
@@ -294,7 +294,7 @@ describe('remark-html()', function () {
     });
 
     it('should overwrite content', function () {
-        var processor = mdast().use(function () {
+        var processor = remark().use(function () {
             return function (ast) {
                 var code = ast.children[0].children[0];
 
@@ -313,7 +313,7 @@ describe('remark-html()', function () {
     });
 
     it('should not overwrite content in `sanitize` mode', function () {
-        var processor = mdast().use(function () {
+        var processor = remark().use(function () {
             return function (ast) {
                 var code = ast.children[0].children[0];
 
@@ -334,7 +334,7 @@ describe('remark-html()', function () {
     });
 
     it('should NOT overwrite classes on code', function () {
-        var processor = mdast().use(function () {
+        var processor = remark().use(function () {
             return function (ast) {
                 ast.children[0].data = {
                     'htmlAttributes': {
@@ -392,7 +392,7 @@ function describeIntegration(integration) {
 
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
 
-        result = mdast
+        result = remark
             .use(html, config)
             .use(INTEGRATION_MAP[integration], config)
             .process(file, config);
