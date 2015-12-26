@@ -9,6 +9,8 @@
 
 'use strict';
 
+/* eslint-env commonjs */
+
 /*
  * Dependencies.
  */
@@ -43,6 +45,8 @@ function plugin(remark, options) {
 
     /**
      * Extensible constructor.
+     *
+     * @param {VFile} file - Virtual file.
      */
     function HTMLCompiler(file) {
         if (file.extension) {
@@ -85,6 +89,8 @@ module.exports = plugin;
  */
 
 'use strict';
+
+/* eslint-env commonjs */
 
 /*
  * Dependencies.
@@ -278,7 +284,7 @@ function one(node, parent) {
  *   }); // 'foo'
  *
  * @param {Node} parent - Parent to visit.
- * @return {Array.<string>}
+ * @return {Array.<string>} - List of compiled nodes.
  * @this {HTMLCompiler}
  */
 function all(parent) {
@@ -1032,6 +1038,8 @@ module.exports = visitors;
 
 'use strict';
 
+/* eslint-env commonjs */
+
 /*
  * Dependencies.
  */
@@ -1169,6 +1177,8 @@ module.exports = h;
  */
 
 'use strict';
+
+/* eslint-env commonjs */
 
 /*
  * Dependencies.
