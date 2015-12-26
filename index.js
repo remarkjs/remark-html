@@ -8,6 +8,8 @@
 
 'use strict';
 
+/* eslint-env commonjs */
+
 /*
  * Dependencies.
  */
@@ -42,6 +44,8 @@ function plugin(remark, options) {
 
     /**
      * Extensible constructor.
+     *
+     * @param {VFile} file - Virtual file.
      */
     function HTMLCompiler(file) {
         if (file.extension) {

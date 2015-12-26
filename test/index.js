@@ -177,7 +177,8 @@ commonmark.forEach(function (test, position) {
  * Shortcut to process.
  *
  * @param {VFile} file - Virtual file.
- * @return {string}
+ * @param {Object?} [config] - Configuration.
+ * @return {string} - Processed `file`.
  */
 function process(file, config) {
     return remark.use(html, config).process(file, config);
@@ -258,7 +259,7 @@ test('remark-html()', function (t) {
                         'title': 'overwrite'
                     }
                 };
-            }
+            };
         })
         .use(html);
 
@@ -274,7 +275,7 @@ test('remark-html()', function (t) {
                 ast.children[0].children[0].data = {
                     'htmlName': 'b'
                 };
-            }
+            };
         })
         .use(html);
 
@@ -294,7 +295,7 @@ test('remark-html()', function (t) {
                         code.value +
                         '</span>'
                 };
-            }
+            };
         })
         .use(html);
 
@@ -314,7 +315,7 @@ test('remark-html()', function (t) {
                         code.value +
                         '</span>'
                 };
-            }
+            };
         })
         .use(html, {
             'sanitize': true
@@ -334,7 +335,7 @@ test('remark-html()', function (t) {
                         'class': 'foo'
                     }
                 };
-            }
+            };
         })
         .use(html);
 
