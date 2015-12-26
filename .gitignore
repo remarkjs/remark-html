@@ -3,3 +3,5 @@
 components/
 coverage/
 node_modules/
+remark-html.js
+remark-html.min.js

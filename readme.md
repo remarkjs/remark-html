@@ -12,8 +12,8 @@ npm install remark-html
 ```
 
 **remark-html** is also available for [duo](http://duojs.org/#getting-started),
-and as an AMD, CommonJS, and globals module, [uncompressed](remark-html.js) and
-[compressed](remark-html.min.js).
+and as an AMD, CommonJS, and globals module, [uncompressed and
+compressed](https://github.com/wooorm/remark-html/releases).
 
 ## Table of Contents
 
