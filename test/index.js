@@ -8,7 +8,7 @@
 
 'use strict';
 
-/* eslint-env mocha */
+/* eslint-env node */
 
 /*
  * Dependencies.
@@ -17,6 +17,7 @@
 var path = require('path');
 var fs = require('fs');
 var assert = require('assert');
+var test = require('tape');
 var remark = require('remark');
 var yamlConfig = require('remark-yaml-config');
 var toc = require('remark-toc');
@@ -182,62 +183,44 @@ function process(file, config) {
     return remark.use(html, config).process(file, config);
 }
 
-/**
- * Assert two strings.
- *
- * @param {string} actual - Value.
- * @param {string} expected - Fixture.
- * @param {boolean?} [silent] - Whether to return the
- *   error.
- * @return {Error?} - When silent and not equal.
- * @throws {Error} - When not silent and not equal.
- */
-function assertion(actual, expected, silent) {
-    try {
-        assert.equal(actual, expected);
-    } catch (exception) {
-        if (silent) {
-            return exception;
-        }
-
-        throw exception;
-    }
-}
-
 /*
  * Tests.
  */
 
-describe('remark-html()', function () {
-    it('should be a function', function () {
-        assert(typeof html === 'function');
-    });
+test('remark-html()', function (t) {
+    var processor;
 
-    it('should not throw if not passed options', function () {
-        assert.doesNotThrow(function () {
-            html(remark());
-        });
-    });
+    t.equal(typeof html, 'function', 'should be a function');
 
-    it('should throw when not given a node', function () {
-        assert.throws(function () {
+    t.doesNotThrow(function () {
+        html(remark());
+    }, 'should not throw if not passed options');
+
+    t.throws(
+        function () {
             remark.use(html).stringify({
                 'type': 'root',
                 'children': [{
                     'value': 'baz'
                 }]
             });
-        }, /Expected node `\[object Object\]`/);
-    });
+        },
+        /Expected node `\[object Object\]`/,
+        'should throw when not given a node'
+    );
 
-    it('should stringify unknown nodes', function () {
-        var processor = remark().use(html);
+    processor = remark().use(html);
 
-        assert.strictEqual(processor.stringify({
+    t.equal(
+        processor.stringify({
             'type': 'alpha'
-        }), '<div></div>');
+        }),
+        '<div></div>',
+        'should stringify unknown nodes'
+    );
 
-        assert.strictEqual(processor.stringify({
+    t.equal(
+        processor.stringify({
             'type': 'alpha',
             'children': [{
                 'type': 'strong',
@@ -246,9 +229,13 @@ describe('remark-html()', function () {
                     'value': 'bravo'
                 }]
             }]
-        }), '<div><strong>bravo</strong></div>');
+        }),
+        '<div><strong>bravo</strong></div>',
+        'should stringify unknown nodes'
+    );
 
-        assert.strictEqual(processor.stringify({
+    t.equal(
+        processor.stringify({
             'type': 'alpha',
             'value': 'bravo',
             'data': {
@@ -258,11 +245,13 @@ describe('remark-html()', function () {
                 },
                 'htmlContent': 'delta'
             }
-        }), '<section class="charlie">delta</section>');
-    });
+        }),
+        '<section class="charlie">delta</section>',
+        'should stringify unknown nodes'
+    );
 
-    it('should patch and merge attributes', function () {
-        var processor = remark().use(function () {
+    processor = remark()
+        .use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
                     'htmlAttributes': {
@@ -270,31 +259,33 @@ describe('remark-html()', function () {
                     }
                 };
             }
-        }).use(html);
+        })
+        .use(html);
 
-        assert.strictEqual(
-            processor.process('![hello](example.jpg "overwritten")'),
-            '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n'
-        );
-    });
+    t.equal(
+        processor.process('![hello](example.jpg "overwritten")'),
+        '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n',
+        'should patch and merge attributes'
+    );
 
-    it('should overwrite a tag-name', function () {
-        var processor = remark().use(function () {
+    processor = remark()
+        .use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
                     'htmlName': 'b'
                 };
             }
-        }).use(html);
+        })
+        .use(html);
 
-        assert.strictEqual(
-            processor.process('**Bold!**'),
-            '<p><b>Bold!</b></p>\n'
-        );
-    });
+    t.equal(
+        processor.process('**Bold!**'),
+        '<p><b>Bold!</b></p>\n',
+        'should overwrite a tag-name'
+    );
 
-    it('should overwrite content', function () {
-        var processor = remark().use(function () {
+    processor = remark()
+        .use(function () {
             return function (ast) {
                 var code = ast.children[0].children[0];
 
@@ -304,16 +295,17 @@ describe('remark-html()', function () {
                         '</span>'
                 };
             }
-        }).use(html);
+        })
+        .use(html);
 
-        assert.strictEqual(
-            processor.process('`var`'),
-            '<p><code><span class="token">var</span></code></p>\n'
-        );
-    });
+    t.equal(
+        processor.process('`var`'),
+        '<p><code><span class="token">var</span></code></p>\n',
+        'should overwrite content'
+    );
 
-    it('should not overwrite content in `sanitize` mode', function () {
-        var processor = remark().use(function () {
+    processor = remark()
+        .use(function () {
             return function (ast) {
                 var code = ast.children[0].children[0];
 
@@ -323,18 +315,19 @@ describe('remark-html()', function () {
                         '</span>'
                 };
             }
-        }).use(html, {
+        })
+        .use(html, {
             'sanitize': true
         });
 
-        assert.strictEqual(
-            processor.process('`var`'),
-            '<p><code>var</code></p>\n'
-        );
-    });
+    t.equal(
+        processor.process('`var`'),
+        '<p><code>var</code></p>\n',
+        'should not overwrite content in `sanitize` mode'
+    );
 
-    it('should NOT overwrite classes on code', function () {
-        var processor = remark().use(function () {
+    processor = remark()
+        .use(function () {
             return function (ast) {
                 ast.children[0].data = {
                     'htmlAttributes': {
@@ -342,22 +335,24 @@ describe('remark-html()', function () {
                     }
                 };
             }
-        }).use(html);
+        })
+        .use(html);
 
-        assert.strictEqual(
-            processor.process('```js\nvar\n```\n'),
-            '<pre><code class="foo language-js">var\n</code></pre>\n'
-        );
-    });
+    t.equal(
+        processor.process('```js\nvar\n```\n'),
+        '<pre><code class="foo language-js">var\n</code></pre>\n',
+        'should NOT overwrite classes on code'
+    );
+
+    t.end();
 });
 
-/**
- * Describe a fixture.
- *
- * @param {string} fixture - Name.
+/*
+ * Assert fixtures.
  */
-function describeFixture(fixture) {
-    it('should work on `' + fixture + '`', function () {
+
+test('Fixtures', function (t) {
+    fixtures.forEach(function (fixture) {
         var filepath = join(FIXTURE_ROOT, fixture);
         var output = read(join(filepath, 'output.html'), 'utf-8');
         var input = read(join(filepath, 'input.md'), 'utf-8');
@@ -370,17 +365,56 @@ function describeFixture(fixture) {
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
         result = process(file, config);
 
-        assertion(result, output);
+        t.equal(result, output, 'should work on `' + fixture + '`');
     });
-}
 
-/**
- * Describe an integration.
- *
- * @param {string} integration - Name.
+    t.end();
+});
+
+/*
+ * Assert CommonMark.
  */
-function describeIntegration(integration) {
-    it('should work on `' + integration + '`', function () {
+
+test('CommonMark', function (t) {
+    commonmark.forEach(function (test, n) {
+        var name = test.section + ' ' + test.relative;
+        var file = toVFile(name + '.md');
+        var result;
+        var message;
+        var err;
+
+        file.contents = test.markdown;
+        result = process(file, CMARK_OPTIONS);
+
+        n = n + 1;
+
+        try {
+            assert.equal(result, test.html);
+        } catch (e) {
+            err = e;
+        }
+
+        message = '(' + n + ') should work on ' + name;
+
+        if (
+            CMARK_IGNORE.indexOf(n) !== -1 ||
+            (ignoreCommonMarkException && err)
+        ) {
+            t.skip(message);
+        } else {
+            t.equal(result, test.html, message);
+        }
+    });
+
+    t.end();
+});
+
+/*
+ * Assert integrations.
+ */
+
+test('Integrations', function (t) {
+    integrations.forEach(function (integration) {
         var filepath = join(INTEGRATION_ROOT, integration);
         var output = read(join(filepath, 'output.html'), 'utf-8');
         var input = read(join(filepath, 'input.md'), 'utf-8');
@@ -397,63 +431,8 @@ function describeIntegration(integration) {
             .use(INTEGRATION_MAP[integration], config)
             .process(file, config);
 
-        assertion(result, output);
+        t.equal(result, output, 'should work on `' + integration + '`');
     });
-}
 
-/**
- * Describe a CommonMark test.
- *
- * @param {Object} test - Test-case.
- * @param {number} n - Index of test-case.
- */
-function describeCommonMark(test, n) {
-    var name = test.section + ' ' + test.relative;
-    var file = toVFile(name + '.md');
-    var result;
-    var err;
-    var fn;
-
-    file.contents = test.markdown;
-    result = process(file, CMARK_OPTIONS);
-
-    n = n + 1;
-
-    err = assertion(result, test.html, true);
-
-    fn = it;
-
-    if (CMARK_IGNORE.indexOf(n) !== -1 || ignoreCommonMarkException && err) {
-        fn = fn.skip;
-    }
-
-    fn('(' + n + ') should work on ' + name, function () {
-        if (err) {
-            throw err;
-        }
-    });
-}
-
-/*
- * Assert fixtures.
- */
-
-describe('Fixtures', function () {
-    fixtures.forEach(describeFixture);
-});
-
-/*
- * Assert CommonMark.
- */
-
-describe('CommonMark', function () {
-    commonmark.forEach(describeCommonMark);
-});
-
-/*
- * Assert integrations.
- */
-
-describe('Integrations', function () {
-    integrations.forEach(describeIntegration);
+    t.end();
 });
