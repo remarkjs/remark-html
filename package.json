@@ -45,6 +45,7 @@
     "remark-github": "^4.0.1",
     "remark-lint": "^2.0.0",
     "remark-toc": "^2.0.0",
+    "remark-usage": "^2.1.0",
     "remark-validate-links": "^2.0.0",
     "remark-yaml-config": "^2.0.0",
     "tape": "^4.0.0",
