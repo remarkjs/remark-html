@@ -11,8 +11,8 @@ an extensively tested and pluggable parser.
 npm install remark-html
 ```
 
-**remark-html** is also available for [duo](http://duojs.org/#getting-started),
-and as an AMD, CommonJS, and globals module, [uncompressed and
+**remark-html** is also available as an AMD, CommonJS, and globals
+module, [uncompressed and
 compressed](https://github.com/wooorm/remark-html/releases).
 
 ## Table of Contents
