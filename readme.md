@@ -1,11 +1,10 @@
-# remark-html [![Build Status][travis-badge]][travis] [![Coverage Status][codecov-badge]][codecov]
+# remark-html [![Build Status][build-badge]][build-status] [![Coverage Status][coverage-badge]][coverage-status] [![Chat][chat-badge]][chat]
 
-Compiles markdown to HTML.  Built on [**remark**][remark], an
-extensively tested and pluggable parser.
+Compile markdown to HTML with [**remark**][remark].
 
 ## Installation
 
-[npm][npm-install]:
+[npm][]:
 
 ```bash
 npm install remark-html
@@ -44,7 +43,7 @@ Yields:
 
 ### `remark.use(html[, options])`
 
-`options` (`Object?`):
+###### `options`
 
 *   `entities` (`true`, `'numbers'`, or `'escape'`, default: `true`)
     — How to encode non-ASCII and HTML-escape characters: the default
@@ -52,11 +51,9 @@ Yields:
     numbered entities (`&` > `&#x26;`), and `'escape'` only encodes
     characters which are required by HTML to be escaped: `&`, `<`, `>`,
     `"`, `'`, and `` ` ``, leaving non-ASCII characters untouched.
-
 *   `xhtml` (`boolean`, default: `false`)
     — Whether or not to terminate self-closing tags (such as `img`) with a
     slash;
-
 *   `sanitize` (`boolean`, default: `false`)
     — Whether or not to allow the use of HTML inside markdown.
 
@@ -65,13 +62,12 @@ Yields:
 > You still need to set `commonmark: true` in
 > [**remark**s options][remark-options].
 
-[CommonMark][] support is a goal but not (yet) a
-necessity. There are some (roughly 115 of 550, relating to inline
-precedence, lists, emphasis and strongness) issues which I’d like
-to cover in the future. Note that this sounds like a lot, but they
-have to do with obscure differences which do not often occur in the
-real world. Read more on some of the reasoning in
-[`doc/commonmark.md`][commonmark-notes].
+[CommonMark][] support is a goal but not (yet) a necessity.  There are
+some (roughly 115 of 550, relating to inline precedence, lists, emphasis
+and importance) issues which I’d like to cover in the future.  Note that
+this sounds like a lot, but they have to do with obscure differences
+which do not often occur in the real world.  Read more on some of the
+reasoning in [`doc/commonmark.md`][commonmark-notes].
 
 ## Integrations
 
@@ -79,28 +75,23 @@ real world. Read more on some of the reasoning in
 
 *   [`wooorm/remark-toc`](https://github.com/wooorm/remark-toc), which
     generates tables of contents;
-
 *   [`wooorm/remark-github`](https://github.com/wooorm/remark-github), which
     generates references to GitHub issues, PRs, users, and more;
-
 *   [`wooorm/remark-comment-config`](https://github.com/wooorm/remark-comment-config)
     and [`wooorm/remark-yaml-config`](https://github.com/wooorm/remark-yaml-config),
     which specify how HTML is compiled in the document itself;
-
 *   [`ben-eb/remark-highlight.js`](https://github.com/ben-eb/remark-highlight.js) and
     [`ben-eb/remark-midas`](https://github.com/ben-eb/remark-midas) which
     highlight code-blocks;
-
 *   [`ben-eb/remark-autolink-headings`](https://github.com/ben-eb/remark-autolink-headings),
     which generates GitHub style anchors for each of the headings;
-
 *   ...and [more][remark-plugins].
 
-All [**MDAST** nodes][mdast] can be compiled to HTML. Unknown **MDAST**
+All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
 nodes are compiled to `div` nodes.
 
-In addition, **remark-html** can be told how to compile nodes through three
-`data` properties:
+In addition, **remark-html** can be told how to compile nodes through
+three `data` properties:
 
 *   `htmlName` — Tag-name to compile as;
 *   `htmlContent` — HTML content to add (instead of `children` and `value`);
@@ -137,21 +128,25 @@ For example, the following node:
 
 <!-- Definitions -->
 
-[travis-badge]: https://img.shields.io/travis/wooorm/remark-html/master.svg
+[build-badge]: https://img.shields.io/travis/wooorm/remark-html.svg
 
-[travis]: https://travis-ci.org/wooorm/remark-html
+[build-status]: https://travis-ci.org/wooorm/remark-html
 
-[codecov-badge]: https://img.shields.io/codecov/c/github/wooorm/remark-html.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/wooorm/remark-html.svg
 
-[codecov]: https://codecov.io/github/wooorm/remark-html
+[coverage-status]: https://codecov.io/github/wooorm/remark-html
 
-[npm-install]: https://docs.npmjs.com/cli/install
+[chat-badge]: https://img.shields.io/gitter/room/wooorm/remark.svg
+
+[chat]: https://gitter.im/wooorm/remark
 
 [releases]: https://github.com/wooorm/remark-html/releases
 
 [license]: LICENSE
 
 [author]: http://wooorm.com
+
+[npm]: https://docs.npmjs.com/cli/install
 
 [remark]: https://github.com/wooorm/remark
 
