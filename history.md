@@ -2,6 +2,12 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+3.0.1 / 2016-06-13
+==================
+
+*   Update metadata ([`83b9054`](https://github.com/wooorm/remark-html/commit/83b9054))
+*   Update dev-dependencies ([`8c9ed9e`](https://github.com/wooorm/remark-html/commit/8c9ed9e))
+
 3.0.0 / 2016-02-13
 ==================
 
