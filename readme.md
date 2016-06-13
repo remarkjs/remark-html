@@ -26,7 +26,7 @@ var html = require('remark-html');
 Process.
 
 ```javascript
-var doc = remark().use(html).process([
+var file = remark().use(html).process([
     '# Hello & World',
     '',
     '**Alpha**, _bravo_, and ~~Charlie~~.'

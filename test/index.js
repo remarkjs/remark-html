@@ -181,7 +181,7 @@ commonmark.forEach(function (test, position) {
  * @return {string} - Processed `file`.
  */
 function process(file, config) {
-    return remark.use(html, config).process(file, config);
+    return remark().use(html, config).process(file, config).toString();
 }
 
 /*
@@ -199,7 +199,7 @@ test('remark-html()', function (t) {
 
     t.throws(
         function () {
-            remark.use(html).stringify({
+            remark().use(html).stringify({
                 'type': 'root',
                 'children': [{
                     'value': 'baz'
@@ -264,7 +264,7 @@ test('remark-html()', function (t) {
         .use(html);
 
     t.equal(
-        processor.process('![hello](example.jpg "overwritten")'),
+        processor.process('![hello](example.jpg "overwritten")').toString(),
         '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n',
         'should patch and merge attributes'
     );
@@ -280,7 +280,7 @@ test('remark-html()', function (t) {
         .use(html);
 
     t.equal(
-        processor.process('**Bold!**'),
+        processor.process('**Bold!**').toString(),
         '<p><b>Bold!</b></p>\n',
         'should overwrite a tag-name'
     );
@@ -300,7 +300,7 @@ test('remark-html()', function (t) {
         .use(html);
 
     t.equal(
-        processor.process('`var`'),
+        processor.process('`var`').toString(),
         '<p><code><span class="token">var</span></code></p>\n',
         'should overwrite content'
     );
@@ -322,7 +322,7 @@ test('remark-html()', function (t) {
         });
 
     t.equal(
-        processor.process('`var`'),
+        processor.process('`var`').toString(),
         '<p><code>var</code></p>\n',
         'should not overwrite content in `sanitize` mode'
     );
@@ -340,7 +340,7 @@ test('remark-html()', function (t) {
         .use(html);
 
     t.equal(
-        processor.process('```js\nvar\n```\n'),
+        processor.process('```js\nvar\n```\n').toString(),
         '<pre><code class="foo language-js">var\n</code></pre>\n',
         'should NOT overwrite classes on code'
     );
@@ -427,10 +427,11 @@ test('Integrations', function (t) {
 
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
 
-        result = remark
+        result = remark()
             .use(html, config)
             .use(INTEGRATION_MAP[integration], config)
-            .process(file, config);
+            .process(file, config)
+            .toString();
 
         t.equal(result, output, 'should work on `' + integration + '`');
     });
