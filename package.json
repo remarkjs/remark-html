@@ -1,6 +1,6 @@
 {
   "name": "remark-html",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "Compile Markdown to HTML with remark",
   "license": "MIT",
   "keywords": [

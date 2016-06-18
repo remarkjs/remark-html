@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+4.0.0 / 2016-06-18
+==================
+
+*   Update to include proper sanitation ([`d736f08`](https://github.com/wooorm/remark-html/commit/d736f08))
+
 3.0.1 / 2016-06-13
 ==================
 
