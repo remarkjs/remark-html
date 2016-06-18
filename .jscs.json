@@ -17,7 +17,9 @@
       "require"
     ]
   },
-  "requireQuotedKeysInObjects": true,
+  "disallowQuotedKeysInObjects": {
+    "allExcept": ["reserved"]
+  },
   "disallowKeywords": [
     "with"
   ],

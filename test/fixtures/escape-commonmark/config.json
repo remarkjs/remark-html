@@ -1,3 +1,4 @@
 {
+  "sanitize": false,
   "commonmark": true
 }

@@ -14,62 +14,67 @@
  * Dependencies.
  */
 
-var compilers = require('./lib/compilers');
-var transformer = require('./lib/transformer');
+var toHAST = require('mdast-util-to-hast');
+var toHTML = require('hast-util-to-html');
+var sanitize = require('hast-util-sanitize');
 
 /**
  * Attach an HTML compiler.
  *
- * @param {Remark} remark - Instance.
+ * @param {Unified} processor - Instance.
  * @param {Object?} [options] - Configuration.
  */
-function plugin(remark, options) {
-    var MarkdownCompiler = remark.Compiler;
-    var ancestor = MarkdownCompiler.prototype;
-    var proto;
-    var key;
-
-    /**
-     * Extensible prototype.
-     */
-    function HTMLCompilerPrototype() {}
-
-    HTMLCompilerPrototype.prototype = ancestor;
-
-    proto = new HTMLCompilerPrototype();
-
-    proto.options.xhtml = false;
-    proto.options.sanitize = false;
-    proto.options.entities = 'true';
+function plugin(processor, options) {
+    var settings = options || {};
+    var clean = settings.sanitize;
+    var schema = clean && typeof clean === 'object' ? clean : null;
 
     /**
      * Extensible constructor.
      *
      * @param {VFile} file - Virtual file.
      */
-    function HTMLCompiler(file) {
+    function Compiler(file) {
         if (file.extension) {
             file.move({
-                'extension': 'html'
+                extension: 'html'
             });
         }
-
-        MarkdownCompiler.apply(this, [file, options]);
     }
 
-    HTMLCompiler.prototype = proto;
-
-    /*
-     * Expose compilers.
+    /**
+     * Compile MDAST to HTML.
+     *
+     * @param {Node} node - MDAST node.
+     * @return {string} - HTML.
      */
+    function compile(node) {
+        var root = node && node.type && node.type === 'root';
+        var hast = toHAST(node, { allowDangerousHTML: !clean });
+        var result;
 
-    for (key in compilers) {
-        proto[key] = compilers[key];
+        if (clean) {
+            hast = sanitize(hast, schema);
+        }
+
+        result = toHTML(hast, {
+            allowDangerousHTML: !clean,
+            entities: settings.entities,
+            voids: settings.voids,
+            closeSelfClosing: settings.closeSelfClosing
+        });
+
+        /* Add a final newline. */
+        if (root && result.charAt(result.length - 1) !== '\n') {
+            result += '\n';
+        }
+
+        return result;
     }
 
-    remark.Compiler = HTMLCompiler;
+    Compiler.prototype.compile = compile;
 
-    return transformer;
+    processor.Compiler = Compiler;
 }
 
 /*

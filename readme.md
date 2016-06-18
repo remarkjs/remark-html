@@ -35,7 +35,7 @@ var file = remark().use(html).process([
 Yields:
 
 ```html
-<h1>Hello &amp; World</h1>
+<h1>Hello &#x26; World</h1>
 <p><strong>Alpha</strong>, <em>bravo</em>, and <del>Charlie</del>.</p>
 ```
 
@@ -43,19 +43,33 @@ Yields:
 
 ### `remark.use(html[, options])`
 
-###### `options`
+##### `options`
 
-*   `entities` (`true`, `'numbers'`, or `'escape'`, default: `true`)
-    — How to encode non-ASCII and HTML-escape characters: the default
-    generates named entities (`&` > `&amp;`); `'numbers'` generates
-    numbered entities (`&` > `&#x26;`), and `'escape'` only encodes
-    characters which are required by HTML to be escaped: `&`, `<`, `>`,
-    `"`, `'`, and `` ` ``, leaving non-ASCII characters untouched.
-*   `xhtml` (`boolean`, default: `false`)
-    — Whether or not to terminate self-closing tags (such as `img`) with a
-    slash;
-*   `sanitize` (`boolean`, default: `false`)
-    — Whether or not to allow the use of HTML inside markdown.
+###### `options.sanitize`
+
+Whether or not to sanitize the output (`boolean` or `Object`, default:
+`true`).
+
+An object can be passed, in which case it’s passed to
+[`hast-util-sanitize`][sanitize].  By default, input is sanitized
+according to [GitHub’s sanitation rules][github], with the addition
+that all embedded HTML is also stripped.
+
+`false` can be passed to allow dangerous HTML.
+
+###### `options.entities`
+
+How to compile entities.  Passed to [`hast-util-to-html`][to-html].
+
+###### `options.voids`
+
+Which elements to treat as void.  Passed to
+[`hast-util-to-html`][to-html].
+
+###### `options.closeSelfClosing`
+
+Whether the close void elements with an extra `slash`.  Passed to
+[`hast-util-to-html`][to-html].
 
 ## CommonMark
 
@@ -77,14 +91,6 @@ reasoning in [`doc/commonmark.md`][commonmark-notes].
     generates tables of contents;
 *   [`wooorm/remark-github`](https://github.com/wooorm/remark-github), which
     generates references to GitHub issues, PRs, users, and more;
-*   [`wooorm/remark-comment-config`](https://github.com/wooorm/remark-comment-config)
-    and [`wooorm/remark-yaml-config`](https://github.com/wooorm/remark-yaml-config),
-    which specify how HTML is compiled in the document itself;
-*   [`ben-eb/remark-highlight.js`](https://github.com/ben-eb/remark-highlight.js) and
-    [`ben-eb/remark-midas`](https://github.com/ben-eb/remark-midas) which
-    highlight code-blocks;
-*   [`ben-eb/remark-autolink-headings`](https://github.com/ben-eb/remark-autolink-headings),
-    which generates GitHub style anchors for each of the headings;
 *   ...and [more][remark-plugins].
 
 All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
@@ -159,3 +165,9 @@ For example, the following node:
 [remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
 
 [mdast]: https://github.com/wooorm/mdast
+
+[to-html]: https://github.com/wooorm/hast-util-to-html
+
+[sanitize]: https://github.com/wooorm/hast-util-sanitize
+
+[github]: https://github.com/wooorm/hast-util-sanitize#schema

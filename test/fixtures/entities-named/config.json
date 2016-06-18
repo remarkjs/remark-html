@@ -1,0 +1,6 @@
+{
+  "sanitize": false,
+  "entities": {
+    "useNamedReferences": true
+  }
+}

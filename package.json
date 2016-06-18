@@ -11,13 +11,9 @@
     "remark"
   ],
   "dependencies": {
-    "collapse-white-space": "^1.0.0",
-    "detab": "^1.0.0",
-    "normalize-uri": "^1.0.0",
-    "object-assign": "^4.0.1",
-    "trim": "0.0.1",
-    "trim-lines": "^1.0.0",
-    "unist-util-visit": "^1.0.0"
+    "hast-util-sanitize": "^1.0.0",
+    "hast-util-to-html": "^1.0.0",
+    "mdast-util-to-hast": "^1.0.0"
   },
   "repository": {
     "type": "git",
@@ -29,8 +25,7 @@
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
   ],
   "files": [
-    "index.js",
-    "lib/"
+    "index.js"
   ],
   "devDependencies": {
     "browserify": "^13.0.0",
@@ -48,7 +43,6 @@
     "remark-toc": "^3.0.0",
     "remark-usage": "^4.0.0-alpha.1",
     "remark-validate-links": "^4.0.0-alpha.1",
-    "remark-yaml-config": "^3.0.0",
     "tape": "^4.0.0",
     "to-vfile": "^1.0.0"
   },

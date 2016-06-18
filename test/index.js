@@ -19,10 +19,8 @@ var fs = require('fs');
 var assert = require('assert');
 var test = require('tape');
 var remark = require('remark');
-var yamlConfig = require('remark-yaml-config');
 var toc = require('remark-toc');
 var github = require('remark-github');
-var commentConfig = require('remark-comment-config');
 var commonmark = require('commonmark.json');
 var toVFile = require('to-vfile');
 var html = require('..');
@@ -49,20 +47,22 @@ var join = path.join;
  */
 
 var INTEGRATION_MAP = {
-    'github': github,
-    'yaml-config': yamlConfig,
-    'toc': toc,
-    'comment-config': commentConfig
+    github: github,
+    toc: toc
 };
 
 var INTEGRATION_ROOT = join(__dirname, 'integrations');
 var FIXTURE_ROOT = join(__dirname, 'fixtures');
 
 var CMARK_OPTIONS = {
-    'entities': 'escape',
-    'commonmark': true,
-    'yaml': false,
-    'xhtml': true
+    entities: {
+        escapeOnly: true,
+        useNamedReferences: true
+    },
+    commonmark: true,
+    yaml: false,
+    closeSelfClosing: true,
+    sanitize: false
 };
 
 /*
@@ -200,13 +200,13 @@ test('remark-html()', function (t) {
     t.throws(
         function () {
             remark().use(html).stringify({
-                'type': 'root',
-                'children': [{
-                    'value': 'baz'
+                type: 'root',
+                children: [{
+                    value: 'baz'
                 }]
             });
         },
-        /Expected node `\[object Object\]`/,
+        /Expected node, got `\[object Object\]`/,
         'should throw when not given a node'
     );
 
@@ -214,7 +214,7 @@ test('remark-html()', function (t) {
 
     t.equal(
         processor.stringify({
-            'type': 'alpha'
+            type: 'alpha'
         }),
         '<div></div>',
         'should stringify unknown nodes'
@@ -222,12 +222,12 @@ test('remark-html()', function (t) {
 
     t.equal(
         processor.stringify({
-            'type': 'alpha',
-            'children': [{
-                'type': 'strong',
-                'children': [{
-                    'type': 'text',
-                    'value': 'bravo'
+            type: 'alpha',
+            children: [{
+                type: 'strong',
+                children: [{
+                    type: 'text',
+                    value: 'bravo'
                 }]
             }]
         }),
@@ -237,17 +237,23 @@ test('remark-html()', function (t) {
 
     t.equal(
         processor.stringify({
-            'type': 'alpha',
-            'value': 'bravo',
-            'data': {
-                'htmlName': 'section',
-                'htmlAttributes': {
-                    'class': 'charlie'
+            type: 'alpha',
+            children: [{
+                type: 'text',
+                value: 'bravo'
+            }],
+            data: {
+                hName: 'i',
+                hProperties: {
+                    className: 'charlie'
                 },
-                'htmlContent': 'delta'
+                hChildren: [{
+                    type: 'text',
+                    value: 'delta'
+                }]
             }
         }),
-        '<section class="charlie">delta</section>',
+        '<i class="charlie">delta</i>',
         'should stringify unknown nodes'
     );
 
@@ -255,8 +261,8 @@ test('remark-html()', function (t) {
         .use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
-                    'htmlAttributes': {
-                        'title': 'overwrite'
+                    hProperties: {
+                        title: 'overwrite'
                     }
                 };
             };
@@ -273,7 +279,7 @@ test('remark-html()', function (t) {
         .use(function () {
             return function (ast) {
                 ast.children[0].children[0].data = {
-                    'htmlName': 'b'
+                    hName: 'b'
                 };
             };
         })
@@ -291,9 +297,19 @@ test('remark-html()', function (t) {
                 var code = ast.children[0].children[0];
 
                 code.data = {
-                    'htmlContent': '<span class="token">' +
-                        code.value +
-                        '</span>'
+                    hChildren: [
+                        {
+                            type: 'element',
+                            tagName: 'span',
+                            properties: {
+                                className: ['token']
+                            },
+                            children: [{
+                                type: 'text',
+                                value: code.value
+                            }]
+                        }
+                    ]
                 };
             };
         })
@@ -311,14 +327,24 @@ test('remark-html()', function (t) {
                 var code = ast.children[0].children[0];
 
                 code.data = {
-                    'htmlContent': '<span class="token">' +
-                        code.value +
-                        '</span>'
+                    hChildren: [
+                        {
+                            type: 'element',
+                            tagName: 'span',
+                            properties: {
+                                className: ['token']
+                            },
+                            children: [{
+                                type: 'text',
+                                value: code.value
+                            }]
+                        }
+                    ]
                 };
             };
         })
         .use(html, {
-            'sanitize': true
+            sanitize: true
         });
 
     t.equal(
@@ -331,8 +357,8 @@ test('remark-html()', function (t) {
         .use(function () {
             return function (ast) {
                 ast.children[0].data = {
-                    'htmlAttributes': {
-                        'class': 'foo'
+                    hProperties: {
+                        className: 'foo'
                     }
                 };
             };
@@ -341,8 +367,18 @@ test('remark-html()', function (t) {
 
     t.equal(
         processor.process('```js\nvar\n```\n').toString(),
-        '<pre><code class="foo language-js">var\n</code></pre>\n',
-        'should NOT overwrite classes on code'
+        '<pre><code class="foo">var\n</code></pre>\n',
+        'should overwrite classes on code'
+    );
+
+    t.equal(
+        remark().use(html, {
+            sanitize: {
+                tagNames: []
+            }
+        }).process('## Hello').toString(),
+        'Hello\n',
+        'should support sanitation schemas'
     );
 
     t.end();
@@ -426,6 +462,8 @@ test('Integrations', function (t) {
         file.contents = input;
 
         config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
+
+        config.sanitize = false;
 
         result = remark()
             .use(html, config)
