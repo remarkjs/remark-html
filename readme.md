@@ -97,27 +97,30 @@ All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
 nodes are compiled to `div` nodes.
 
 In addition, **remark-html** can be told how to compile nodes through
-three `data` properties:
+three `data` properties ([more information][to-hast]):
 
-*   `htmlName` — Tag-name to compile as;
-*   `htmlContent` — HTML content to add (instead of `children` and `value`);
-*   `htmlAttributes` — Map of attributes to add.
+*   `hName` — Tag-name to compile as;
+*   `hChildren` — HTML content to add (instead of `children` and `value`);
+*   `hProperties` — Map of attributes to add.
 
 For example, the following node:
 
-```json
+```js
 {
-  "type": "emphasis",
-  "data": {
-    "htmlName": "i",
-    "htmlAttributes": {
-      "id": "foo"
+  type: 'emphasis',
+  data: {
+    hName: 'i',
+    hProperties: {
+      className: 'foo'
     },
-    "htmlContent": "bar"
+    hChildren: [{
+        type: 'text',
+        value: 'bar'
+    }]
   },
-  "children": [{
-    "type": "text",
-    "value": "baz",
+  children: [{
+    type: 'text',
+    value: 'baz',
   }]
 }
 ```
@@ -125,7 +128,7 @@ For example, the following node:
 ...would yield:
 
 ```markdown
-<i id="foo">bar</i>
+<i class="foo">bar</i>
 ```
 
 ## License
@@ -171,3 +174,5 @@ For example, the following node:
 [sanitize]: https://github.com/wooorm/hast-util-sanitize
 
 [github]: https://github.com/wooorm/hast-util-sanitize#schema
+
+[to-hast]: https://github.com/wooorm/mdast-util-to-hast#note
