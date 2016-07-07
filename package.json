@@ -13,7 +13,8 @@
   "dependencies": {
     "hast-util-sanitize": "^1.0.0",
     "hast-util-to-html": "^2.0.0",
-    "mdast-util-to-hast": "^1.0.0"
+    "mdast-util-to-hast": "^1.0.0",
+    "xtend": "^4.0.1"
   },
   "repository": {
     "type": "git",
