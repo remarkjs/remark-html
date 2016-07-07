@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings -->
 
+5.0.0 / 2016-07-07
+==================
+
+*   Update `hast-util-to-html` to compile smarter ([`ba7152b`](https://github.com/wooorm/remark-html/commit/ba7152b))
+
 4.0.0 / 2016-06-18
 ==================
 
