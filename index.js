@@ -14,6 +14,7 @@
  * Dependencies.
  */
 
+var xtend = require('xtend');
 var toHAST = require('mdast-util-to-hast');
 var toHTML = require('hast-util-to-html');
 var sanitize = require('hast-util-sanitize');
@@ -57,12 +58,9 @@ function plugin(processor, options) {
             hast = sanitize(hast, schema);
         }
 
-        result = toHTML(hast, {
-            allowDangerousHTML: !clean,
-            entities: settings.entities,
-            voids: settings.voids,
-            closeSelfClosing: settings.closeSelfClosing
-        });
+        result = toHTML(hast, xtend(settings, {
+            allowDangerousHTML: !clean
+        }));
 
         /* Add a final newline. */
         if (root && result.charAt(result.length - 1) !== '\n') {

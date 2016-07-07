@@ -45,6 +45,9 @@ Yields:
 
 ##### `options`
 
+All options except for `sanitize` are passed to
+[`hast-util-to-html`][to-html].
+
 ###### `options.sanitize`
 
 Whether or not to sanitize the output (`boolean` or `Object`, default:
@@ -56,20 +59,6 @@ according to [GitHub’s sanitation rules][github], with the addition
 that all embedded HTML is also stripped.
 
 `false` can be passed to allow dangerous HTML.
-
-###### `options.entities`
-
-How to compile entities.  Passed to [`hast-util-to-html`][to-html].
-
-###### `options.voids`
-
-Which elements to treat as void.  Passed to
-[`hast-util-to-html`][to-html].
-
-###### `options.closeSelfClosing`
-
-Whether the close void elements with an extra `slash`.  Passed to
-[`hast-util-to-html`][to-html].
 
 ## CommonMark
 
