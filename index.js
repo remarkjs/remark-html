@@ -8,16 +8,14 @@
 
 'use strict';
 
-/* eslint-env commonjs */
-
-/*
- * Dependencies.
- */
-
+/* Dependencies. */
 var xtend = require('xtend');
 var toHAST = require('mdast-util-to-hast');
 var toHTML = require('hast-util-to-html');
 var sanitize = require('hast-util-sanitize');
+
+/* Expose `plugin`. */
+module.exports = plugin;
 
 /**
  * Attach an HTML compiler.
@@ -26,57 +24,52 @@ var sanitize = require('hast-util-sanitize');
  * @param {Object?} [options] - Configuration.
  */
 function plugin(processor, options) {
-    var settings = options || {};
-    var clean = settings.sanitize;
-    var schema = clean && typeof clean === 'object' ? clean : null;
+  var settings = options || {};
+  var clean = settings.sanitize;
+  var schema = clean && typeof clean === 'object' ? clean : null;
 
-    /**
-     * Extensible constructor.
-     *
-     * @param {VFile} file - Virtual file.
-     */
-    function Compiler(file) {
-        if (file.extension) {
-            file.move({
-                extension: 'html'
-            });
-        }
+  Compiler.prototype.compile = compile;
+
+  processor.Compiler = Compiler;
+
+  /**
+   * Extensible constructor.
+   */
+  function Compiler(file) {
+    /* istanbul ignore if - vfile@1.0.0 */
+    if (file.extension) {
+      file.move({extension: 'html'});
     }
 
-    /**
-     * Compile MDAST to HTML.
-     *
-     * @param {Node} node - MDAST node.
-     * @return {string} - HTML.
-     */
-    function compile(node) {
-        var root = node && node.type && node.type === 'root';
-        var hast = toHAST(node, { allowDangerousHTML: !clean });
-        var result;
+    if (file.extname) {
+      file.extname = '.html';
+    }
+  }
 
-        if (clean) {
-            hast = sanitize(hast, schema);
-        }
+  /**
+   * Compile MDAST to HTML.
+   *
+   * @param {Node} node - MDAST node.
+   * @return {string} - HTML.
+   */
+  function compile(node) {
+    var root = node && node.type && node.type === 'root';
+    var hast = toHAST(node, {allowDangerousHTML: !clean});
+    var result;
 
-        result = toHTML(hast, xtend(settings, {
-            allowDangerousHTML: !clean
-        }));
-
-        /* Add a final newline. */
-        if (root && result.charAt(result.length - 1) !== '\n') {
-            result += '\n';
-        }
-
-        return result;
+    if (clean) {
+      hast = sanitize(hast, schema);
     }
 
-    Compiler.prototype.compile = compile;
+    result = toHTML(hast, xtend(settings, {
+      allowDangerousHTML: !clean
+    }));
 
-    processor.Compiler = Compiler;
+    /* Add a final newline. */
+    if (root && result.charAt(result.length - 1) !== '\n') {
+      result += '\n';
+    }
+
+    return result;
+  }
 }
-
-/*
- * Expose `plugin`.
- */
-
-module.exports = plugin;
