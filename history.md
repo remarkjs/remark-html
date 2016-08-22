@@ -2,6 +2,11 @@
 
 <!--lint disable no-multiple-toplevel-headings heading-style-->
 
+5.0.1 / 2016-08-22
+==================
+
+*   Update for changes in remark ([`52dbf70`](https://github.com/wooorm/remark-html/commit/52dbf70))
+
 5.0.0 / 2016-07-07
 ==================
 
