@@ -289,10 +289,40 @@ test('remark-html()', function (t) {
   );
 
   t.equal(
+    remark().use(html).process('## Hello <span>world</span>').toString(),
+    '<h2>Hello <span>world</span></h2>\n',
+    'should be `sanitation: false` by default'
+  );
+
+  t.equal(
+    remark().use(html, {
+      sanitize: true
+    }).process('## Hello <span>world</span>').toString(),
+    '<h2>Hello world</h2>\n',
+    'should support sanitation: true'
+  );
+
+  t.equal(
+    remark().use(html, {
+      sanitize: null
+    }).process('## Hello <span>world</span>').toString(),
+    '<h2>Hello <span>world</span></h2>\n',
+    'should support sanitation: null'
+  );
+
+  t.equal(
+    remark().use(html, {
+      sanitize: false
+    }).process('## Hello <span>world</span>').toString(),
+    '<h2>Hello <span>world</span></h2>\n',
+    'should support sanitation: false'
+  );
+
+  t.equal(
     remark().use(html, {
       sanitize: {tagNames: []}
-    }).process('## Hello').toString(),
-    'Hello\n',
+    }).process('## Hello <span>world</span>').toString(),
+    'Hello world\n',
     'should support sanitation schemas'
   );
 

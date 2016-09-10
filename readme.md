@@ -50,15 +50,25 @@ All options except for `sanitize` are passed to
 
 ###### `options.sanitize`
 
-Whether or not to sanitize the output (`boolean` or `Object`, default:
-`true`).
+How to sanitise the output (`Object` or `boolean`, default: `false`).
 
-An object can be passed, in which case it’s passed to
-[`hast-util-sanitize`][sanitize].  By default, input is sanitized
-according to [GitHub’s sanitation rules][github], with the addition
-that all embedded HTML is also stripped.
+If `true` or an `object`, sanitation is done by
+[`hast-util-sanitize`][sanitize].  If an object is passed in, it’s
+given as a schema to `sanitize`.  If `true`, input is sanitised
+according to [GitHub’s sanitation rules][github].
 
-`false` can be passed to allow dangerous HTML.
+For example, to add strict sanitation but allowing `className`s, use
+something like:
+
+```js
+// ...
+var merge = require('deepmerge');
+var github = require('hast-util-sanitize/lib/github');
+
+var schema = merge(github, {attributes: {'*': ['className']}});
+
+remark().use(html, {sanitize: schema}).process(/*...*/);
+```
 
 ## CommonMark
 
