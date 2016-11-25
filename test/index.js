@@ -155,7 +155,7 @@ test('remark-html()', function (t) {
         children: [{value: 'baz'}]
       });
     },
-    /Expected node, got `\[object Object\]`/,
+    /Expected node, got `\[object Object]`/,
     'should throw when not given a node'
   );
 
