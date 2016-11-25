@@ -10,26 +10,19 @@ Compile markdown to HTML with [**remark**][remark].
 npm install remark-html
 ```
 
-**remark-html** is also available as an AMD, CommonJS, and
-globals module, [uncompressed and compressed][releases].
-
 ## Usage
-
-Dependencies:
 
 ```javascript
 var remark = require('remark');
 var html = require('remark-html');
-```
 
-Process.
-
-```javascript
 var file = remark().use(html).process([
-    '# Hello & World',
-    '',
-    '**Alpha**, _bravo_, and ~~Charlie~~.'
+  '# Hello & World',
+  '',
+  '**Alpha**, _bravo_, and ~~Charlie~~.'
 ].join('\n'));
+
+console.log(String(file));
 ```
 
 Yields:
@@ -147,8 +140,6 @@ For example, the following node:
 [chat-badge]: https://img.shields.io/gitter/room/wooorm/remark.svg
 
 [chat]: https://gitter.im/wooorm/remark
-
-[releases]: https://github.com/wooorm/remark-html/releases
 
 [license]: LICENSE
 
