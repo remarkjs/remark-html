@@ -1,14 +1,5 @@
-/**
- * @author Titus Wormer
- * @copyright 2015 Titus Wormer
- * @license MIT
- * @module remark:html:test
- * @fileoverview Test suite for remark-html.
- */
-
 'use strict';
 
-/* Dependencies. */
 var path = require('path');
 var fs = require('fs');
 var assert = require('assert');
@@ -21,18 +12,15 @@ var toVFile = require('to-vfile');
 var hidden = require('is-hidden');
 var html = require('..');
 
-/* Methods. */
 var read = fs.readFileSync;
 var exists = fs.existsSync;
 var join = path.join;
 
 /* By default, CommonMark failures are accepted.
- *
  * To fail on CommonMark exceptions, set the `CMARK`
  * environment variable. */
 var ignoreCommonMarkException = !('CMARK' in global.process.env);
 
-/* Constants. */
 var INTEGRATION_MAP = {github: github, toc: toc};
 var INTEGRATION_ROOT = join(__dirname, 'integrations');
 var FIXTURE_ROOT = join(__dirname, 'fixtures');
@@ -50,7 +38,6 @@ var CMARK_OPTIONS = {
 
 /* List of CommonMark tests I dissagree with.
  * For reasoning, see `doc/commonmark.md`.
- *
  * Note that these differences have to do with not
  * puting more time into features which IMHO produce
  * less quality HTML. So if you’d like to write the
@@ -106,15 +93,12 @@ var CMARK_IGNORE = [
   493
 ];
 
-/* Fixtures. */
 var fixtures = fs.readdirSync(FIXTURE_ROOT);
 var integrations = fs.readdirSync(INTEGRATION_ROOT);
 
-/* Gather fixtures. */
 fixtures = fixtures.filter(hidden);
 integrations = integrations.filter(hidden);
 
-/* CommonMark. */
 var section;
 var start;
 
@@ -127,18 +111,6 @@ commonmark.forEach(function (test, position) {
   test.relative = position - start + 1;
 });
 
-/**
- * Shortcut to process.
- *
- * @param {VFile} file - Virtual file.
- * @param {Object?} [config] - Configuration.
- * @return {string} - Processed `file`.
- */
-function process(file, config) {
-  return remark().use(html, config).process(file, config).toString();
-}
-
-/* Tests. */
 test('remark-html()', function (t) {
   var processor;
 
@@ -412,3 +384,7 @@ test('Integrations', function (t) {
 
   t.end();
 });
+
+function process(file, config) {
+  return remark().use(html, config).process(file, config).toString();
+}
