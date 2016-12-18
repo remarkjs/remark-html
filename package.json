@@ -30,7 +30,7 @@
   ],
   "devDependencies": {
     "browserify": "^13.0.0",
-    "commonmark.json": "^0.26.0",
+    "commonmark.json": "^0.27.0",
     "esmangle": "^1.0.0",
     "is-hidden": "^1.0.1",
     "nyc": "^10.0.0",
