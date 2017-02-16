@@ -10,7 +10,7 @@ var github = require('remark-github');
 var commonmark = require('commonmark.json');
 var toVFile = require('to-vfile');
 var hidden = require('is-hidden');
-var all = require('mdast-util-to-hast/lib/all')
+var all = require('mdast-util-to-hast/lib/all');
 var html = require('..');
 
 var read = fs.readFileSync;
@@ -178,7 +178,7 @@ test('remark-html()', function (t) {
       };
     })
     .use(html, {handlers: {
-      paragraph: function (h, node, parent) {
+      paragraph: function (h, node) {
         node.children[0].value = 'changed';
         return h(node, 'p', all(h, node));
       }
