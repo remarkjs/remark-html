@@ -11,6 +11,7 @@ function plugin(processor, options) {
   var settings = options || {};
   var clean = settings.sanitize;
   var schema = clean && typeof clean === 'object' ? clean : null;
+  var handlers = settings.handlers || {};
 
   Compiler.prototype.compile = compile;
 
@@ -29,7 +30,7 @@ function plugin(processor, options) {
 
   function compile(node) {
     var root = node && node.type && node.type === 'root';
-    var hast = toHAST(node, {allowDangerousHTML: !clean});
+    var hast = toHAST(node, {allowDangerousHTML: !clean, handlers: handlers});
     var result;
 
     if (clean) {
