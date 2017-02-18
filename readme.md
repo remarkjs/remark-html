@@ -86,7 +86,8 @@ reasoning in [`doc/commonmark.md`][commonmark-notes].
 *   ...and [more][remark-plugins].
 
 All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
-nodes are compiled to `div` nodes if they have `children` or `text` nodes if they have `value`.
+nodes are compiled to `div` nodes if they have `children` or `text` nodes
+if they have `value`.
 
 In addition, **remark-html** can be told how to compile nodes through
 three `data` properties ([more information][to-hast]):
