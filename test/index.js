@@ -10,6 +10,7 @@ var github = require('remark-github');
 var commonmark = require('commonmark.json');
 var toVFile = require('to-vfile');
 var hidden = require('is-hidden');
+var all = require('mdast-util-to-hast/lib/all');
 var html = require('..');
 
 var read = fs.readFileSync;
@@ -166,6 +167,27 @@ test('remark-html()', function (t) {
     }),
     '<i class="charlie">delta</i>',
     'should stringify unknown nodes'
+  );
+
+  processor = remark()
+    .use(function () {
+      return function (ast) {
+        ast.children[0].children[0].data = {
+          hProperties: {title: 'overwrite'}
+        };
+      };
+    })
+    .use(html, {handlers: {
+      paragraph: function (h, node) {
+        node.children[0].value = 'changed';
+        return h(node, 'p', all(h, node));
+      }
+    }});
+
+  t.equal(
+    processor.process('paragraph text').toString(),
+    '<p>changed</p>\n',
+    'should allow overriding handlers'
   );
 
   processor = remark()
