@@ -170,13 +170,6 @@ test('remark-html()', function (t) {
   );
 
   processor = remark()
-    .use(function () {
-      return function (ast) {
-        ast.children[0].children[0].data = {
-          hProperties: {title: 'overwrite'}
-        };
-      };
-    })
     .use(html, {handlers: {
       paragraph: function (h, node) {
         node.children[0].value = 'changed';
