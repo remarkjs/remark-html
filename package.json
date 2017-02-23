@@ -38,7 +38,7 @@
     "remark-cli": "^2.0.0",
     "remark-github": "^6.0.1",
     "remark-preset-wooorm": "^1.0.0",
-    "remark-toc": "^3.1.0",
+    "remark-toc": "^4.0.0",
     "tape": "^4.0.0",
     "to-vfile": "^2.0.0",
     "xo": "^0.17.1"
