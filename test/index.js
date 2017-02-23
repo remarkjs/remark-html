@@ -118,7 +118,7 @@ test('remark-html()', function (t) {
   t.equal(typeof html, 'function', 'should be a function');
 
   t.doesNotThrow(function () {
-    html(remark());
+    html.call(remark());
   }, 'should not throw if not passed options');
 
   t.throws(
@@ -178,7 +178,7 @@ test('remark-html()', function (t) {
     }});
 
   t.equal(
-    processor.process('paragraph text').toString(),
+    processor.processSync('paragraph text').toString(),
     '<p>changed</p>\n',
     'should allow overriding handlers'
   );
@@ -194,7 +194,7 @@ test('remark-html()', function (t) {
     .use(html);
 
   t.equal(
-    processor.process('![hello](example.jpg "overwritten")').toString(),
+    processor.processSync('![hello](example.jpg "overwritten")').toString(),
     '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n',
     'should patch and merge attributes'
   );
@@ -208,7 +208,7 @@ test('remark-html()', function (t) {
     .use(html);
 
   t.equal(
-    processor.process('**Bold!**').toString(),
+    processor.processSync('**Bold!**').toString(),
     '<p><b>Bold!</b></p>\n',
     'should overwrite a tag-name'
   );
@@ -231,7 +231,7 @@ test('remark-html()', function (t) {
     .use(html);
 
   t.equal(
-    processor.process('`var`').toString(),
+    processor.processSync('`var`').toString(),
     '<p><code><span class="token">var</span></code></p>\n',
     'should overwrite content'
   );
@@ -254,7 +254,7 @@ test('remark-html()', function (t) {
     .use(html, {sanitize: true});
 
   t.equal(
-    processor.process('`var`').toString(),
+    processor.processSync('`var`').toString(),
     '<p><code>var</code></p>\n',
     'should not overwrite content in `sanitize` mode'
   );
@@ -270,13 +270,13 @@ test('remark-html()', function (t) {
     .use(html);
 
   t.equal(
-    processor.process('```js\nvar\n```\n').toString(),
+    processor.processSync('```js\nvar\n```\n').toString(),
     '<pre><code class="foo">var\n</code></pre>\n',
     'should overwrite classes on code'
   );
 
   t.equal(
-    remark().use(html).process('## Hello <span>world</span>').toString(),
+    remark().use(html).processSync('## Hello <span>world</span>').toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should be `sanitation: false` by default'
   );
@@ -284,7 +284,7 @@ test('remark-html()', function (t) {
   t.equal(
     remark().use(html, {
       sanitize: true
-    }).process('## Hello <span>world</span>').toString(),
+    }).processSync('## Hello <span>world</span>').toString(),
     '<h2>Hello world</h2>\n',
     'should support sanitation: true'
   );
@@ -292,7 +292,7 @@ test('remark-html()', function (t) {
   t.equal(
     remark().use(html, {
       sanitize: null
-    }).process('## Hello <span>world</span>').toString(),
+    }).processSync('## Hello <span>world</span>').toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should support sanitation: null'
   );
@@ -300,7 +300,7 @@ test('remark-html()', function (t) {
   t.equal(
     remark().use(html, {
       sanitize: false
-    }).process('## Hello <span>world</span>').toString(),
+    }).processSync('## Hello <span>world</span>').toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should support sanitation: false'
   );
@@ -308,7 +308,7 @@ test('remark-html()', function (t) {
   t.equal(
     remark().use(html, {
       sanitize: {tagNames: []}
-    }).process('## Hello <span>world</span>').toString(),
+    }).processSync('## Hello <span>world</span>').toString(),
     'Hello world\n',
     'should support sanitation schemas'
   );
@@ -329,7 +329,7 @@ test('Fixtures', function (t) {
     file.contents = input;
 
     config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {};
-    result = process(file, config);
+    result = processSync(file, config);
 
     t.equal(result, output, 'should work on `' + fixture + '`');
   });
@@ -347,7 +347,7 @@ test('CommonMark', function (t) {
     var exception;
 
     file.contents = test.markdown;
-    result = process(file, CMARK_OPTIONS);
+    result = processSync(file, CMARK_OPTIONS);
 
     n += 1;
 
@@ -389,9 +389,10 @@ test('Integrations', function (t) {
     config.sanitize = false;
 
     result = remark()
+        .data('settings', config)
         .use(html, config)
         .use(INTEGRATION_MAP[integration], config)
-        .process(file, config)
+        .processSync(file)
         .toString();
 
     t.equal(result, output, 'should work on `' + integration + '`');
@@ -400,6 +401,6 @@ test('Integrations', function (t) {
   t.end();
 });
 
-function process(file, config) {
-  return remark().use(html, config).process(file, config).toString();
+function processSync(file, config) {
+  return remark().data('settings', config).use(html, config).processSync(file).toString();
 }

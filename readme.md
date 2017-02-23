@@ -16,7 +16,7 @@ npm install remark-html
 var remark = require('remark');
 var html = require('remark-html');
 
-var file = remark().use(html).process([
+var file = remark().use(html).processSync([
   '# Hello & World',
   '',
   '**Alpha**, _bravo_, and ~~Charlie~~.'
@@ -60,7 +60,7 @@ var github = require('hast-util-sanitize/lib/github');
 
 var schema = merge(github, {attributes: {'*': ['className']}});
 
-remark().use(html, {sanitize: schema}).process(/*...*/);
+remark().use(html, {sanitize: schema}).processSync(/*...*/);
 ```
 
 ## CommonMark

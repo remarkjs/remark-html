@@ -10,16 +10,7 @@
     "compile",
     "remark"
   ],
-  "dependencies": {
-    "hast-util-sanitize": "^1.0.0",
-    "hast-util-to-html": "^3.0.0",
-    "mdast-util-to-hast": "^2.1.1",
-    "xtend": "^4.0.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wooorm/remark-html.git"
-  },
+  "repository": "https://github.com/wooorm/remark-html",
   "bugs": "https://github.com/wooorm/remark-html/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
@@ -28,23 +19,29 @@
   "files": [
     "index.js"
   ],
+  "dependencies": {
+    "hast-util-sanitize": "^1.0.0",
+    "hast-util-to-html": "^3.0.0",
+    "mdast-util-to-hast": "^2.1.1",
+    "xtend": "^4.0.1"
+  },
   "devDependencies": {
     "browserify": "^14.0.0",
     "commonmark.json": "^0.27.0",
     "esmangle": "^1.0.0",
     "is-hidden": "^1.0.1",
     "nyc": "^10.0.0",
-    "remark": "^6.0.0",
+    "remark": "^7.0.0",
     "remark-cli": "^2.0.0",
-    "remark-github": "^6.0.1",
+    "remark-github": "^7.0.0",
     "remark-preset-wooorm": "^1.0.0",
-    "remark-toc": "^3.1.0",
+    "remark-toc": "^4.0.0",
     "tape": "^4.0.0",
     "to-vfile": "^2.0.0",
     "xo": "^0.17.1"
   },
   "scripts": {
-    "build-md": "remark *.md doc/*.md --quiet --frail",
+    "build-md": "# remark *.md doc/*.md --quiet --frail",
     "build-bundle": "browserify index.js --bare -s remarkHTML > remark-html.js",
     "build-mangle": "esmangle remark-html.js > remark-html.min.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",

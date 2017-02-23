@@ -7,31 +7,22 @@ var sanitize = require('hast-util-sanitize');
 
 module.exports = plugin;
 
-function plugin(processor, options) {
+function plugin(options) {
   var settings = options || {};
   var clean = settings.sanitize;
   var schema = clean && typeof clean === 'object' ? clean : null;
   var handlers = settings.handlers || {};
 
-  Compiler.prototype.compile = compile;
+  this.Compiler = compiler;
 
-  processor.Compiler = Compiler;
-
-  function Compiler(file) {
-    /* istanbul ignore if - vfile@1.0.0 */
-    if (file.extension) {
-      file.move({extension: 'html'});
-    }
+  function compiler(node, file) {
+    var root = node && node.type && node.type === 'root';
+    var hast = toHAST(node, {allowDangerousHTML: !clean, handlers: handlers});
+    var result;
 
     if (file.extname) {
       file.extname = '.html';
     }
-  }
-
-  function compile(node) {
-    var root = node && node.type && node.type === 'root';
-    var hast = toHAST(node, {allowDangerousHTML: !clean, handlers: handlers});
-    var result;
 
     if (clean) {
       hast = sanitize(hast, schema);
