@@ -14,7 +14,11 @@
   "bugs": "https://github.com/wooorm/remark-html/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)"
+    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+    "Ben Briggs <beneb.info@gmail.com>",
+    "Seth Vincent <sethvincent@gmail.com>",
+    "Junyoung Choi <fluke8259@gmail.com>",
+    "Jonathan Soeder <jonathan.soeder@gmail.com>"
   ],
   "files": [
     "index.js"
