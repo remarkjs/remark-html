@@ -129,7 +129,8 @@ In addition, **remark-html** can be told how to compile nodes through
 three `data` properties ([more information][to-hast]):
 
 *   `hName` — Tag-name to compile as
-*   `hChildren` — HTML content to add (instead of `children` and `value`)
+*   `hChildren` — HTML content to add (instead of `children` and `value`),
+    in [`HAST`][hast]
 *   `hProperties` — Map of attributes to add
 
 For example, the following node:
@@ -207,3 +208,5 @@ For example, the following node:
 [rehype-stringify]: https://github.com/wooorm/rehype/tree/master/packages/rehype-stringify
 
 [rehype]: https://github.com/wooorm/rehype
+
+[hast]: https://github.com/syntax-tree/hast
