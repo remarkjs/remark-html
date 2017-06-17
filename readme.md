@@ -122,9 +122,9 @@ if they have `value`.
 In addition, **remark-html** can be told how to compile nodes through
 three `data` properties ([more information][to-hast]):
 
-*   `hName` — Tag-name to compile as;
-*   `hChildren` — HTML content to add (instead of `children` and `value`);
-*   `hProperties` — Map of attributes to add.
+*   `hName` — Tag-name to compile as
+*   `hChildren` — HTML content to add (instead of `children` and `value`)
+*   `hProperties` — Map of attributes to add
 
 For example, the following node:
 
