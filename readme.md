@@ -97,11 +97,23 @@ which do not often occur in the real world.
 
 `remark-html` works great with:
 
-*   [`wooorm/remark-toc`](https://github.com/wooorm/remark-toc), which
-    generates tables of contents;
-*   [`wooorm/remark-github`](https://github.com/wooorm/remark-github), which
-    generates references to GitHub issues, PRs, users, and more;
-*   ...and [more][remark-plugins].
+*   [`remark-autolink-headings`](https://github.com/ben-eb/remark-autolink-headings)
+    — Automatically add links to headings in Markdown
+*   [`remark-github`](https://github.com/wooorm/remark-github)
+    — Generate references to GitHub issues, PRs, users, and more
+*   [`remark-highlight.js`](https://github.com/ben-eb/remark-highlight.js)
+    — Highlight code blocks
+*   [`remark-html-emoji-image`](https://github.com/jackycute/remark-html-emoji-image)
+    — Transform emoji unicodes into html images
+*   [`remark-html-katex`](https://github.com/rokt33r/remark-math/blob/master/packages/remark-html-katex/readme.md)
+    — Transform math to HTML with KaTeX
+*   [`remark-math`](https://github.com/rokt33r/remark-math)
+    — Math support for markdown (inline and block)
+*   [`remark-midas`](https://github.com/ben-eb/remark-midas)
+    — Highlight CSS code with [midas](https://github.com/ben-eb/midas)
+*   [`remark-toc`](https://github.com/wooorm/remark-toc)
+    — Generate a Tables of Contents
+*   ...and [more][remark-plugins]
 
 All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
 nodes are compiled to `div` nodes if they have `children` or `text` nodes
