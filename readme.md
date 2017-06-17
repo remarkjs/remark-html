@@ -72,8 +72,7 @@ remark().use(html, {sanitize: schema}).processSync(/*...*/);
 some (roughly 115 of 550, relating to inline precedence, lists, emphasis
 and importance) issues which I’d like to cover in the future.  Note that
 this sounds like a lot, but they have to do with obscure differences
-which do not often occur in the real world.  Read more on some of the
-reasoning in [`doc/commonmark.md`][commonmark-notes].
+which do not often occur in the real world.
 
 ## Integrations
 
@@ -153,8 +152,6 @@ For example, the following node:
 [remark-options]: https://github.com/wooorm/remark#remarkprocessvalue-options-done
 
 [commonmark]: http://commonmark.org
-
-[commonmark-notes]: doc/commonmark.md
 
 [remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
 
