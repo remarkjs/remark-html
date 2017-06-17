@@ -144,8 +144,8 @@ For example, the following node:
       className: 'foo'
     },
     hChildren: [{
-        type: 'text',
-        value: 'bar'
+      type: 'text',
+      value: 'bar'
     }]
   },
   children: [{
