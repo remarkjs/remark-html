@@ -2,6 +2,12 @@
 
 Compile markdown to HTML with [**remark**][remark].
 
+> :warning: This package essentially packs [`remark-rehype`][remark2rehype] and
+> [`rehype-stringify`][rehype-stringify], and although it does support some
+> customisation, it isn’t very pluggable.  It’s probably smarter to use
+> `remark-rehype` directly and benefit from the [**rehype**][rehype]
+> ecosystem.
+
 ## Installation
 
 [npm][]:
@@ -195,3 +201,9 @@ For example, the following node:
 [github]: https://github.com/wooorm/hast-util-sanitize#schema
 
 [to-hast]: https://github.com/wooorm/mdast-util-to-hast#note
+
+[remark2rehype]: https://github.com/wooorm/remark-rehype
+
+[rehype-stringify]: https://github.com/wooorm/rehype/tree/master/packages/rehype-stringify
+
+[rehype]: https://github.com/wooorm/rehype
