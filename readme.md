@@ -91,7 +91,7 @@ remark().use(html, {sanitize: schema}).processSync(/*...*/);
 ## CommonMark
 
 > You still need to set `commonmark: true` in
-> [**remark**s options][remark-options].
+> [`remark-parse`s options][remark-options].
 
 [CommonMark][] support is a goal but not (yet) a necessity.  There are
 some (roughly 115 of 550, relating to inline precedence, lists, emphasis
@@ -186,21 +186,21 @@ For example, the following node:
 
 [remark]: https://github.com/wooorm/remark
 
-[remark-options]: https://github.com/wooorm/remark#remarkprocessvalue-options-done
+[remark-options]: https://github.com/wooorm/remark/tree/master/packages/remark-parse#options
 
 [commonmark]: http://commonmark.org
 
 [remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
 
-[mdast]: https://github.com/wooorm/mdast
+[mdast]: https://github.com/syntax-tree/mdast
 
-[to-html]: https://github.com/wooorm/hast-util-to-html
+[to-html]: https://github.com/syntax-tree/hast-util-to-html
 
-[sanitize]: https://github.com/wooorm/hast-util-sanitize
+[sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
-[github]: https://github.com/wooorm/hast-util-sanitize#schema
+[github]: https://github.com/syntax-tree/hast-util-sanitize#schema
 
-[to-hast]: https://github.com/wooorm/mdast-util-to-hast#note
+[to-hast]: https://github.com/syntax-tree/mdast-util-to-hast#note
 
 [remark2rehype]: https://github.com/wooorm/remark-rehype
 
