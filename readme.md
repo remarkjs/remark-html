@@ -12,24 +12,43 @@ npm install remark-html
 
 ## Usage
 
-```javascript
-var remark = require('remark');
-var html = require('remark-html');
+Say we have the following file, `example.md`:
 
-var file = remark().use(html).processSync([
-  '# Hello & World',
-  '',
-  '**Alpha**, _bravo_, and ~~Charlie~~.'
-].join('\n'));
+```markdown
+# Hello & World
 
-console.log(String(file));
+> A block quote.
+
+* Some _emphasis_, **importance**, and `code`.
 ```
 
-Yields:
+And our script, `example.js`, looks as follows:
+
+```javascript
+var fs = require('fs');
+var unified = require('unified');
+var markdown = require('remark-parse');
+var html = require('remark-html');
+
+unified()
+  .use(markdown)
+  .use(html)
+  .process(fs.readFileSync('example.md'), function (err, file) {
+    if (err) throw err;
+    console.log(String(file));
+  });
+```
+
+Now, running `node example` yields:
 
 ```html
 <h1>Hello &#x26; World</h1>
-<p><strong>Alpha</strong>, <em>bravo</em>, and <del>Charlie</del>.</p>
+<blockquote>
+<p>A block quote.</p>
+</blockquote>
+<ul>
+<li>Some <em>emphasis</em>, <strong>importance</strong>, and <code>code</code>.</li>
+</ul>
 ```
 
 ## API
