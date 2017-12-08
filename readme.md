@@ -105,7 +105,7 @@ which do not often occur in the real world.
 
 *   [`remark-autolink-headings`](https://github.com/ben-eb/remark-autolink-headings)
     — Automatically add links to headings in Markdown
-*   [`remark-github`](https://github.com/wooorm/remark-github)
+*   [`remark-github`](https://github.com/remarkjs/remark-github)
     — Generate references to GitHub issues, PRs, users, and more
 *   [`remark-highlight.js`](https://github.com/ben-eb/remark-highlight.js)
     — Highlight code blocks
@@ -117,7 +117,7 @@ which do not often occur in the real world.
     — Math support for markdown (inline and block)
 *   [`remark-midas`](https://github.com/ben-eb/remark-midas)
     — Highlight CSS code with [midas](https://github.com/ben-eb/midas)
-*   [`remark-toc`](https://github.com/wooorm/remark-toc)
+*   [`remark-toc`](https://github.com/remarkjs/remark-toc)
     — Generate a Tables of Contents
 *   ...and [more][remark-plugins]
 
@@ -167,17 +167,17 @@ For example, the following node:
 
 <!-- Definitions -->
 
-[build-badge]: https://img.shields.io/travis/wooorm/remark-html.svg
+[build-badge]: https://img.shields.io/travis/remarkjs/remark-html.svg
 
-[build-status]: https://travis-ci.org/wooorm/remark-html
+[build-status]: https://travis-ci.org/remarkjs/remark-html
 
-[coverage-badge]: https://img.shields.io/codecov/c/github/wooorm/remark-html.svg
+[coverage-badge]: https://img.shields.io/codecov/c/github/remarkjs/remark-html.svg
 
-[coverage-status]: https://codecov.io/github/wooorm/remark-html
+[coverage-status]: https://codecov.io/github/remarkjs/remark-html
 
-[chat-badge]: https://img.shields.io/gitter/room/wooorm/remark.svg
+[chat-badge]: https://img.shields.io/gitter/room/remarkjs/Lobby.svg
 
-[chat]: https://gitter.im/wooorm/remark
+[chat]: https://gitter.im/remarkjs/Lobby
 
 [license]: LICENSE
 
@@ -185,13 +185,13 @@ For example, the following node:
 
 [npm]: https://docs.npmjs.com/cli/install
 
-[remark]: https://github.com/wooorm/remark
+[remark]: https://github.com/remarkjs/remark
 
-[remark-options]: https://github.com/wooorm/remark/tree/master/packages/remark-parse#options
+[remark-options]: https://github.com/remarkjs/remark/tree/master/packages/remark-parse#options
 
 [commonmark]: http://commonmark.org
 
-[remark-plugins]: https://github.com/wooorm/remark/blob/master/doc/plugins.md#list-of-plugins
+[remark-plugins]: https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins
 
 [mdast]: https://github.com/syntax-tree/mdast
 
@@ -203,10 +203,10 @@ For example, the following node:
 
 [to-hast]: https://github.com/syntax-tree/mdast-util-to-hast#note
 
-[remark2rehype]: https://github.com/wooorm/remark-rehype
+[remark2rehype]: https://github.com/remarkjs/remark-rehype
 
-[rehype-stringify]: https://github.com/wooorm/rehype/tree/master/packages/rehype-stringify
+[rehype-stringify]: https://github.com/rehypejs/rehype/tree/master/packages/rehype-stringify
 
-[rehype]: https://github.com/wooorm/rehype
+[rehype]: https://github.com/rehypejs/rehype
 
 [hast]: https://github.com/syntax-tree/hast

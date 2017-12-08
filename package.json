@@ -10,8 +10,8 @@
     "compile",
     "remark"
   ],
-  "repository": "https://github.com/wooorm/remark-html",
-  "bugs": "https://github.com/wooorm/remark-html/issues",
+  "repository": "remarkjs/remark-html",
+  "bugs": "https://github.com/remarkjs/remark-html/issues",
   "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
@@ -68,6 +68,8 @@
     ]
   },
   "remarkConfig": {
-    "plugins": ["preset-wooorm"]
+    "plugins": [
+      "preset-wooorm"
+    ]
   }
 }
