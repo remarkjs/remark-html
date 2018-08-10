@@ -41,6 +41,7 @@
     "remark-preset-wooorm": "^4.0.0",
     "remark-toc": "^5.0.0",
     "tape": "^4.0.0",
+    "tinyify": "^2.4.3",
     "to-vfile": "^5.0.0",
     "xo": "^0.22.0"
   },
