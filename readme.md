@@ -70,10 +70,16 @@ All options except for `sanitize` are passed to
 
 How to sanitise the output (`Object` or `boolean`, default: `false`).
 
-If `true` or an `object`, sanitation is done by
-[`hast-util-sanitize`][sanitize].  If an object is passed in, it’s
-given as a schema to `sanitize`.  If `true`, input is sanitised
-according to [GitHub’s sanitation rules][github].
+If `false`, no HTML is sanitized, and dangerous HTML is left unescaped.
+
+If `true` or an `object`, sanitation is done by [`hast-util-sanitize`][sanitize]
+If an object is passed in, it’s given as a schema to `hast-util-sanitize`.
+If `true`, input is sanitised according to [GitHub’s sanitation rules][github].
+
+> Note that raw HTML in markdown cannot be sanitized, so it’s removed.
+> A schema can still be used to allow certain values from [integrations][]
+> though.
+> To support HTML in markdown, use [`rehype-raw`][raw].
 
 For example, to add strict sanitation but allowing `className`s, use
 something like:
@@ -142,18 +148,10 @@ For example, the following node:
   type: 'emphasis',
   data: {
     hName: 'i',
-    hProperties: {
-      className: 'foo'
-    },
-    hChildren: [{
-      type: 'text',
-      value: 'bar'
-    }]
+    hProperties: {className: 'foo'},
+    hChildren: [{type: 'text', value: 'bar'}]
   },
-  children: [{
-    type: 'text',
-    value: 'baz',
-  }]
+  children: [{type: 'text', value: 'baz',}]
 }
 ```
 
@@ -219,8 +217,12 @@ repository, organisation, or community you agree to abide by its terms.
 
 [rehype]: https://github.com/rehypejs/rehype
 
+[raw]: https://github.com/rehypejs/rehype-raw
+
 [hast]: https://github.com/syntax-tree/hast
 
 [contributing]: https://github.com/remarkjs/remark/blob/master/contributing.md
 
 [coc]: https://github.com/remarkjs/remark/blob/master/code-of-conduct.md
+
+[integrations]: #integrations
