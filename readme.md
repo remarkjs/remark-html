@@ -31,18 +31,18 @@ Say we have the following file, `example.md`:
 And our script, `example.js`, looks as follows:
 
 ```javascript
-var fs = require('fs');
-var unified = require('unified');
-var markdown = require('remark-parse');
-var html = require('remark-html');
+var fs = require('fs')
+var unified = require('unified')
+var markdown = require('remark-parse')
+var html = require('remark-html')
 
 unified()
   .use(markdown)
   .use(html)
-  .process(fs.readFileSync('example.md'), function (err, file) {
-    if (err) throw err;
-    console.log(String(file));
-  });
+  .process(fs.readFileSync('example.md'), function(err, file) {
+    if (err) throw err
+    console.log(String(file))
+  })
 ```
 
 Now, running `node example` yields:
@@ -80,12 +80,14 @@ something like:
 
 ```js
 // ...
-var merge = require('deepmerge');
-var github = require('hast-util-sanitize/lib/github');
+var merge = require('deepmerge')
+var github = require('hast-util-sanitize/lib/github')
 
-var schema = merge(github, {attributes: {'*': ['className']}});
+var schema = merge(github, {attributes: {'*': ['className']}})
 
-remark().use(html, {sanitize: schema}).processSync(/*...*/);
+remark()
+  .use(html, {sanitize: schema})
+  .processSync(/* ... */)
 ```
 
 ## CommonMark
