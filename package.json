@@ -32,7 +32,6 @@
   "devDependencies": {
     "browserify": "^14.0.0",
     "commonmark.json": "^0.27.0",
-    "esmangle": "^1.0.0",
     "is-hidden": "^1.0.1",
     "nyc": "^11.0.0",
     "remark": "^8.0.0",
@@ -46,8 +45,8 @@
   },
   "scripts": {
     "build-md": "remark *.md doc/*.md -qfo",
-    "build-bundle": "browserify index.js --bare -s remarkHTML > remark-html.js",
-    "build-mangle": "esmangle remark-html.js > remark-html.min.js",
+    "build-bundle": "browserify . -s remarkHtml > remark-html.js",
+    "build-mangle": "browserify . -s remarkHtml -p tinyify > remark-html.js",
     "build": "npm run build-md && npm run build-bundle && npm run build-mangle",
     "lint": "xo",
     "test-api": "node test/index.js",
