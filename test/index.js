@@ -352,7 +352,7 @@ test('CommonMark', function (t) {
     n += 1;
 
     try {
-      assert.equal(result, test.html);
+      assert.strictEqual(result, test.html);
     } catch (err) {
       exception = err;
     }
@@ -389,11 +389,11 @@ test('Integrations', function (t) {
     config.sanitize = false;
 
     result = remark()
-        .data('settings', config)
-        .use(html, config)
-        .use(INTEGRATION_MAP[integration], config)
-        .processSync(file)
-        .toString();
+      .data('settings', config)
+      .use(html, config)
+      .use(INTEGRATION_MAP[integration], config)
+      .processSync(file)
+      .toString();
 
     t.equal(result, output, 'should work on `' + integration + '`');
   });
