@@ -355,8 +355,8 @@ test('CommonMark', function(t) {
 
     try {
       assert.strictEqual(result, test.html)
-    } catch (err) {
-      exception = err
+    } catch (error) {
+      exception = error
     }
 
     message = '(' + n + ') should work on ' + name
