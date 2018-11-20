@@ -12,9 +12,9 @@
   ],
   "repository": "remarkjs/remark-html",
   "bugs": "https://github.com/remarkjs/remark-html/issues",
-  "author": "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+  "author": "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
   "contributors": [
-    "Titus Wormer <tituswormer@gmail.com> (http://wooorm.com)",
+    "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)",
     "Ben Briggs <beneb.info@gmail.com>",
     "Seth Vincent <sethvincent@gmail.com>",
     "Junyoung Choi <fluke8259@gmail.com>",

@@ -189,7 +189,7 @@ repository, organisation, or community you agree to abide by its terms.
 
 [license]: license
 
-[author]: http://wooorm.com
+[author]: https://wooorm.com
 
 [npm]: https://docs.npmjs.com/cli/install
 
@@ -197,7 +197,7 @@ repository, organisation, or community you agree to abide by its terms.
 
 [remark-options]: https://github.com/remarkjs/remark/tree/master/packages/remark-parse#options
 
-[commonmark]: http://commonmark.org
+[commonmark]: https://commonmark.org
 
 [remark-plugins]: https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins
 
