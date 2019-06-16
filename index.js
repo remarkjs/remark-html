@@ -1,8 +1,8 @@
 'use strict'
 
 var xtend = require('xtend')
-var toHAST = require('mdast-util-to-hast')
-var toHTML = require('hast-util-to-html')
+var toHast = require('mdast-util-to-hast')
+var toHtml = require('hast-util-to-html')
 var sanitize = require('hast-util-sanitize')
 
 module.exports = plugin
@@ -17,7 +17,7 @@ function plugin(options) {
 
   function compiler(node, file) {
     var root = node && node.type && node.type === 'root'
-    var hast = toHAST(node, {allowDangerousHTML: !clean, handlers: handlers})
+    var hast = toHast(node, {allowDangerousHTML: !clean, handlers: handlers})
     var result
 
     if (file.extname) {
@@ -28,7 +28,7 @@ function plugin(options) {
       hast = sanitize(hast, schema)
     }
 
-    result = toHTML(hast, xtend(settings, {allowDangerousHTML: !clean}))
+    result = toHtml(hast, xtend(settings, {allowDangerousHTML: !clean}))
 
     // Add an eof eol.
     if (root && result.charAt(result.length - 1) !== '\n') {

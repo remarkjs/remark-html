@@ -21,11 +21,11 @@ var join = path.join
 // To fail on CommonMark exceptions, set the `CMARK` environment variable.
 var ignoreCommonMarkException = !('CMARK' in global.process.env)
 
-var INTEGRATION_MAP = {github: github, toc: toc}
-var INTEGRATION_ROOT = join(__dirname, 'integrations')
-var FIXTURE_ROOT = join(__dirname, 'fixtures')
+var integrationMap = {github: github, toc: toc}
+var integrationRoot = join(__dirname, 'integrations')
+var fixtureRoot = join(__dirname, 'fixtures')
 
-var CMARK_OPTIONS = {
+var commonmarkOptions = {
   entities: {escapeOnly: true, useNamedReferences: true},
   commonmark: true,
   yaml: false,
@@ -38,7 +38,7 @@ var CMARK_OPTIONS = {
 // Note that these differences have to do with not puting more time into
 // features which IMHO produce less quality HTML.
 // So if you’d like to write the features, I’ll gladly merge!
-var CMARK_IGNORE = [
+var commonmarkIgnore = [
   // Exception 1.
   247,
   248,
@@ -89,8 +89,8 @@ var CMARK_IGNORE = [
   493
 ]
 
-var fixtures = fs.readdirSync(FIXTURE_ROOT)
-var integrations = fs.readdirSync(INTEGRATION_ROOT)
+var fixtures = fs.readdirSync(fixtureRoot)
+var integrations = fs.readdirSync(integrationRoot)
 
 fixtures = fixtures.filter(hidden)
 integrations = integrations.filter(hidden)
@@ -319,7 +319,7 @@ test('remark-html()', function(t) {
 // Assert fixtures.
 test('Fixtures', function(t) {
   fixtures.forEach(function(fixture) {
-    var filepath = join(FIXTURE_ROOT, fixture)
+    var filepath = join(fixtureRoot, fixture)
     var output = read(join(filepath, 'output.html'), 'utf-8')
     var input = read(join(filepath, 'input.md'), 'utf-8')
     var config = join(filepath, 'config.json')
@@ -347,7 +347,7 @@ test('CommonMark', function(t) {
     var exception
 
     file.contents = test.markdown
-    result = processSync(file, CMARK_OPTIONS)
+    result = processSync(file, commonmarkOptions)
 
     n += 1
 
@@ -360,7 +360,7 @@ test('CommonMark', function(t) {
     message = '(' + n + ') should work on ' + name
 
     if (
-      CMARK_IGNORE.indexOf(n) !== -1 ||
+      commonmarkIgnore.indexOf(n) !== -1 ||
       (ignoreCommonMarkException && exception)
     ) {
       t.skip(message)
@@ -375,7 +375,7 @@ test('CommonMark', function(t) {
 // Assert integrations.
 test('Integrations', function(t) {
   integrations.forEach(function(integration) {
-    var filepath = join(INTEGRATION_ROOT, integration)
+    var filepath = join(integrationRoot, integration)
     var output = read(join(filepath, 'output.html'), 'utf-8')
     var input = read(join(filepath, 'input.md'), 'utf-8')
     var config = join(filepath, 'config.json')
@@ -391,7 +391,7 @@ test('Integrations', function(t) {
     result = remark()
       .data('settings', config)
       .use(html, config)
-      .use(INTEGRATION_MAP[integration], config)
+      .use(integrationMap[integration], config)
       .processSync(file)
       .toString()
 

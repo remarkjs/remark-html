@@ -136,7 +136,7 @@ which do not often occur in the real world.
     — Generate a Tables of Contents
 *   ...and [more][remark-plugins]
 
-All [**MDAST** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
+All [**mdast** nodes][mdast] can be compiled to HTML.  Unknown **MDAST**
 nodes are compiled to `div` nodes if they have `children` or `text` nodes
 if they have `value`.
 
@@ -145,7 +145,7 @@ three `data` properties ([more information][to-hast]):
 
 *   `hName` — Tag-name to compile as
 *   `hChildren` — HTML content to add (instead of `children` and `value`),
-    in [`HAST`][hast]
+    in [`hast`][hast]
 *   `hProperties` — Map of attributes to add
 
 For example, the following node:
