@@ -30,7 +30,7 @@ function plugin(options) {
 
     result = toHTML(hast, xtend(settings, {allowDangerousHTML: !clean}))
 
-    /* Add a final newline. */
+    // Add an eof eol.
     if (root && result.charAt(result.length - 1) !== '\n') {
       result += '\n'
     }

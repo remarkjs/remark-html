@@ -17,9 +17,8 @@ var read = fs.readFileSync
 var exists = fs.existsSync
 var join = path.join
 
-/* By default, CommonMark failures are accepted.
- * To fail on CommonMark exceptions, set the `CMARK`
- * environment variable. */
+// By default, CommonMark failures are accepted.
+// To fail on CommonMark exceptions, set the `CMARK` environment variable.
 var ignoreCommonMarkException = !('CMARK' in global.process.env)
 
 var INTEGRATION_MAP = {github: github, toc: toc}
@@ -34,18 +33,17 @@ var CMARK_OPTIONS = {
   sanitize: false
 }
 
-/* List of CommonMark tests I dissagree with.
- * For reasoning, see `doc/commonmark.md`.
- * Note that these differences have to do with not
- * puting more time into features which IMHO produce
- * less quality HTML. So if you’d like to write the
- * features, I’ll gladly merge! */
+// List of CommonMark tests I dissagree with.
+// For reasoning, see `doc/commonmark.md`.
+// Note that these differences have to do with not puting more time into
+// features which IMHO produce less quality HTML.
+// So if you’d like to write the features, I’ll gladly merge!
 var CMARK_IGNORE = [
-  /* Exception 1. */
+  // Exception 1.
   247,
   248,
 
-  /* Exception 2. */
+  // Exception 2.
   3,
   50,
   76,
@@ -80,7 +78,7 @@ var CMARK_IGNORE = [
   522,
   551,
 
-  /* Exception 3. */
+  // Exception 3.
   428,
   477,
   478,
@@ -318,7 +316,7 @@ test('remark-html()', function(t) {
   t.end()
 })
 
-/* Assert fixtures. */
+// Assert fixtures.
 test('Fixtures', function(t) {
   fixtures.forEach(function(fixture) {
     var filepath = join(FIXTURE_ROOT, fixture)
@@ -339,7 +337,7 @@ test('Fixtures', function(t) {
   t.end()
 })
 
-/* Assert CommonMark. */
+// Assert CommonMark.
 test('CommonMark', function(t) {
   commonmark.forEach(function(test, n) {
     var name = test.section + ' ' + test.relative
@@ -374,7 +372,7 @@ test('CommonMark', function(t) {
   t.end()
 })
 
-/* Assert integrations. */
+// Assert integrations.
 test('Integrations', function(t) {
   integrations.forEach(function(integration) {
     var filepath = join(INTEGRATION_ROOT, integration)
