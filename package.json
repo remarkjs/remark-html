@@ -28,7 +28,7 @@
   ],
   "dependencies": {
     "hast-util-sanitize": "^1.0.0",
-    "hast-util-to-html": "^5.0.0",
+    "hast-util-to-html": "^6.0.0",
     "mdast-util-to-hast": "^6.0.0",
     "xtend": "^4.0.1"
   },
