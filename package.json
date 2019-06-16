@@ -1,14 +1,17 @@
 {
   "name": "remark-html",
   "version": "9.0.0",
-  "description": "Compile Markdown to HTML with remark",
+  "description": "remark plugin to compile Markdown to HTML",
   "license": "MIT",
   "keywords": [
+    "unified",
+    "remark",
+    "plugin",
+    "mdast",
     "markdown",
     "html",
     "stringify",
-    "compile",
-    "remark"
+    "compile"
   ],
   "repository": "remarkjs/remark-html",
   "bugs": "https://github.com/remarkjs/remark-html/issues",
