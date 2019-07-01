@@ -236,7 +236,7 @@ test('remark-html()', function(t) {
           hChildren: [
             {
               type: 'element',
-              tagName: 'span',
+              tagName: 'output',
               properties: {className: ['token']},
               children: [{type: 'text', value: code.value}]
             }
