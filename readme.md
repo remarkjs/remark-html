@@ -78,7 +78,7 @@ All options except for `sanitize` are passed to
 
 ###### `options.sanitize`
 
-How to sanitise the output (`Object` or `boolean`, default: `false`).
+How to sanitise the output (`Object` or `boolean`, default: `true`).
 
 If `false`, no HTML is sanitized, and dangerous HTML is left unescaped.
 
@@ -137,7 +137,7 @@ which do not often occur in the real world.
     — Highlight CSS code with [midas](https://github.com/ben-eb/midas)
 *   [`remark-toc`](https://github.com/remarkjs/remark-toc)
     — Generate a Tables of Contents
-*   ...and [more][remark-plugins]
+*   …and [more][remark-plugins]
 
 All [**mdast** nodes][mdast] can be compiled to HTML.
 Unknown **mdast** nodes are compiled to `div` nodes if they have `children` or
