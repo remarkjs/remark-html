@@ -171,6 +171,13 @@ For example, the following node:
 <i class="foo">bar</i>
 ```
 
+## Security
+
+Use of `remark-html` is *unsafe* by default and opens you up to a
+[cross-site scripting (XSS)][xss] attack.
+Pass `sanitize: true` to prevent attacks.
+Settings `sanitize` to anything else may be unsafe.
+
 ## Contribute
 
 See [`contributing.md`][contributing] in [`remarkjs/.github`][health] for ways
@@ -256,3 +263,5 @@ abide by its terms.
 [commonmark]: https://commonmark.org
 
 [integrations]: #integrations
+
+[xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
