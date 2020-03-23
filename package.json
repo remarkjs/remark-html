@@ -56,7 +56,7 @@
   "scripts": {
     "format": "remark *.md -qfo && prettier --write \"**/*.js\" && xo --fix",
     "build-bundle": "browserify . -s remarkHtml > remark-html.js",
-    "build-mangle": "browserify . -s remarkHtml -p tinyify > remark-html.js",
+    "build-mangle": "browserify . -s remarkHtml -p tinyify > remark-html.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
     "test-api": "node test",
     "test-coverage": "nyc --reporter lcov tape test/index.js",
