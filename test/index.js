@@ -98,7 +98,7 @@ integrations = integrations.filter(hidden)
 var section
 var start
 
-commonmark.forEach(function(test, position) {
+commonmark.forEach(function (test, position) {
   if (section !== test.section) {
     section = test.section
     start = position
@@ -107,17 +107,17 @@ commonmark.forEach(function(test, position) {
   test.relative = position - start + 1
 })
 
-test('remark-html()', function(t) {
+test('remark-html()', function (t) {
   var processor
 
   t.equal(typeof html, 'function', 'should be a function')
 
-  t.doesNotThrow(function() {
+  t.doesNotThrow(function () {
     html.call(remark())
   }, 'should not throw if not passed options')
 
   t.throws(
-    function() {
+    function () {
       remark()
         .use(html)
         .stringify({type: 'root', children: [{value: 'baz'}]})
@@ -159,7 +159,7 @@ test('remark-html()', function(t) {
 
   processor = remark().use(html, {
     handlers: {
-      paragraph: function(h, node) {
+      paragraph: function (h, node) {
         node.children[0].value = 'changed'
         return h(node, 'p', all(h, node))
       }
@@ -173,8 +173,8 @@ test('remark-html()', function(t) {
   )
 
   processor = remark()
-    .use(function() {
-      return function(ast) {
+    .use(function () {
+      return function (ast) {
         ast.children[0].children[0].data = {
           hProperties: {title: 'overwrite'}
         }
@@ -189,8 +189,8 @@ test('remark-html()', function(t) {
   )
 
   processor = remark()
-    .use(function() {
-      return function(ast) {
+    .use(function () {
+      return function (ast) {
         ast.children[0].children[0].data = {hName: 'b'}
       }
     })
@@ -203,8 +203,8 @@ test('remark-html()', function(t) {
   )
 
   processor = remark()
-    .use(function() {
-      return function(ast) {
+    .use(function () {
+      return function (ast) {
         var code = ast.children[0].children[0]
 
         code.data = {
@@ -228,8 +228,8 @@ test('remark-html()', function(t) {
   )
 
   processor = remark()
-    .use(function() {
-      return function(ast) {
+    .use(function () {
+      return function (ast) {
         var code = ast.children[0].children[0]
 
         code.data = {
@@ -253,8 +253,8 @@ test('remark-html()', function(t) {
   )
 
   processor = remark()
-    .use(function() {
-      return function(ast) {
+    .use(function () {
+      return function (ast) {
         ast.children[0].data = {
           hProperties: {className: 'foo'}
         }
@@ -269,10 +269,7 @@ test('remark-html()', function(t) {
   )
 
   t.equal(
-    remark()
-      .use(html)
-      .processSync('## Hello <span>world</span>')
-      .toString(),
+    remark().use(html).processSync('## Hello <span>world</span>').toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should be `sanitation: false` by default'
   )
@@ -317,8 +314,8 @@ test('remark-html()', function(t) {
 })
 
 // Assert fixtures.
-test('Fixtures', function(t) {
-  fixtures.forEach(function(fixture) {
+test('Fixtures', function (t) {
+  fixtures.forEach(function (fixture) {
     var filepath = join(fixtureRoot, fixture)
     var output = read(join(filepath, 'output.html'), 'utf-8')
     var input = read(join(filepath, 'input.md'), 'utf-8')
@@ -338,8 +335,8 @@ test('Fixtures', function(t) {
 })
 
 // Assert CommonMark.
-test('CommonMark', function(t) {
-  commonmark.forEach(function(test, n) {
+test('CommonMark', function (t) {
+  commonmark.forEach(function (test, n) {
     var name = test.section + ' ' + test.relative
     var file = vfile(name + '.md')
     var result
@@ -373,8 +370,8 @@ test('CommonMark', function(t) {
 })
 
 // Assert integrations.
-test('Integrations', function(t) {
-  integrations.forEach(function(integration) {
+test('Integrations', function (t) {
+  integrations.forEach(function (integration) {
     var filepath = join(integrationRoot, integration)
     var output = read(join(filepath, 'output.html'), 'utf-8')
     var input = read(join(filepath, 'input.md'), 'utf-8')
