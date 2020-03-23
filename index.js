@@ -28,7 +28,7 @@ function plugin(options) {
       hast = sanitize(hast, schema)
     }
 
-    result = toHtml(hast, xtend(settings, {allowDangerousHTML: !clean}))
+    result = toHtml(hast, xtend(settings, {allowDangerousHtml: !clean}))
 
     // Add an eof eol.
     if (root && result.charAt(result.length - 1) !== '\n') {
