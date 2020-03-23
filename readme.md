@@ -8,7 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[**remark**][remark] plugin to compile Markdown to HTML.
+[**remark**][remark] plugin to serialize Markdown as HTML.
 
 > ⚠️ This package essentially packs [`remark-rehype`][remark2rehype] and
 > [`rehype-stringify`][rehype-stringify], and although it does support some
@@ -69,7 +69,7 @@ Now, running `node example` yields:
 
 ### `remark().use(html[, options])`
 
-Compile Markdown to HTML.
+Serialize Markdown as HTML.
 
 ##### `options`
 
@@ -78,13 +78,13 @@ All options except for `sanitize` are passed to
 
 ###### `options.sanitize`
 
-How to sanitise the output (`Object` or `boolean`, default: `true`).
+How to sanitize the output (`Object` or `boolean`, default: `true`).
 
 If `false`, no HTML is sanitized, and dangerous HTML is left unescaped.
 
 If `true` or an `object`, sanitation is done by [`hast-util-sanitize`][sanitize]
 If an object is passed in, it’s given as a schema to `hast-util-sanitize`.
-If `true`, input is sanitised according to [GitHub’s sanitation rules][github].
+If `true`, input is sanitized according to [GitHub’s sanitation rules][github].
 
 > Note that raw HTML in Markdown cannot be sanitized, so it’s removed.
 > A schema can still be used to allow certain values from [integrations][]
@@ -103,7 +103,7 @@ var schema = merge(github, {attributes: {'*': ['className']}})
 
 remark()
   .use(html, {sanitize: schema})
-  .processSync(/* ... */)
+  .processSync(/* … */)
 ```
 
 ## CommonMark
@@ -184,8 +184,8 @@ See [`contributing.md`][contributing] in [`remarkjs/.github`][health] for ways
 to get started.
 See [`support.md`][support] for ways to get help.
 
-This project has a [Code of Conduct][coc].
-By interacting with this repository, organisation, or community you agree to
+This project has a [code of conduct][coc].
+By interacting with this repository, organization, or community you agree to
 abide by its terms.
 
 ## License
@@ -216,7 +216,7 @@ abide by its terms.
 
 [collective]: https://opencollective.com/unified
 
-[chat-badge]: https://img.shields.io/badge/join%20the%20community-on%20spectrum-7b16ff.svg
+[chat-badge]: https://img.shields.io/badge/chat-spectrum-7b16ff.svg
 
 [chat]: https://spectrum.chat/unified/remark
 
