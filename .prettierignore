@@ -1,3 +1,6 @@
 coverage/
 remark-html.js
 remark-html.min.js
+*.html
+*.json
+*.md

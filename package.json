@@ -51,10 +51,10 @@
     "tape": "^5.0.0",
     "tinyify": "^2.0.0",
     "to-vfile": "^6.0.0",
-    "xo": "^0.30.0"
+    "xo": "^0.32.0"
   },
   "scripts": {
-    "format": "remark *.md -qfo && prettier --write \"**/*.js\" && xo --fix",
+    "format": "remark . -qfo --ignore-pattern test/ && prettier . --write && xo --fix",
     "build-bundle": "browserify . -s remarkHtml > remark-html.js",
     "build-mangle": "browserify . -s remarkHtml -p tinyify > remark-html.min.js",
     "build": "npm run build-bundle && npm run build-mangle",
