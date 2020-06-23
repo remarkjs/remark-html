@@ -129,7 +129,7 @@ which do not often occur in the real world.
     — Highlight code blocks
 *   [`remark-html-emoji-image`](https://github.com/jackycute/remark-html-emoji-image)
     — Transform emoji unicodes into html images
-*   [`remark-html-katex`](https://github.com/rokt33r/remark-math/blob/master/packages/remark-html-katex/readme.md)
+*   [`remark-html-katex`](https://github.com/remark/remark-math/blob/HEAD/packages/remark-html-katex/readme.md)
     — Transform math to HTML with KaTeX
 *   [`remark-math`](https://github.com/rokt33r/remark-math)
     — Math support for Markdown (inline and block)
@@ -194,7 +194,7 @@ abide by its terms.
 
 <!-- Definitions -->
 
-[build-badge]: https://img.shields.io/travis/remarkjs/remark-html/master.svg
+[build-badge]: https://img.shields.io/travis/remarkjs/remark-html/main.svg
 
 [build]: https://travis-ci.org/remarkjs/remark-html
 
@@ -224,11 +224,11 @@ abide by its terms.
 
 [health]: https://github.com/remarkjs/.github
 
-[contributing]: https://github.com/remarkjs/.github/blob/master/contributing.md
+[contributing]: https://github.com/remarkjs/.github/blob/HEAD/contributing.md
 
-[support]: https://github.com/remarkjs/.github/blob/master/support.md
+[support]: https://github.com/remarkjs/.github/blob/HEAD/support.md
 
-[coc]: https://github.com/remarkjs/.github/blob/master/code-of-conduct.md
+[coc]: https://github.com/remarkjs/.github/blob/HEAD/code-of-conduct.md
 
 [license]: license
 
@@ -236,15 +236,15 @@ abide by its terms.
 
 [remark]: https://github.com/remarkjs/remark
 
-[remark-options]: https://github.com/remarkjs/remark/tree/master/packages/remark-parse#options
+[remark-options]: https://github.com/remarkjs/remark/tree/HEAD/packages/remark-parse#options
 
-[remark-plugins]: https://github.com/remarkjs/remark/blob/master/doc/plugins.md#list-of-plugins
+[remark-plugins]: https://github.com/remarkjs/remark/blob/HEAD/doc/plugins.md#list-of-plugins
 
 [remark2rehype]: https://github.com/remarkjs/remark-rehype
 
 [rehype]: https://github.com/rehypejs/rehype
 
-[rehype-stringify]: https://github.com/rehypejs/rehype/tree/master/packages/rehype-stringify
+[rehype-stringify]: https://github.com/rehypejs/rehype/tree/HEAD/packages/rehype-stringify
 
 [raw]: https://github.com/rehypejs/rehype-raw
 
