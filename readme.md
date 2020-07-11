@@ -73,8 +73,13 @@ Serialize Markdown as HTML.
 
 ##### `options`
 
-All options except for `sanitize` are passed to
+All options except for `sanitize` and `handlers` are passed to
 [`hast-util-to-html`][to-html].
+
+###### `options.handlers`
+
+Object mapping [mdast][] [nodes][mdast-node] to functions handling them.
+This option is passed to [`mdast-util-to-html`][to-mdast-handlers].
 
 ###### `options.sanitize`
 
@@ -250,9 +255,13 @@ abide by its terms.
 
 [mdast]: https://github.com/syntax-tree/mdast
 
+[mdast-node]: https://github.com/syntax-tree/mdast#nodes
+
 [hast]: https://github.com/syntax-tree/hast
 
 [to-html]: https://github.com/syntax-tree/hast-util-to-html
+
+[to-mdast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
 
 [sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
