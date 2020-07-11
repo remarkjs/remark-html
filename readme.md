@@ -255,15 +255,13 @@ abide by its terms.
 
 [mdast]: https://github.com/syntax-tree/mdast
 
+[mdast-node]: https://github.com/syntax-tree/mdast#nodes
+
 [hast]: https://github.com/syntax-tree/hast
 
 [to-html]: https://github.com/syntax-tree/hast-util-to-html
 
 [to-mdast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
-
-[mdast]: https://github.com/syntax-tree/mdast
-
-[mdast-node]: https://github.com/syntax-tree/mdast#nodes
 
 [sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
