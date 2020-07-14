@@ -83,13 +83,16 @@ This option is passed to [`mdast-util-to-html`][to-mdast-handlers].
 
 ###### `options.sanitize`
 
-How to sanitize the output (`Object` or `boolean`, default: `true`).
+How to sanitize the output (`Object` or `boolean`, default: `true`):
 
-If `false`, no HTML is sanitized, and dangerous HTML is left unescaped.
-
-If `true` or an `object`, sanitation is done by [`hast-util-sanitize`][sanitize]
-If an object is passed in, it’s given as a schema to `hast-util-sanitize`.
-If `true`, input is sanitized according to [GitHub’s sanitation rules][github].
+*   `false`
+    — HTML is not sanitized, dangerous HTML persists
+*   `true`
+    — HTML is [`hast-util-sanitize`][sanitize] according to [GitHub’s sanitation
+    rules][github], dangerous HTML is dropped
+*   `Object`
+    — the object is treated as a `schema` for how to sanitize with
+    [`hast-util-sanitize`][sanitize], dangerous HTML is dropped
 
 > Note that raw HTML in Markdown cannot be sanitized, so it’s removed.
 > A schema can still be used to allow certain values from [integrations][]
