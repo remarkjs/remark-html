@@ -42,7 +42,7 @@
   "devDependencies": {
     "browserify": "^16.0.0",
     "commonmark.json": "^0.29.0",
-    "dtslint": "^3.0.0",
+    "dtslint": "^4.0.0",
     "is-hidden": "^1.0.0",
     "nyc": "^15.0.0",
     "prettier": "^2.0.0",
@@ -52,10 +52,10 @@
     "remark-preset-wooorm": "^7.0.0",
     "remark-toc": "^7.0.0",
     "tape": "^5.0.0",
-    "tinyify": "^2.0.0",
+    "tinyify": "^3.0.0",
     "to-vfile": "^6.0.0",
     "unified": "^9.0.0",
-    "xo": "^0.32.0"
+    "xo": "^0.33.0"
   },
   "scripts": {
     "format": "remark . -qfo --ignore-pattern test/ && prettier . --write && xo --fix",
