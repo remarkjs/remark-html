@@ -54,7 +54,7 @@ var html = require('remark-html')
 unified()
   .use(markdown)
   .use(html)
-  .process(fs.readFileSync('example.md'), function(err, file) {
+  .process(fs.readFileSync('example.md'), function (err, file) {
     if (err) throw err
     console.log(String(file))
   })
@@ -95,8 +95,8 @@ How to sanitize the output (`Object` or `boolean`, default: `true`):
 *   `false`
     — HTML is not sanitized, dangerous HTML persists
 *   `true`
-    — HTML is [`hast-util-sanitize`][sanitize] according to [GitHub’s sanitation
-    rules][github], dangerous HTML is dropped
+    — HTML is sanitized according to [GitHub’s sanitation rules][github],
+    dangerous HTML is dropped
 *   `Object`
     — the object is treated as a `schema` for how to sanitize with
     [`hast-util-sanitize`][sanitize], dangerous HTML is dropped
@@ -120,17 +120,6 @@ remark()
   .use(html, {sanitize: schema})
   .processSync(/* … */)
 ```
-
-## CommonMark
-
-> You still need to set `commonmark: true` in [`remark-parse`s
-> options][remark-options].
-
-[CommonMark][] support is a goal but not (yet) a necessity.
-There are some (roughly 115 of 550, relating to inline precedence, lists,
-emphasis and importance) issues which I’d like to cover in the future.
-Note that this sounds like a lot, but they have to do with obscure differences
-which do not often occur in the real world.
 
 ## Integrations
 
@@ -251,8 +240,6 @@ abide by its terms.
 
 [remark]: https://github.com/remarkjs/remark
 
-[remark-options]: https://github.com/remarkjs/remark/tree/HEAD/packages/remark-parse#options
-
 [remark-plugins]: https://github.com/remarkjs/remark/blob/HEAD/doc/plugins.md#list-of-plugins
 
 [remark2rehype]: https://github.com/remarkjs/remark-rehype
@@ -278,8 +265,6 @@ abide by its terms.
 [github]: https://github.com/syntax-tree/hast-util-sanitize#schema
 
 [to-hast]: https://github.com/syntax-tree/mdast-util-to-hast#note
-
-[commonmark]: https://commonmark.org
 
 [integrations]: #integrations
 
