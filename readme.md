@@ -16,6 +16,13 @@
 > It’s probably smarter to use `remark-rehype` directly and benefit from the
 > [**rehype**][rehype] ecosystem.
 
+## Note!
+
+This plugin is ready for the new parser in remark
+([`remarkjs/remark#536`](https://github.com/remarkjs/remark/pull/536)).
+The current and previous version of the plugin works with the current and
+previous version of remark.
+
 ## Install
 
 [npm][]:
@@ -79,7 +86,7 @@ All options except for `sanitize` and `handlers` are passed to
 ###### `options.handlers`
 
 Object mapping [mdast][] [nodes][mdast-node] to functions handling them.
-This option is passed to [`mdast-util-to-html`][to-mdast-handlers].
+This option is passed to [`mdast-util-to-hast`][to-hast-handlers].
 
 ###### `options.sanitize`
 
@@ -264,7 +271,7 @@ abide by its terms.
 
 [to-html]: https://github.com/syntax-tree/hast-util-to-html
 
-[to-mdast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
+[to-hast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
 
 [sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 

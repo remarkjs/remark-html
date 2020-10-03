@@ -2,110 +2,21 @@
 
 var path = require('path')
 var fs = require('fs')
-var assert = require('assert')
 var test = require('tape')
 var remark = require('remark')
+var slug = require('remark-slug')
 var toc = require('remark-toc')
 var github = require('remark-github')
 var commonmark = require('commonmark.json')
 var vfile = require('to-vfile')
 var hidden = require('is-hidden')
+var not = require('not')
+var unified = require('unified')
+var parse = require('remark-parse')
+var rehypeParse = require('rehype-parse')
+var rehypeStringify = require('rehype-stringify')
 var all = require('mdast-util-to-hast/lib/all')
 var html = require('..')
-
-var read = fs.readFileSync
-var exists = fs.existsSync
-var join = path.join
-
-// By default, CommonMark failures are accepted.
-// To fail on CommonMark exceptions, set the `CMARK` environment variable.
-var ignoreCommonMarkException = !('CMARK' in global.process.env)
-
-var integrationMap = {github: github, toc: toc}
-var integrationRoot = join(__dirname, 'integrations')
-var fixtureRoot = join(__dirname, 'fixtures')
-
-var commonmarkOptions = {
-  entities: {escapeOnly: true, useNamedReferences: true},
-  commonmark: true,
-  yaml: false,
-  closeSelfClosing: true,
-  sanitize: false
-}
-
-// List of CommonMark tests I dissagree with.
-// For reasoning, see `doc/commonmark.md`.
-// Note that these differences have to do with not puting more time into
-// features which IMHO produce less quality HTML.
-// So if you’d like to write the features, I’ll gladly merge!
-var commonmarkIgnore = [
-  // Exception 1.
-  247,
-  248,
-
-  // Exception 2.
-  3,
-  50,
-  76,
-  77,
-  80,
-  86,
-  89,
-  98,
-  118,
-  176,
-  230,
-  231,
-  233,
-  236,
-  257,
-  258,
-  261,
-  262,
-  263,
-  264,
-  265,
-  266,
-  267,
-  268,
-  269,
-  270,
-  395,
-  396,
-  433,
-  445,
-  520,
-  522,
-  551,
-
-  // Exception 3.
-  428,
-  477,
-  478,
-  479,
-  480,
-  481,
-  489,
-  493
-]
-
-var fixtures = fs.readdirSync(fixtureRoot)
-var integrations = fs.readdirSync(integrationRoot)
-
-fixtures = fixtures.filter(hidden)
-integrations = integrations.filter(hidden)
-
-var section
-var start
-
-commonmark.forEach(function (test, position) {
-  if (section !== test.section) {
-    section = test.section
-    start = position
-  }
-
-  test.relative = position - start + 1
-})
 
 test('remark-html()', function (t) {
   var processor
@@ -113,7 +24,7 @@ test('remark-html()', function (t) {
   t.equal(typeof html, 'function', 'should be a function')
 
   t.doesNotThrow(function () {
-    html.call(remark())
+    remark().use(html).freeze()
   }, 'should not throw if not passed options')
 
   t.throws(
@@ -315,93 +226,104 @@ test('remark-html()', function (t) {
 
 // Assert fixtures.
 test('Fixtures', function (t) {
-  fixtures.forEach(function (fixture) {
-    var filepath = join(fixtureRoot, fixture)
-    var output = read(join(filepath, 'output.html'), 'utf-8')
-    var input = read(join(filepath, 'input.md'), 'utf-8')
-    var config = join(filepath, 'config.json')
-    var file = vfile(fixture + '.md')
-    var result
+  var base = path.join(__dirname, 'fixtures')
 
-    file.contents = input
-
-    config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {}
-    result = processSync(file, config)
-
-    t.equal(result, output, 'should work on `' + fixture + '`')
-  })
+  fs.readdirSync(base).filter(not(hidden)).forEach(each)
 
   t.end()
-})
 
-// Assert CommonMark.
-test('CommonMark', function (t) {
-  commonmark.forEach(function (test, n) {
-    var name = test.section + ' ' + test.relative
+  function each(name) {
+    var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
+    var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
+    var config = {}
     var file = vfile(name + '.md')
     var result
-    var message
-    var exception
 
-    file.contents = test.markdown
-    result = processSync(file, commonmarkOptions)
-
-    n += 1
+    file.contents = input
 
     try {
-      assert.strictEqual(result, test.html)
-    } catch (error) {
-      exception = error
-    }
+      config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
+    } catch (_) {}
 
-    message = '(' + n + ') should work on ' + name
+    result = processSync(file, config)
 
-    if (
-      commonmarkIgnore.indexOf(n) !== -1 ||
-      (ignoreCommonMarkException && exception)
-    ) {
-      t.skip(message)
-    } else {
-      t.equal(result, test.html, message)
-    }
-  })
-
-  t.end()
+    t.equal(result, output, 'should work on `' + name + '`')
+  }
 })
 
-// Assert integrations.
+test('CommonMark', function (t) {
+  var start = 0
+  var section
+
+  commonmark.forEach(each)
+
+  t.end()
+
+  function each(example, index) {
+    if (section !== example.section) {
+      section = example.section
+      start = index
+    }
+
+    var actual = unified()
+      .use(parse)
+      .use(html)
+      .processSync(example.markdown)
+      .toString()
+
+    var reformat = unified()
+      .use(rehypeParse, {fragment: true})
+      .use(rehypeStringify)
+
+    // Normalize meaningless stuff, like character references, `<hr />` is `<hr>`,
+    // etc.
+    t.equal(
+      String(reformat.processSync(actual)),
+      String(reformat.processSync(example.html)),
+      index + ': ' + example.section + ' (' + (index - start + 1) + ')'
+    )
+  }
+})
+
 test('Integrations', function (t) {
-  integrations.forEach(function (integration) {
-    var filepath = join(integrationRoot, integration)
-    var output = read(join(filepath, 'output.html'), 'utf-8')
-    var input = read(join(filepath, 'input.md'), 'utf-8')
-    var config = join(filepath, 'config.json')
-    var file = vfile(integration + '.md')
+  var integrationMap = {github: github, toc: [slug, toc]}
+  var base = path.join(__dirname, 'integrations')
+
+  fs.readdirSync(base)
+    .filter(not(hidden))
+    // Ignore `github` for now, which needs to be updated for remark@next.
+    // To do: add gfm, footnotes, frontmatter integrations.
+    .filter((d) => d !== 'github')
+    .forEach(each)
+
+  t.end()
+
+  function each(name) {
+    var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
+    var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
+    var file = vfile(name + '.md')
+    var config = {}
     var result
 
     file.contents = input
 
-    config = exists(config) ? JSON.parse(read(config, 'utf-8')) : {}
+    try {
+      config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
+    } catch (_) {}
 
     config.sanitize = false
 
     result = remark()
       .data('settings', config)
       .use(html, config)
-      .use(integrationMap[integration], config)
+      .use(integrationMap[name], config)
       .processSync(file)
       .toString()
 
-    t.equal(result, output, 'should work on `' + integration + '`')
-  })
-
-  t.end()
+    t.equal(result, output, 'should work on `' + name + '`')
+  }
 })
 
 function processSync(file, config) {
-  return remark()
-    .data('settings', config)
-    .use(html, config)
-    .processSync(file)
-    .toString()
+  return remark().use(html, config).processSync(file).toString()
 }
