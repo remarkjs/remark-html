@@ -36,7 +36,7 @@
   "dependencies": {
     "hast-util-sanitize": "^3.0.0",
     "hast-util-to-html": "^7.0.0",
-    "mdast-util-to-hast": "^9.0.0"
+    "mdast-util-to-hast": "^10.0.0"
   },
   "devDependencies": {
     "browserify": "^16.0.0",

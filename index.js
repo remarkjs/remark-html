@@ -16,11 +16,7 @@ function plugin(options) {
 
   function compiler(node, file) {
     var root = node && node.type && node.type === 'root'
-    var hast = toHast(node, {
-      allowDangerousHtml: !clean,
-      handlers: handlers,
-      commonmark: true
-    })
+    var hast = toHast(node, {allowDangerousHtml: !clean, handlers: handlers})
     var result
 
     if (file.extname) {
