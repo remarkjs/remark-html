@@ -135,7 +135,7 @@ remark()
     — Transform emoji unicodes into html images
 *   [`remark-html-katex`](https://github.com/remark/remark-math/blob/HEAD/packages/remark-html-katex/readme.md)
     — Transform math to HTML with KaTeX
-*   [`remark-math`](https://github.com/rokt33r/remark-math)
+*   [`remark-math`](https://github.com/remarkjs/remark-math)
     — Math support for Markdown (inline and block)
 *   [`remark-midas`](https://github.com/ben-eb/remark-midas)
     — Highlight CSS code with [midas](https://github.com/ben-eb/midas)
