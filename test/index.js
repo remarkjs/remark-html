@@ -5,8 +5,11 @@ var fs = require('fs')
 var test = require('tape')
 var remark = require('remark')
 var slug = require('remark-slug')
-var toc = require('remark-toc')
+var footnotes = require('remark-footnotes')
+var frontmatter = require('remark-frontmatter')
+var gfm = require('remark-gfm')
 var github = require('remark-github')
+var toc = require('remark-toc')
 var commonmark = require('commonmark.json')
 var vfile = require('to-vfile')
 var hidden = require('is-hidden')
@@ -286,41 +289,32 @@ test('CommonMark', function (t) {
 })
 
 test('Integrations', function (t) {
-  var integrationMap = {github: github, toc: [slug, toc]}
+  var integrationMap = {
+    footnotes: footnotes,
+    frontmatter: frontmatter,
+    gfm: gfm,
+    github: github,
+    toc: [slug, toc]
+  }
   var base = path.join(__dirname, 'integrations')
 
-  fs.readdirSync(base)
-    .filter(not(hidden))
-    // Ignore `github` for now, which needs to be updated for remark@next.
-    // To do: add gfm, footnotes, frontmatter integrations.
-    .filter((d) => d !== 'github')
-    .forEach(each)
+  fs.readdirSync(base).filter(not(hidden)).forEach(each)
 
   t.end()
 
   function each(name) {
     var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
     var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
-    var file = vfile(name + '.md')
-    var config = {}
+    var file = vfile({path: name + '.md', contents: input})
     var result
 
-    file.contents = input
-
-    try {
-      config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
-    } catch (_) {}
-
-    config.sanitize = false
-
     result = remark()
-      .data('settings', config)
-      .use(html, config)
-      .use(integrationMap[name], config)
+      .use(integrationMap[name])
+      .use(html)
       .processSync(file)
       .toString()
 
-    t.equal(result, output, 'should work on `' + name + '`')
+    t.equal(result, output, 'should integrate w/ `' + name + '`')
   }
 })
 

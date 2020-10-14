@@ -1,0 +1,25 @@
+<p>Here is a footnote reference,<sup id="fnref-1"><a href="#fn-1" class="footnote-ref">1</a></sup>
+another,<sup id="fnref-longnote"><a href="#fn-longnote" class="footnote-ref">longnote</a></sup>,
+and optionally there are inline
+notes.^[you can type them inline, which may be easier, since you don’t
+have to pick an identifier and move down to type the note.]</p>
+<p>This paragraph won’t be part of the note, because it
+isn’t indented.</p>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn-1">
+<p>Here is the footnote.<a href="#fnref-1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn-longnote">
+<p>Here’s one with multiple blocks.</p>
+<p>Subsequent paragraphs are indented to show that they
+belong to the previous footnote.</p>
+<pre><code>{ some.code }
+</code></pre>
+<p>The whole paragraph can be indented, or just the first
+line.  In this way, multi-paragraph footnotes work like
+multi-paragraph list items.<a href="#fnref-longnote" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</div>
