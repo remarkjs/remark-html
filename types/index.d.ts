@@ -17,5 +17,5 @@ interface htmlOptions extends HastUtilToHtmlOptions {
   handlers?: Handlers
 }
 
-declare const html: Plugin<[htmlOptions?]>
+declare const html: Plugin<htmlOptions[]>
 export = html
