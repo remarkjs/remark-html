@@ -2,37 +2,33 @@ import {toHtml} from 'hast-util-to-html'
 import {sanitize} from 'hast-util-sanitize'
 import {toHast} from 'mdast-util-to-hast'
 
-export default function remarkHtml(options) {
-  var settings = options || {}
-  var clean = settings.sanitize
-  var schema = clean && typeof clean === 'object' ? clean : null
-  var handlers = settings.handlers || {}
+export default function remarkHtml(options = {}) {
+  const handlers = options.handlers || {}
+  const schema =
+    options.sanitize && typeof options.sanitize === 'object'
+      ? options.sanitize
+      : null
 
-  this.Compiler = compiler
+  Object.assign(this, {Compiler: compiler})
 
   function compiler(node, file) {
-    var root = node && node.type && node.type === 'root'
-    var hast = toHast(node, {allowDangerousHtml: !clean, handlers: handlers})
-    var result
+    const hast = toHast(node, {allowDangerousHtml: !options.sanitize, handlers})
+    const result = toHtml(
+      options.sanitize ? sanitize(hast, schema) : hast,
+      Object.assign({}, options, {allowDangerousHtml: !options.sanitize})
+    )
 
     if (file.extname) {
       file.extname = '.html'
     }
 
-    if (clean) {
-      hast = sanitize(hast, schema)
-    }
-
-    result = toHtml(
-      hast,
-      Object.assign({}, settings, {allowDangerousHtml: !clean})
-    )
-
     // Add an eof eol.
-    if (root && result && /[^\r\n]/.test(result.charAt(result.length - 1))) {
-      result += '\n'
-    }
-
-    return result
+    return node &&
+      node.type &&
+      node.type === 'root' &&
+      result &&
+      /[^\r\n]/.test(result.charAt(result.length - 1))
+      ? result + '\n'
+      : result
   }
 }

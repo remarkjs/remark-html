@@ -1,43 +1,41 @@
 import path from 'path'
 import fs from 'fs'
 import test from 'tape'
-import {remark} from 'remark'
-import slug from 'remark-slug'
-import footnotes from 'remark-footnotes'
-import frontmatter from 'remark-frontmatter'
-import gfm from 'remark-gfm'
-import github from 'remark-github'
-import toc from 'remark-toc'
+import {isHidden} from 'is-hidden'
 import {commonmark} from 'commonmark.json'
 import {toVFile} from 'to-vfile'
-import {isHidden} from 'is-hidden'
+import {all} from 'mdast-util-to-hast'
 import {unified} from 'unified'
-import parse from 'remark-parse'
+import {remark} from 'remark'
+import remarkParse from 'remark-parse'
+import remarkSlug from 'remark-slug'
+import remarkFootnotes from 'remark-footnotes'
+import remarkFrontmatter from 'remark-frontmatter'
+import remarkGfm from 'remark-gfm'
+import remarkGithub from 'remark-github'
+import remarkToc from 'remark-toc'
 import rehypeParse from 'rehype-parse'
 import rehypeStringify from 'rehype-stringify'
-import {all} from 'mdast-util-to-hast'
-import html from '../index.js'
+import remarkHtml from '../index.js'
 
-test('remark-html()', function (t) {
-  var processor
+test('remarkHtml', (t) => {
+  let processor
 
-  t.equal(typeof html, 'function', 'should be a function')
-
-  t.doesNotThrow(function () {
-    remark().use(html).freeze()
+  t.doesNotThrow(() => {
+    remark().use(remarkHtml).freeze()
   }, 'should not throw if not passed options')
 
   t.throws(
-    function () {
+    () => {
       remark()
-        .use(html)
+        .use(remarkHtml)
         .stringify({type: 'root', children: [{value: 'baz'}]})
     },
     /Expected node, got `\[object Object]`/,
     'should throw when not given a node'
   )
 
-  processor = remark().use(html)
+  processor = remark().use(remarkHtml)
 
   t.equal(
     processor.stringify({type: 'alpha'}),
@@ -68,9 +66,9 @@ test('remark-html()', function (t) {
     'should stringify unknown nodes'
   )
 
-  processor = remark().use(html, {
+  processor = remark().use(remarkHtml, {
     handlers: {
-      paragraph: function (h, node) {
+      paragraph(h, node) {
         node.children[0].value = 'changed'
         return h(node, 'p', all(h, node))
       }
@@ -84,14 +82,14 @@ test('remark-html()', function (t) {
   )
 
   processor = remark()
-    .use(function () {
+    .use(() => {
       return function (ast) {
         ast.children[0].children[0].data = {
           hProperties: {title: 'overwrite'}
         }
       }
     })
-    .use(html)
+    .use(remarkHtml)
 
   t.equal(
     processor.processSync('![hello](example.jpg "overwritten")').toString(),
@@ -100,12 +98,12 @@ test('remark-html()', function (t) {
   )
 
   processor = remark()
-    .use(function () {
+    .use(() => {
       return function (ast) {
         ast.children[0].children[0].data = {hName: 'b'}
       }
     })
-    .use(html)
+    .use(remarkHtml)
 
   t.equal(
     processor.processSync('**Bold!**').toString(),
@@ -114,9 +112,9 @@ test('remark-html()', function (t) {
   )
 
   processor = remark()
-    .use(function () {
+    .use(() => {
       return function (ast) {
-        var code = ast.children[0].children[0]
+        const code = ast.children[0].children[0]
 
         code.data = {
           hChildren: [
@@ -130,7 +128,7 @@ test('remark-html()', function (t) {
         }
       }
     })
-    .use(html)
+    .use(remarkHtml)
 
   t.equal(
     processor.processSync('`var`').toString(),
@@ -139,9 +137,9 @@ test('remark-html()', function (t) {
   )
 
   processor = remark()
-    .use(function () {
+    .use(() => {
       return function (ast) {
-        var code = ast.children[0].children[0]
+        const code = ast.children[0].children[0]
 
         code.data = {
           hChildren: [
@@ -155,7 +153,7 @@ test('remark-html()', function (t) {
         }
       }
     })
-    .use(html, {sanitize: true})
+    .use(remarkHtml, {sanitize: true})
 
   t.equal(
     processor.processSync('`var`').toString(),
@@ -164,14 +162,14 @@ test('remark-html()', function (t) {
   )
 
   processor = remark()
-    .use(function () {
+    .use(() => {
       return function (ast) {
         ast.children[0].data = {
           hProperties: {className: 'foo'}
         }
       }
     })
-    .use(html)
+    .use(remarkHtml)
 
   t.equal(
     processor.processSync('```js\nvar\n```\n').toString(),
@@ -180,14 +178,17 @@ test('remark-html()', function (t) {
   )
 
   t.equal(
-    remark().use(html).processSync('## Hello <span>world</span>').toString(),
+    remark()
+      .use(remarkHtml)
+      .processSync('## Hello <span>world</span>')
+      .toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should be `sanitation: false` by default'
   )
 
   t.equal(
     remark()
-      .use(html, {sanitize: true})
+      .use(remarkHtml, {sanitize: true})
       .processSync('## Hello <span>world</span>')
       .toString(),
     '<h2>Hello world</h2>\n',
@@ -196,7 +197,7 @@ test('remark-html()', function (t) {
 
   t.equal(
     remark()
-      .use(html, {sanitize: null})
+      .use(remarkHtml, {sanitize: null})
       .processSync('## Hello <span>world</span>')
       .toString(),
     '<h2>Hello <span>world</span></h2>\n',
@@ -205,7 +206,7 @@ test('remark-html()', function (t) {
 
   t.equal(
     remark()
-      .use(html, {sanitize: false})
+      .use(remarkHtml, {sanitize: false})
       .processSync('## Hello <span>world</span>')
       .toString(),
     '<h2>Hello <span>world</span></h2>\n',
@@ -214,7 +215,7 @@ test('remark-html()', function (t) {
 
   t.equal(
     remark()
-      .use(html, {sanitize: {tagNames: []}})
+      .use(remarkHtml, {sanitize: {tagNames: []}})
       .processSync('## Hello <span>world</span>')
       .toString(),
     'Hello world\n',
@@ -225,53 +226,52 @@ test('remark-html()', function (t) {
 })
 
 // Assert fixtures.
-test('Fixtures', function (t) {
-  var base = path.join('test', 'fixtures')
+test('Fixtures', (t) => {
+  const base = path.join('test', 'fixtures')
+  const files = fs.readdirSync(base)
+  let index = -1
 
-  fs.readdirSync(base)
-    .filter((d) => !isHidden(d))
-    .forEach(each)
+  while (++index < files.length) {
+    const name = files[index]
 
-  t.end()
+    if (isHidden(name)) continue
 
-  function each(name) {
-    var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
-    var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
-    var config = {}
-    var file = toVFile({path: name + '.md', value: input})
-    var result
+    const output = String(fs.readFileSync(path.join(base, name, 'output.html')))
+    const input = String(fs.readFileSync(path.join(base, name, 'input.md')))
+    const file = toVFile({path: name + '.md', value: input})
+    let config = {}
 
     try {
       config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
-    } catch (_) {}
+    } catch {}
 
-    result = processSync(file, config)
+    const result = processSync(file, config)
 
     t.equal(result, output, 'should work on `' + name + '`')
   }
-})
-
-test('CommonMark', function (t) {
-  var start = 0
-  var section
-
-  commonmark.forEach(each)
 
   t.end()
+})
 
-  function each(example, index) {
+test('CommonMark', (t) => {
+  let start = 0
+  let index = -1
+  let section
+
+  while (++index < commonmark.length) {
+    const example = commonmark[index]
     if (section !== example.section) {
       section = example.section
       start = index
     }
 
-    var actual = unified()
-      .use(parse)
-      .use(html)
+    const actual = unified()
+      .use(remarkParse)
+      .use(remarkHtml)
       .processSync(example.markdown)
       .toString()
 
-    var reformat = unified()
+    const reformat = unified()
       .use(rehypeParse, {fragment: true})
       .use(rehypeStringify)
 
@@ -283,40 +283,42 @@ test('CommonMark', function (t) {
       index + ': ' + example.section + ' (' + (index - start + 1) + ')'
     )
   }
-})
-
-test('Integrations', function (t) {
-  var integrationMap = {
-    footnotes: footnotes,
-    frontmatter: frontmatter,
-    gfm: gfm,
-    github: github,
-    toc: [slug, toc]
-  }
-  var base = path.join('test', 'integrations')
-
-  fs.readdirSync(base)
-    .filter((d) => !isHidden(d))
-    .forEach(each)
 
   t.end()
+})
 
-  function each(name) {
-    var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
-    var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
-    var file = toVFile({path: name + '.md', value: input})
-    var result
+test('Integrations', (t) => {
+  const integrationMap = {
+    footnotes: remarkFootnotes,
+    frontmatter: remarkFrontmatter,
+    gfm: remarkGfm,
+    github: remarkGithub,
+    toc: [remarkSlug, remarkToc]
+  }
+  const base = path.join('test', 'integrations')
+  const files = fs.readdirSync(base)
+  let index = -1
 
-    result = remark()
+  while (++index < files.length) {
+    const name = files[index]
+
+    if (isHidden(name)) continue
+
+    const output = String(fs.readFileSync(path.join(base, name, 'output.html')))
+    const input = String(fs.readFileSync(path.join(base, name, 'input.md')))
+    const file = toVFile({path: name + '.md', value: input})
+    const result = remark()
       .use(integrationMap[name])
-      .use(html)
+      .use(remarkHtml)
       .processSync(file)
       .toString()
 
     t.equal(result, output, 'should integrate w/ `' + name + '`')
   }
+
+  t.end()
 })
 
 function processSync(file, config) {
-  return remark().use(html, config).processSync(file).toString()
+  return remark().use(remarkHtml, config).processSync(file).toString()
 }
