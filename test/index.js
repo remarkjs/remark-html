@@ -5,8 +5,8 @@
  * @typedef {import('../index.js').Options} Options
  */
 
-import path from 'path'
-import fs from 'fs'
+import path from 'node:path'
+import fs from 'node:fs'
 import test from 'tape'
 import {isHidden} from 'is-hidden'
 import {commonmark} from 'commonmark.json'
