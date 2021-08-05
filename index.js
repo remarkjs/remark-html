@@ -1,6 +1,6 @@
-import toHast from 'mdast-util-to-hast'
-import toHtml from 'hast-util-to-html'
-import sanitize from 'hast-util-sanitize'
+import {toHtml} from 'hast-util-to-html'
+import {sanitize} from 'hast-util-sanitize'
+import {toHast} from 'mdast-util-to-hast'
 
 export default function remarkHtml(options) {
   var settings = options || {}

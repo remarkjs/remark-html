@@ -16,7 +16,7 @@ import unified from 'unified'
 import parse from 'remark-parse'
 import rehypeParse from 'rehype-parse'
 import rehypeStringify from 'rehype-stringify'
-import all from 'mdast-util-to-hast/lib/all.js'
+import {all} from 'mdast-util-to-hast'
 import html from '../index.js'
 
 test('remark-html()', function (t) {
