@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import test from 'tape'
-import remark from 'remark'
+import {remark} from 'remark'
 import slug from 'remark-slug'
 import footnotes from 'remark-footnotes'
 import frontmatter from 'remark-frontmatter'
@@ -9,10 +9,9 @@ import gfm from 'remark-gfm'
 import github from 'remark-github'
 import toc from 'remark-toc'
 import {commonmark} from 'commonmark.json'
-import vfile from 'to-vfile'
-import hidden from 'is-hidden'
-import not from 'not'
-import unified from 'unified'
+import {toVFile} from 'to-vfile'
+import {isHidden} from 'is-hidden'
+import {unified} from 'unified'
 import parse from 'remark-parse'
 import rehypeParse from 'rehype-parse'
 import rehypeStringify from 'rehype-stringify'
@@ -229,7 +228,9 @@ test('remark-html()', function (t) {
 test('Fixtures', function (t) {
   var base = path.join('test', 'fixtures')
 
-  fs.readdirSync(base).filter(not(hidden)).forEach(each)
+  fs.readdirSync(base)
+    .filter((d) => !isHidden(d))
+    .forEach(each)
 
   t.end()
 
@@ -237,10 +238,8 @@ test('Fixtures', function (t) {
     var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
     var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
     var config = {}
-    var file = vfile(name + '.md')
+    var file = toVFile({path: name + '.md', value: input})
     var result
-
-    file.contents = input
 
     try {
       config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
@@ -296,14 +295,16 @@ test('Integrations', function (t) {
   }
   var base = path.join('test', 'integrations')
 
-  fs.readdirSync(base).filter(not(hidden)).forEach(each)
+  fs.readdirSync(base)
+    .filter((d) => !isHidden(d))
+    .forEach(each)
 
   t.end()
 
   function each(name) {
     var output = String(fs.readFileSync(path.join(base, name, 'output.html')))
     var input = String(fs.readFileSync(path.join(base, name, 'input.md')))
-    var file = vfile({path: name + '.md', contents: input})
+    var file = toVFile({path: name + '.md', value: input})
     var result
 
     result = remark()
