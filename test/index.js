@@ -1,25 +1,23 @@
-'use strict'
-
-var path = require('path')
-var fs = require('fs')
-var test = require('tape')
-var remark = require('remark')
-var slug = require('remark-slug')
-var footnotes = require('remark-footnotes')
-var frontmatter = require('remark-frontmatter')
-var gfm = require('remark-gfm')
-var github = require('remark-github')
-var toc = require('remark-toc')
-var commonmark = require('commonmark.json')
-var vfile = require('to-vfile')
-var hidden = require('is-hidden')
-var not = require('not')
-var unified = require('unified')
-var parse = require('remark-parse')
-var rehypeParse = require('rehype-parse')
-var rehypeStringify = require('rehype-stringify')
-var all = require('mdast-util-to-hast/lib/all')
-var html = require('..')
+import path from 'path'
+import fs from 'fs'
+import test from 'tape'
+import remark from 'remark'
+import slug from 'remark-slug'
+import footnotes from 'remark-footnotes'
+import frontmatter from 'remark-frontmatter'
+import gfm from 'remark-gfm'
+import github from 'remark-github'
+import toc from 'remark-toc'
+import {commonmark} from 'commonmark.json'
+import vfile from 'to-vfile'
+import hidden from 'is-hidden'
+import not from 'not'
+import unified from 'unified'
+import parse from 'remark-parse'
+import rehypeParse from 'rehype-parse'
+import rehypeStringify from 'rehype-stringify'
+import all from 'mdast-util-to-hast/lib/all.js'
+import html from '../index.js'
 
 test('remark-html()', function (t) {
   var processor
@@ -229,7 +227,7 @@ test('remark-html()', function (t) {
 
 // Assert fixtures.
 test('Fixtures', function (t) {
-  var base = path.join(__dirname, 'fixtures')
+  var base = path.join('test', 'fixtures')
 
   fs.readdirSync(base).filter(not(hidden)).forEach(each)
 
@@ -296,7 +294,7 @@ test('Integrations', function (t) {
     github: github,
     toc: [slug, toc]
   }
-  var base = path.join(__dirname, 'integrations')
+  var base = path.join('test', 'integrations')
 
   fs.readdirSync(base).filter(not(hidden)).forEach(each)
 

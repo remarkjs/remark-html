@@ -1,12 +1,8 @@
-'use strict'
+import toHast from 'mdast-util-to-hast'
+import toHtml from 'hast-util-to-html'
+import sanitize from 'hast-util-sanitize'
 
-var toHast = require('mdast-util-to-hast')
-var toHtml = require('hast-util-to-html')
-var sanitize = require('hast-util-sanitize')
-
-module.exports = plugin
-
-function plugin(options) {
+export default function remarkHtml(options) {
   var settings = options || {}
   var clean = settings.sanitize
   var schema = clean && typeof clean === 'object' ? clean : null
