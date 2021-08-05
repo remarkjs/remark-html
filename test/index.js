@@ -1,3 +1,10 @@
+/**
+ * @typedef {import('mdast').Root} Root
+ * @typedef {import('mdast').Paragraph} Paragraph
+ * @typedef {import('vfile').VFile} VFile
+ * @typedef {import('../index.js').Options} Options
+ */
+
 import path from 'path'
 import fs from 'fs'
 import test from 'tape'
@@ -19,8 +26,6 @@ import rehypeStringify from 'rehype-stringify'
 import remarkHtml from '../index.js'
 
 test('remarkHtml', (t) => {
-  let processor
-
   t.doesNotThrow(() => {
     remark().use(remarkHtml).freeze()
   }, 'should not throw if not passed options')
@@ -29,15 +34,17 @@ test('remarkHtml', (t) => {
     () => {
       remark()
         .use(remarkHtml)
+        // @ts-expect-error: not a node.
         .stringify({type: 'root', children: [{value: 'baz'}]})
     },
     /Expected node, got `\[object Object]`/,
     'should throw when not given a node'
   )
 
-  processor = remark().use(remarkHtml)
+  let processor = remark().use(remarkHtml)
 
   t.equal(
+    // @ts-expect-error: unknown node.
     processor.stringify({type: 'alpha'}),
     '<div></div>',
     'should stringify unknown nodes'
@@ -45,6 +52,7 @@ test('remarkHtml', (t) => {
 
   t.equal(
     processor.stringify({
+      // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'strong', children: [{type: 'text', value: 'bravo'}]}]
     }),
@@ -54,6 +62,7 @@ test('remarkHtml', (t) => {
 
   t.equal(
     processor.stringify({
+      // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'text', value: 'bravo'}],
       data: {
@@ -68,8 +77,14 @@ test('remarkHtml', (t) => {
 
   processor = remark().use(remarkHtml, {
     handlers: {
+      /** @param {Paragraph} node */
       paragraph(h, node) {
-        node.children[0].value = 'changed'
+        const head = node.children[0]
+
+        if (head.type === 'text') {
+          head.value = 'changed'
+        }
+
         return h(node, 'p', all(h, node))
       }
     }
@@ -82,13 +97,15 @@ test('remarkHtml', (t) => {
   )
 
   processor = remark()
-    .use(() => {
-      return function (ast) {
+    .use(
+      /** @type {import('unified').Plugin<void[], Root>} */
+      () => (ast) => {
+        // @ts-expect-error: assume it exists.
         ast.children[0].children[0].data = {
           hProperties: {title: 'overwrite'}
         }
       }
-    })
+    )
     .use(remarkHtml)
 
   t.equal(
@@ -98,11 +115,13 @@ test('remarkHtml', (t) => {
   )
 
   processor = remark()
-    .use(() => {
-      return function (ast) {
+    .use(
+      /** @type {import('unified').Plugin<void[], Root>} */
+      () => (ast) => {
+        // @ts-expect-error: assume it exists.
         ast.children[0].children[0].data = {hName: 'b'}
       }
-    })
+    )
     .use(remarkHtml)
 
   t.equal(
@@ -112,8 +131,10 @@ test('remarkHtml', (t) => {
   )
 
   processor = remark()
-    .use(() => {
-      return function (ast) {
+    .use(
+      /** @type {import('unified').Plugin<void[], Root>} */
+      () => (ast) => {
+        // @ts-expect-error: assume it exists.
         const code = ast.children[0].children[0]
 
         code.data = {
@@ -127,7 +148,7 @@ test('remarkHtml', (t) => {
           ]
         }
       }
-    })
+    )
     .use(remarkHtml)
 
   t.equal(
@@ -137,8 +158,10 @@ test('remarkHtml', (t) => {
   )
 
   processor = remark()
-    .use(() => {
-      return function (ast) {
+    .use(
+      /** @type {import('unified').Plugin<void[], Root>} */
+      () => (ast) => {
+        // @ts-expect-error: assume it exists.
         const code = ast.children[0].children[0]
 
         code.data = {
@@ -152,7 +175,7 @@ test('remarkHtml', (t) => {
           ]
         }
       }
-    })
+    )
     .use(remarkHtml, {sanitize: true})
 
   t.equal(
@@ -162,13 +185,14 @@ test('remarkHtml', (t) => {
   )
 
   processor = remark()
-    .use(() => {
-      return function (ast) {
+    .use(
+      /** @type {import('unified').Plugin<void[], Root>} */
+      () => (ast) => {
         ast.children[0].data = {
           hProperties: {className: 'foo'}
         }
       }
-    })
+    )
     .use(remarkHtml)
 
   t.equal(
@@ -242,7 +266,9 @@ test('Fixtures', (t) => {
     let config = {}
 
     try {
-      config = JSON.parse(fs.readFileSync(path.join(base, name, 'config.json')))
+      config = JSON.parse(
+        String(fs.readFileSync(path.join(base, name, 'config.json')))
+      )
     } catch {}
 
     const result = processSync(file, config)
@@ -256,6 +282,7 @@ test('Fixtures', (t) => {
 test('CommonMark', (t) => {
   let start = 0
   let index = -1
+  /** @type {string|undefined} */
   let section
 
   while (++index < commonmark.length) {
@@ -296,7 +323,7 @@ test('Integrations', (t) => {
     toc: [remarkSlug, remarkToc]
   }
   const base = path.join('test', 'integrations')
-  const files = fs.readdirSync(base)
+  const files = /** @type {(keyof integrationMap)[]} */ (fs.readdirSync(base))
   let index = -1
 
   while (++index < files.length) {
@@ -308,6 +335,7 @@ test('Integrations', (t) => {
     const input = String(fs.readFileSync(path.join(base, name, 'input.md')))
     const file = toVFile({path: name + '.md', value: input})
     const result = remark()
+      // @ts-expect-error: fine.
       .use(integrationMap[name])
       .use(remarkHtml)
       .processSync(file)
@@ -319,6 +347,10 @@ test('Integrations', (t) => {
   t.end()
 })
 
+/**
+ * @param {VFile} file
+ * @param {Options} [config]
+ */
 function processSync(file, config) {
   return remark().use(remarkHtml, config).processSync(file).toString()
 }
