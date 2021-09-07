@@ -20,12 +20,19 @@ import {toHast} from 'mdast-util-to-hast'
  *
  * @type {import('unified').Plugin<[Options?]|void[], Root, string>}
  */
-export default function remarkHtml(options = {}) {
-  const handlers = options.handlers || {}
-  const schema =
-    options.sanitize && typeof options.sanitize === 'object'
-      ? options.sanitize
-      : undefined
+export default function remarkHtml(settings) {
+  const options = {...(settings || {})}
+  /** @type {boolean|undefined} */
+  let clean
+
+  if (typeof options.sanitize === 'boolean') {
+    clean = options.sanitize
+    options.sanitize = undefined
+  }
+
+  if (typeof clean !== 'boolean') {
+    clean = true
+  }
 
   Object.assign(this, {Compiler: compiler})
 
@@ -33,13 +40,16 @@ export default function remarkHtml(options = {}) {
    * @type {import('unified').CompilerFunction<Root, string>}
    */
   function compiler(node, file) {
-    const hast = toHast(node, {allowDangerousHtml: !options.sanitize, handlers})
+    const hast = toHast(node, {
+      allowDangerousHtml: !clean,
+      handlers: options.handlers
+    })
     // @ts-expect-error: assume root.
-    const cleanHast = options.sanitize ? sanitize(hast, schema) : hast
+    const cleanHast = clean ? sanitize(hast, options.sanitize) : hast
     const result = toHtml(
       // @ts-expect-error: assume root.
       cleanHast,
-      Object.assign({}, options, {allowDangerousHtml: !options.sanitize})
+      Object.assign({}, options, {allowDangerousHtml: !clean})
     )
 
     if (file.extname) {

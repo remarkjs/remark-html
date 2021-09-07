@@ -41,17 +41,17 @@ test('remarkHtml', (t) => {
     'should throw when not given a node'
   )
 
-  let processor = remark().use(remarkHtml)
+  let processorDangerous = remark().use(remarkHtml, {sanitize: false})
 
   t.equal(
     // @ts-expect-error: unknown node.
-    processor.stringify({type: 'alpha'}),
+    processorDangerous.stringify({type: 'alpha'}),
     '<div></div>',
     'should stringify unknown nodes'
   )
 
   t.equal(
-    processor.stringify({
+    processorDangerous.stringify({
       // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'strong', children: [{type: 'text', value: 'bravo'}]}]
@@ -61,7 +61,7 @@ test('remarkHtml', (t) => {
   )
 
   t.equal(
-    processor.stringify({
+    processorDangerous.stringify({
       // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'text', value: 'bravo'}],
@@ -75,7 +75,8 @@ test('remarkHtml', (t) => {
     'should stringify unknown nodes'
   )
 
-  processor = remark().use(remarkHtml, {
+  processorDangerous = remark().use(remarkHtml, {
+    sanitize: false,
     handlers: {
       /** @param {Paragraph} node */
       paragraph(h, node) {
@@ -91,12 +92,12 @@ test('remarkHtml', (t) => {
   })
 
   t.equal(
-    processor.processSync('paragraph text').toString(),
+    processorDangerous.processSync('paragraph text').toString(),
     '<p>changed</p>\n',
     'should allow overriding handlers'
   )
 
-  processor = remark()
+  processorDangerous = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -106,15 +107,17 @@ test('remarkHtml', (t) => {
         }
       }
     )
-    .use(remarkHtml)
+    .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processor.processSync('![hello](example.jpg "overwritten")').toString(),
+    processorDangerous
+      .processSync('![hello](example.jpg "overwritten")')
+      .toString(),
     '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n',
     'should patch and merge attributes'
   )
 
-  processor = remark()
+  processorDangerous = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -122,15 +125,15 @@ test('remarkHtml', (t) => {
         ast.children[0].children[0].data = {hName: 'b'}
       }
     )
-    .use(remarkHtml)
+    .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processor.processSync('**Bold!**').toString(),
+    processorDangerous.processSync('**Bold!**').toString(),
     '<p><b>Bold!</b></p>\n',
     'should overwrite a tag-name'
   )
 
-  processor = remark()
+  processorDangerous = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -149,15 +152,15 @@ test('remarkHtml', (t) => {
         }
       }
     )
-    .use(remarkHtml)
+    .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processor.processSync('`var`').toString(),
+    processorDangerous.processSync('`var`').toString(),
     '<p><code><span class="token">var</span></code></p>\n',
     'should overwrite content'
   )
 
-  processor = remark()
+  processorDangerous = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -179,12 +182,12 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: true})
 
   t.equal(
-    processor.processSync('`var`').toString(),
+    processorDangerous.processSync('`var`').toString(),
     '<p><code>var</code></p>\n',
     'should not overwrite content in `sanitize` mode'
   )
 
-  processor = remark()
+  processorDangerous = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -193,10 +196,10 @@ test('remarkHtml', (t) => {
         }
       }
     )
-    .use(remarkHtml)
+    .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processor.processSync('```js\nvar\n```\n').toString(),
+    processorDangerous.processSync('```js\nvar\n```\n').toString(),
     '<pre><code class="foo">var\n</code></pre>\n',
     'should overwrite classes on code'
   )
@@ -206,8 +209,8 @@ test('remarkHtml', (t) => {
       .use(remarkHtml)
       .processSync('## Hello <span>world</span>')
       .toString(),
-    '<h2>Hello <span>world</span></h2>\n',
-    'should be `sanitation: false` by default'
+    '<h2>Hello world</h2>\n',
+    'should be `sanitation: true` by default'
   )
 
   t.equal(
@@ -224,7 +227,7 @@ test('remarkHtml', (t) => {
       .use(remarkHtml, {sanitize: null})
       .processSync('## Hello <span>world</span>')
       .toString(),
-    '<h2>Hello <span>world</span></h2>\n',
+    '<h2>Hello world</h2>\n',
     'should support sanitation: null'
   )
 
@@ -294,7 +297,7 @@ test('CommonMark', (t) => {
 
     const actual = unified()
       .use(remarkParse)
-      .use(remarkHtml)
+      .use(remarkHtml, {sanitize: false})
       .processSync(example.markdown)
       .toString()
 
@@ -337,7 +340,7 @@ test('Integrations', (t) => {
     const result = remark()
       // @ts-expect-error: fine.
       .use(integrationMap[name])
-      .use(remarkHtml)
+      .use(remarkHtml, {sanitize: false})
       .processSync(file)
       .toString()
 
