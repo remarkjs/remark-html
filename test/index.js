@@ -37,7 +37,7 @@ test('remark-html()', function (t) {
     'should throw when not given a node'
   )
 
-  processor = remark().use(html)
+  processor = remark().use(html, {sanitize: false})
 
   t.equal(
     processor.stringify({type: 'alpha'}),
@@ -69,6 +69,7 @@ test('remark-html()', function (t) {
   )
 
   processor = remark().use(html, {
+    sanitize: false,
     handlers: {
       paragraph: function (h, node) {
         node.children[0].value = 'changed'
@@ -91,7 +92,7 @@ test('remark-html()', function (t) {
         }
       }
     })
-    .use(html)
+    .use(html, {sanitize: false})
 
   t.equal(
     processor.processSync('![hello](example.jpg "overwritten")').toString(),
@@ -105,7 +106,7 @@ test('remark-html()', function (t) {
         ast.children[0].children[0].data = {hName: 'b'}
       }
     })
-    .use(html)
+    .use(html, {sanitize: false})
 
   t.equal(
     processor.processSync('**Bold!**').toString(),
@@ -130,7 +131,7 @@ test('remark-html()', function (t) {
         }
       }
     })
-    .use(html)
+    .use(html, {sanitize: false})
 
   t.equal(
     processor.processSync('`var`').toString(),
@@ -171,7 +172,7 @@ test('remark-html()', function (t) {
         }
       }
     })
-    .use(html)
+    .use(html, {sanitize: false})
 
   t.equal(
     processor.processSync('```js\nvar\n```\n').toString(),
@@ -180,7 +181,10 @@ test('remark-html()', function (t) {
   )
 
   t.equal(
-    remark().use(html).processSync('## Hello <span>world</span>').toString(),
+    remark()
+      .use(html, {sanitize: false})
+      .processSync('## Hello <span>world</span>')
+      .toString(),
     '<h2>Hello <span>world</span></h2>\n',
     'should be `sanitation: false` by default'
   )
@@ -199,7 +203,7 @@ test('remark-html()', function (t) {
       .use(html, {sanitize: null})
       .processSync('## Hello <span>world</span>')
       .toString(),
-    '<h2>Hello <span>world</span></h2>\n',
+    '<h2>Hello world</h2>\n',
     'should support sanitation: null'
   )
 
@@ -267,7 +271,7 @@ test('CommonMark', function (t) {
 
     var actual = unified()
       .use(parse)
-      .use(html)
+      .use(html, {sanitize: false})
       .processSync(example.markdown)
       .toString()
 

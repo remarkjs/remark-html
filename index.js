@@ -7,16 +7,26 @@ var sanitize = require('hast-util-sanitize')
 module.exports = plugin
 
 function plugin(options) {
-  var settings = options || {}
-  var clean = settings.sanitize
-  var schema = clean && typeof clean === 'object' ? clean : null
-  var handlers = settings.handlers || {}
+  var settings = Object.assign({}, options || {})
+  let clean
+
+  if (typeof settings.sanitize === 'boolean') {
+    clean = settings.sanitize
+    settings.sanitize = undefined
+  }
+
+  if (typeof clean !== 'boolean') {
+    clean = true
+  }
 
   this.Compiler = compiler
 
   function compiler(node, file) {
     var root = node && node.type && node.type === 'root'
-    var hast = toHast(node, {allowDangerousHtml: !clean, handlers: handlers})
+    var hast = toHast(node, {
+      allowDangerousHtml: !clean,
+      handlers: settings.handlers
+    })
     var result
 
     if (file.extname) {
@@ -24,7 +34,7 @@ function plugin(options) {
     }
 
     if (clean) {
-      hast = sanitize(hast, schema)
+      hast = sanitize(hast, settings.sanitize)
     }
 
     result = toHtml(
