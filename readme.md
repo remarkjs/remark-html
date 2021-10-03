@@ -10,18 +10,11 @@
 
 [**remark**][remark] plugin to serialize Markdown as HTML.
 
-> ⚠️ This package essentially packs [`remark-rehype`][remark2rehype] and
+> ⚠️ This package essentially packs [`remark-rehype`][remark-rehype] and
 > [`rehype-stringify`][rehype-stringify], and although it does support some
 > customisation, it isn’t very pluggable.
 > It’s probably smarter to use `remark-rehype` directly and benefit from the
 > [**rehype**][rehype] ecosystem.
-
-## Note!
-
-This plugin is ready for the new parser in remark
-([`remarkjs/remark#536`](https://github.com/remarkjs/remark/pull/536)).
-The current and previous version of the plugin works with the current and
-previous version of remark.
 
 ## Install
 
@@ -91,6 +84,10 @@ Serialize Markdown as HTML.
 All options except for `sanitize` and `handlers` are passed to
 [`hast-util-to-html`][to-html].
 
+The underlying tools allow much more customisation.
+It is recommended to replace this project with [`remark-rehype`][remark-rehype]
+and [`rehype-stringify`][rehype-stringify] ;
+
 ###### `options.handlers`
 
 Object mapping [mdast][] [nodes][mdast-node] to functions handling them.
@@ -110,7 +107,7 @@ How to sanitize the output (`Object` or `boolean`, default: `true`):
     [`hast-util-sanitize`][sanitize], dangerous HTML is dropped
 
 > Note that raw HTML in Markdown cannot be sanitized, so it’s removed.
-> A schema can still be used to allow certain values from [integrations][]
+> A schema can still be used to allow certain values from other plugins
 > though.
 > To support HTML in Markdown, use [`rehype-raw`][raw].
 
@@ -127,60 +124,6 @@ var schema = merge(github, {attributes: {'*': ['className']}})
 remark()
   .use(html, {sanitize: schema})
   .processSync(/* … */)
-```
-
-## Integrations
-
-`remark-html` works great with:
-
-*   [`remark-autolink-headings`](https://github.com/ben-eb/remark-autolink-headings)
-    — Automatically add links to headings in Markdown
-*   [`remark-github`](https://github.com/remarkjs/remark-github)
-    — Generate references to GitHub issues, PRs, users, and more
-*   [`remark-highlight.js`](https://github.com/ben-eb/remark-highlight.js)
-    — Highlight code blocks
-*   [`remark-html-emoji-image`](https://github.com/jackycute/remark-html-emoji-image)
-    — Transform emoji unicodes into html images
-*   [`remark-html-katex`](https://github.com/remark/remark-math/blob/HEAD/packages/remark-html-katex/readme.md)
-    — Transform math to HTML with KaTeX
-*   [`remark-math`](https://github.com/remarkjs/remark-math)
-    — Math support for Markdown (inline and block)
-*   [`remark-midas`](https://github.com/ben-eb/remark-midas)
-    — Highlight CSS code with [midas](https://github.com/ben-eb/midas)
-*   [`remark-toc`](https://github.com/remarkjs/remark-toc)
-    — Generate a Tables of Contents
-*   …and [more][remark-plugins]
-
-All [**mdast** nodes][mdast] can be compiled to HTML.
-Unknown **mdast** nodes are compiled to `div` nodes if they have `children` or
-`text` nodes if they have `value`.
-
-In addition, **remark-html** can be told how to compile nodes through
-three `data` properties ([more information][to-hast]):
-
-*   `hName` — Tag name to compile as
-*   `hChildren` — HTML content to add (instead of `children` and `value`), in
-    [`hast`][hast]
-*   `hProperties` — Map of properties to add
-
-For example, the following node:
-
-```js
-{
-  type: 'emphasis',
-  data: {
-    hName: 'i',
-    hProperties: {className: 'foo'},
-    hChildren: [{type: 'text', value: 'bar'}]
-  },
-  children: [{type: 'text', value: 'baz'}]
-}
-```
-
-…would yield:
-
-```markdown
-<i class="foo">bar</i>
 ```
 
 ## Security
@@ -248,9 +191,7 @@ abide by its terms.
 
 [remark]: https://github.com/remarkjs/remark
 
-[remark-plugins]: https://github.com/remarkjs/remark/blob/HEAD/doc/plugins.md#list-of-plugins
-
-[remark2rehype]: https://github.com/remarkjs/remark-rehype
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
 
 [rehype]: https://github.com/rehypejs/rehype
 
@@ -262,8 +203,6 @@ abide by its terms.
 
 [mdast-node]: https://github.com/syntax-tree/mdast#nodes
 
-[hast]: https://github.com/syntax-tree/hast
-
 [to-html]: https://github.com/syntax-tree/hast-util-to-html
 
 [to-hast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
@@ -271,9 +210,5 @@ abide by its terms.
 [sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
 [github]: https://github.com/syntax-tree/hast-util-sanitize#schema
-
-[to-hast]: https://github.com/syntax-tree/mdast-util-to-hast#note
-
-[integrations]: #integrations
 
 [xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
