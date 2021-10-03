@@ -16,7 +16,6 @@ import {unified} from 'unified'
 import {remark} from 'remark'
 import remarkParse from 'remark-parse'
 import remarkSlug from 'remark-slug'
-import remarkFootnotes from 'remark-footnotes'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import remarkGithub from 'remark-github'
@@ -319,7 +318,7 @@ test('CommonMark', (t) => {
 
 test('Integrations', (t) => {
   const integrationMap = {
-    footnotes: remarkFootnotes,
+    footnotes: remarkGfm,
     frontmatter: remarkFrontmatter,
     gfm: remarkGfm,
     github: remarkGithub,

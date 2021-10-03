@@ -20,8 +20,8 @@ import {toHast} from 'mdast-util-to-hast'
  *
  * @type {import('unified').Plugin<[Options?]|void[], Root, string>}
  */
-export default function remarkHtml(settings) {
-  const options = {...(settings || {})}
+export default function remarkHtml(settings = {}) {
+  const options = {...settings}
   /** @type {boolean|undefined} */
   let clean
 
