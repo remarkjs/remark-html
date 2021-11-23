@@ -8,28 +8,93 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[**remark**][remark] plugin to serialize Markdown as HTML.
+**[remark][]** plugin to add support for serializing HTML.
 
-> ⚠️ This package essentially packs [`remark-rehype`][remark-rehype] and
-> [`rehype-stringify`][rehype-stringify], and although it does support some
-> customisation, it isn’t very pluggable.
-> It’s probably smarter to use `remark-rehype` directly and benefit from the
-> [**rehype**][rehype] ecosystem.
+## Contents
+
+*   [What is this?](#what-is-this)
+*   [When should I use this?](#when-should-i-use-this)
+*   [Install](#install)
+*   [Use](#use)
+*   [API](#api)
+    *   [`unified().use(remarkHtml[, options])`](#unifieduseremarkhtml-options)
+*   [Types](#types)
+*   [Compatibility](#compatibility)
+*   [Security](#security)
+*   [Related](#related)
+*   [Contribute](#contribute)
+*   [License](#license)
+
+## What is this?
+
+This package is a [unified][] ([remark][]) plugin that compiles markdown to
+HTML.
+
+**unified** is a project that transforms content with abstract syntax trees
+(ASTs).
+**remark** adds support for markdown to unified.
+**rehype** adds support for HTML to unified.
+**mdast** is the markdown AST that remark uses.
+**hast** is the HTML AST that rehype uses.
+This is a remark plugin that adds a compiler to compile mdast to hast and then
+to a string.
+
+## When should I use this?
+
+This plugin is useful when you want to turn markdown into HTML.
+It’s a shortcut for `.use(remarkRehype).use(rehypeStringify)`.
+
+The reason that there are different ecosystems for markdown and HTML is that
+turning markdown into HTML is, while frequently needed, not the only purpose of
+markdown.
+Checking (linting) and formatting markdown are also common use cases for
+remark and markdown.
+There are several aspects of markdown that do not translate 1-to-1 to HTML.
+In some cases markdown contains more information than HTML: for example, there
+are several ways to add a link in markdown (as in, autolinks: `<https://url>`,
+resource links: `[label](url)`, and reference links with definitions:
+`[label][id]` and `[id]: url`).
+In other cases HTML contains more information than markdown: there are many
+tags, which add new meaning (semantics), available in HTML that aren’t available
+in markdown.
+If there was just one AST, it would be quite hard to perform the tasks that
+several remark and rehype plugins currently do.
+
+This plugin is useful when you want to quickly turn markdown into HTML.
+In most cases though, it’s recommended to use [`remark-rehype`][remark-rehype]
+instead and finally use [`rehype-stringify`][rehype-stringify] to serialize
+HTML.
+The reason using both ecosystems instead of this plugin is recommended, is that
+there are many useful rehype plugins that you can then use.
+You can [minify HTML][rehype-minify], [format HTML][rehype-format],
+[highlight code][rehype-highlight], [add metadata][rehype-meta], and a lot more.
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
-Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
-
-[npm][]:
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
+In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 
 ```sh
 npm install remark-html
 ```
 
+In Deno with [Skypack][]:
+
+```js
+import remarkHtml from 'https://cdn.skypack.dev/remark-html@15?dts'
+```
+
+In browsers with [Skypack][]:
+
+```html
+<script type="module">
+  import remarkHtml from 'https://cdn.skypack.dev/remark-html@15?min'
+</script>
+```
+
 ## Use
 
-Say we have the following file, `example.md`:
+Say we have the following file `example.md`:
 
 ```markdown
 # Hello & World
@@ -39,26 +104,27 @@ Say we have the following file, `example.md`:
 * Some _emphasis_, **importance**, and `code`.
 ```
 
-And our module, `example.js`, looks as follows:
+And our module `example.js` looks as follows:
 
 ```js
-import fs from 'node:fs'
+import {read} from 'to-vfile'
 import {unified} from 'unified'
 import remarkParse from 'remark-parse'
 import remarkHtml from 'remark-html'
 
-const buf = fs.readFileSync('example.md')
+main()
 
-unified()
-  .use(remarkParse)
-  .use(remarkHtml)
-  .process(buf)
-  .then((file) => {
-    console.log(String(file))
-  })
+async function main() {
+  const file = await unified()
+    .use(remarkParse)
+    .use(remarkHtml)
+    .process(await read('example.md'))
+
+  console.log(String(file))
+}
 ```
 
-Now, running `node example` yields:
+Now running `node example.js` yields:
 
 ```html
 <h1>Hello &#x26; World</h1>
@@ -77,61 +143,61 @@ The default export is `remarkHtml`.
 
 ### `unified().use(remarkHtml[, options])`
 
-Serialize Markdown as HTML.
+Add support for serializing HTML.
 
 ##### `options`
 
-All options except for `sanitize` and `handlers` are passed to
-[`hast-util-to-html`][to-html].
-
-The underlying tools allow much more customisation.
-It is recommended to replace this project with [`remark-rehype`][remark-rehype]
-and [`rehype-stringify`][rehype-stringify] ;
+Configuration (optional).
+All options other than `sanitize` and `handlers` are passed to
+[`hast-util-to-html`][hast-util-to-html].
 
 ###### `options.handlers`
 
-Object mapping [mdast][] [nodes][mdast-node] to functions handling them.
-This option is passed to [`mdast-util-to-hast`][to-hast-handlers].
+This option is a bit advanced as it requires knowledge of ASTs, so we defer
+to the documentation available in
+[`mdast-util-to-hast`][mdast-util-to-hast].
 
 ###### `options.sanitize`
 
 How to sanitize the output (`Object` or `boolean`, default: `true`):
 
 *   `false`
-    — HTML is not sanitized, dangerous HTML persists
+    — output is not sanitized, dangerous raw HTML persists
 *   `true`
-    — HTML is sanitized according to [GitHub’s sanitation rules][github],
-    dangerous HTML is dropped
+    — output is sanitized according to [GitHub’s sanitation rules][github],
+    dangerous raw HTML is dropped
 *   `Object`
-    — the object is treated as a `schema` for how to sanitize with
-    [`hast-util-sanitize`][sanitize], dangerous HTML is dropped
+    — `schema` that defines how to sanitize output with
+    [`hast-util-sanitize`][sanitize], dangerous raw HTML is dropped
 
-> Note that raw HTML in Markdown cannot be sanitized, so it’s removed.
-> A schema can still be used to allow certain values from other plugins
-> though.
-> To support HTML in Markdown, use [`rehype-raw`][raw].
+## Types
 
-For example, to add strict sanitation but allowing `className`s, use something
-like:
+This package is fully typed with [TypeScript][].
+It exports an `Options` type, which specifies the interface of the accepted
+options.
 
-```js
-// ...
-var merge = require('deepmerge')
-var github = require('hast-util-sanitize/lib/github')
+## Compatibility
 
-var schema = merge(github, {attributes: {'*': ['className']}})
+Projects maintained by the unified collective are compatible with all maintained
+versions of Node.js.
+As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
+Our projects sometimes work with older versions, but this is not guaranteed.
 
-remark()
-  .use(html, {sanitize: schema})
-  .processSync(/* … */)
-```
+This plugin works with `unified` version 6+ and `remark` version 7+.
 
 ## Security
 
-Use of `remark-html` is *unsafe* by default and opens you up to a
-[cross-site scripting (XSS)][xss] attack.
+Use of `remark-html` is **unsafe** by default and opens you up to
+[cross-site scripting (XSS)][xss] attacks.
 Pass `sanitize: true` to prevent attacks.
-Settings `sanitize` to anything else may be unsafe.
+Setting `sanitize` to anything else can be unsafe.
+
+## Related
+
+*   [`remark-rehype`](https://github.com/remarkjs/remark-rehype)
+    — turn markdown into HTML to support rehype
+*   [`rehype-sanitize`](https://github.com/rehypejs/rehype-sanitize)
+    — sanitize HTML
 
 ## Contribute
 
@@ -177,38 +243,44 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
+[skypack]: https://www.skypack.dev
+
 [health]: https://github.com/remarkjs/.github
 
-[contributing]: https://github.com/remarkjs/.github/blob/HEAD/contributing.md
+[contributing]: https://github.com/remarkjs/.github/blob/main/contributing.md
 
-[support]: https://github.com/remarkjs/.github/blob/HEAD/support.md
+[support]: https://github.com/remarkjs/.github/blob/main/support.md
 
-[coc]: https://github.com/remarkjs/.github/blob/HEAD/code-of-conduct.md
+[coc]: https://github.com/remarkjs/.github/blob/main/code-of-conduct.md
 
 [license]: license
 
 [author]: https://wooorm.com
 
+[unified]: https://github.com/unifiedjs/unified
+
 [remark]: https://github.com/remarkjs/remark
-
-[remark-rehype]: https://github.com/remarkjs/remark-rehype
-
-[rehype]: https://github.com/rehypejs/rehype
-
-[rehype-stringify]: https://github.com/rehypejs/rehype/tree/HEAD/packages/rehype-stringify
-
-[raw]: https://github.com/rehypejs/rehype-raw
-
-[mdast]: https://github.com/syntax-tree/mdast
-
-[mdast-node]: https://github.com/syntax-tree/mdast#nodes
-
-[to-html]: https://github.com/syntax-tree/hast-util-to-html
-
-[to-hast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#optionshandlers
-
-[sanitize]: https://github.com/syntax-tree/hast-util-sanitize
 
 [github]: https://github.com/syntax-tree/hast-util-sanitize#schema
 
 [xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
+
+[typescript]: https://www.typescriptlang.org
+
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
+
+[rehype-minify]: https://github.com/rehypejs/rehype-minify
+
+[rehype-format]: https://github.com/rehypejs/rehype-format
+
+[rehype-highlight]: https://github.com/rehypejs/rehype-highlight
+
+[rehype-meta]: https://github.com/rehypejs/rehype-meta
+
+[rehype-stringify]: https://github.com/rehypejs/rehype/tree/main/packages/rehype-stringify
+
+[sanitize]: https://github.com/syntax-tree/hast-util-sanitize
+
+[hast-util-to-html]: https://github.com/syntax-tree/hast-util-to-html
+
+[mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast

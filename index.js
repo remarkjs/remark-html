@@ -1,14 +1,15 @@
 /**
  * @typedef {import('mdast').Root} Root
  * @typedef {import('hast-util-sanitize').Schema} Schema
- * @typedef {import('mdast-util-to-hast').Handlers} Handlers
  *
- * @typedef Options
- *   Configuration.
+ * @typedef ExtraOptionsFields
+ *   Configuration (optional).
  * @property {boolean|Schema|null} [sanitize]
  *   How to sanitize the output.
- * @property {Handlers} [handlers={}]
+ * @property {import('mdast-util-to-hast').Handlers} [handlers={}]
  *   Object mapping mdast nodes to functions handling them.
+ *
+ * @typedef {import('hast-util-to-html').Options & ExtraOptionsFields} Options
  */
 
 import {toHtml} from 'hast-util-to-html'
