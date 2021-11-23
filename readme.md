@@ -66,7 +66,7 @@ instead and finally use [`rehype-stringify`][rehype-stringify] to serialize
 HTML.
 The reason using both ecosystems instead of this plugin is recommended, is that
 there are many useful rehype plugins that you can then use.
-You can [minify HTML][rehype-minify], [format HTML][rehype-format],
+For example, you can [minify HTML][rehype-minify], [format HTML][rehype-format],
 [highlight code][rehype-highlight], [add metadata][rehype-meta], and a lot more.
 
 ## Install
