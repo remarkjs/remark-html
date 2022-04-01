@@ -78,17 +78,17 @@ In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
 npm install remark-html
 ```
 
-In Deno with [Skypack][]:
+In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import remarkHtml from 'https://cdn.skypack.dev/remark-html@15?dts'
+import remarkHtml from 'https://esm.sh/remark-html@15'
 ```
 
-In browsers with [Skypack][]:
+In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import remarkHtml from 'https://cdn.skypack.dev/remark-html@15?min'
+  import remarkHtml from 'https://esm.sh/remark-html@15?bundle'
 </script>
 ```
 
@@ -243,7 +243,7 @@ abide by its terms.
 
 [npm]: https://docs.npmjs.com/cli/install
 
-[skypack]: https://www.skypack.dev
+[esmsh]: https://esm.sh
 
 [health]: https://github.com/remarkjs/.github
 
