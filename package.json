@@ -1,6 +1,6 @@
 {
   "name": "remark-html",
-  "version": "15.0.1",
+  "version": "15.0.2",
   "description": "remark plugin to compile Markdown to HTML",
   "license": "MIT",
   "keywords": [
