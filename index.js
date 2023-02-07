@@ -19,7 +19,8 @@ import {toHast} from 'mdast-util-to-hast'
 /**
  * Plugin to serialize markdown as HTML.
  *
- * @type {import('unified').Plugin<[Options?]|void[], Root, string>}
+ * @this {import('unified').Processor}
+ * @type {import('unified').Plugin<[Options?] | [], Root, string>}
  */
 export default function remarkHtml(settings = {}) {
   const options = {...settings}
