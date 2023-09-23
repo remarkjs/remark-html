@@ -1,6 +1,7 @@
 /**
  * @typedef {import('mdast').Root} Root
  * @typedef {import('mdast').Paragraph} Paragraph
+ * @typedef {import('hast').Element} Element
  * @typedef {import('vfile').VFile} VFile
  * @typedef {import('../index.js').Options} Options
  */
@@ -11,7 +12,6 @@ import test from 'tape'
 import {isHidden} from 'is-hidden'
 import {commonmark} from 'commonmark.json'
 import {toVFile} from 'to-vfile'
-import {all} from 'mdast-util-to-hast'
 import {unified} from 'unified'
 import {remark} from 'remark'
 import remarkParse from 'remark-parse'
@@ -29,28 +29,17 @@ test('remarkHtml', (t) => {
     remark().use(remarkHtml).freeze()
   }, 'should not throw if not passed options')
 
-  t.throws(
-    () => {
-      remark()
-        .use(remarkHtml)
-        // @ts-expect-error: not a node.
-        .stringify({type: 'root', children: [{value: 'baz'}]})
-    },
-    /Expected node, got `\[object Object]`/,
-    'should throw when not given a node'
-  )
-
-  let processorDangerous = remark().use(remarkHtml, {sanitize: false})
+  const processorDangerous1 = remark().use(remarkHtml, {sanitize: false})
 
   t.equal(
     // @ts-expect-error: unknown node.
-    processorDangerous.stringify({type: 'alpha'}),
+    processorDangerous1.stringify({type: 'alpha'}),
     '<div></div>',
     'should stringify unknown nodes'
   )
 
   t.equal(
-    processorDangerous.stringify({
+    processorDangerous1.stringify({
       // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'strong', children: [{type: 'text', value: 'bravo'}]}]
@@ -60,7 +49,7 @@ test('remarkHtml', (t) => {
   )
 
   t.equal(
-    processorDangerous.stringify({
+    processorDangerous1.stringify({
       // @ts-expect-error: unknown node.
       type: 'alpha',
       children: [{type: 'text', value: 'bravo'}],
@@ -74,29 +63,37 @@ test('remarkHtml', (t) => {
     'should stringify unknown nodes'
   )
 
-  processorDangerous = remark().use(remarkHtml, {
+  const processorDangerous2 = remark().use(remarkHtml, {
     sanitize: false,
     handlers: {
       /** @param {Paragraph} node */
-      paragraph(h, node) {
+      paragraph(state, node) {
         const head = node.children[0]
 
         if (head.type === 'text') {
           head.value = 'changed'
         }
 
-        return h(node, 'p', all(h, node))
+        /** @type {Element} */
+        const result = {
+          type: 'element',
+          tagName: 'p',
+          properties: {},
+          children: state.all(node)
+        }
+        state.patch(node, result)
+        return state.applyData(node, result)
       }
     }
   })
 
   t.equal(
-    processorDangerous.processSync('paragraph text').toString(),
+    processorDangerous2.processSync('paragraph text').toString(),
     '<p>changed</p>\n',
     'should allow overriding handlers'
   )
 
-  processorDangerous = remark()
+  const processorDangerous3 = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -109,14 +106,14 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processorDangerous
+    processorDangerous3
       .processSync('![hello](example.jpg "overwritten")')
       .toString(),
     '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n',
     'should patch and merge attributes'
   )
 
-  processorDangerous = remark()
+  const processorDangerous4 = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -127,12 +124,12 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processorDangerous.processSync('**Bold!**').toString(),
+    processorDangerous4.processSync('**Bold!**').toString(),
     '<p><b>Bold!</b></p>\n',
     'should overwrite a tag-name'
   )
 
-  processorDangerous = remark()
+  const processorDangerous5 = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -154,12 +151,12 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processorDangerous.processSync('`var`').toString(),
+    processorDangerous5.processSync('`var`').toString(),
     '<p><code><span class="token">var</span></code></p>\n',
     'should overwrite content'
   )
 
-  processorDangerous = remark()
+  const processorDangerous6 = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -181,12 +178,12 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: true})
 
   t.equal(
-    processorDangerous.processSync('`var`').toString(),
+    processorDangerous6.processSync('`var`').toString(),
     '<p><code>var</code></p>\n',
     'should not overwrite content in `sanitize` mode'
   )
 
-  processorDangerous = remark()
+  const processorDangerous7 = remark()
     .use(
       /** @type {import('unified').Plugin<void[], Root>} */
       () => (ast) => {
@@ -198,7 +195,7 @@ test('remarkHtml', (t) => {
     .use(remarkHtml, {sanitize: false})
 
   t.equal(
-    processorDangerous.processSync('```js\nvar\n```\n').toString(),
+    processorDangerous7.processSync('```js\nvar\n```\n').toString(),
     '<pre><code class="foo">var\n</code></pre>\n',
     'should overwrite classes on code'
   )

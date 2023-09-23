@@ -37,20 +37,19 @@ export default function remarkHtml(settings = {}) {
     clean = true
   }
 
-  Object.assign(this, {Compiler: compiler})
+  Object.assign(this, {compiler})
 
   /**
-   * @type {import('unified').CompilerFunction<Root, string>}
+   * @type {import('unified').Compiler<Root, string>}
    */
   function compiler(node, file) {
     const hast = toHast(node, {
       allowDangerousHtml: !clean,
       handlers: options.handlers
     })
-    // @ts-expect-error: assume root.
+    // @ts-expect-error: to do: no longer boolean.
     const cleanHast = clean ? sanitize(hast, options.sanitize) : hast
     const result = toHtml(
-      // @ts-expect-error: assume root.
       cleanHast,
       Object.assign({}, options, {allowDangerousHtml: !clean})
     )

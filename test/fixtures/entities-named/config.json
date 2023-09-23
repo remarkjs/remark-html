@@ -1,6 +1,6 @@
 {
   "sanitize": false,
-  "entities": {
+  "characterReferences": {
     "useNamedReferences": true
   }
 }
