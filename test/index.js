@@ -361,5 +361,11 @@ test('Integrations', (t) => {
  * @param {Options} [config]
  */
 function processSync(file, config) {
-  return remark().use(remarkHtml, config).processSync(file).toString()
+  return (
+    remark()
+      // @ts-expect-error: to do: fix.
+      .use(remarkHtml, config)
+      .processSync(file)
+      .toString()
+  )
 }

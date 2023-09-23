@@ -29,6 +29,7 @@ export default function remarkHtml(settings = {}) {
 
   if (typeof options.sanitize === 'boolean') {
     clean = options.sanitize
+    // @ts-expect-error: to do: fix.
     options.sanitize = undefined
   }
 
