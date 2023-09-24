@@ -1,7 +1,7 @@
 /**
- * @typedef {import('mdast').Root} Root
- * @typedef {import('mdast').Paragraph} Paragraph
  * @typedef {import('hast').Element} Element
+ * @typedef {import('mdast').Paragraph} Paragraph
+ * @typedef {import('mdast').Root} Root
  * @typedef {import('unified').Pluggable} Pluggable
  * @typedef {import('../index.js').Options} Options
  */
@@ -24,24 +24,31 @@ import {VFile} from 'vfile'
 import remarkHtml from '../index.js'
 
 test('remarkHtml', async function (t) {
-  await t.test('should stringify unknown nodes', async function () {
+  await t.test('should expose the public api', async function () {
+    assert.deepEqual(Object.keys(await import('../index.js')).sort(), [
+      'default'
+    ])
+  })
+
+  await t.test('should stringify unknown void nodes', async function () {
     assert.equal(
       unified()
         .use(remarkParse)
-        .use(remarkHtml, {sanitize: false})
+        .use(remarkHtml)
+        // @ts-expect-error: check how an unknown node is handled.
         .stringify({type: 'alpha'}),
       '<div></div>'
     )
   })
 
-  await t.test('should stringify unknown nodes', async function () {
+  await t.test('should stringify unknown nodes w/ children', async function () {
     assert.equal(
       unified()
         .use(remarkParse)
-        .use(remarkHtml, {sanitize: false})
+        .use(remarkHtml)
         .stringify({
+          // @ts-expect-error: check how an unknown node is handled.
           type: 'alpha',
-          // @ts-expect-error: unknown node.
           children: [
             {type: 'strong', children: [{type: 'text', value: 'bravo'}]}
           ]
@@ -50,32 +57,34 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should stringify unknown nodes', async function () {
-    assert.equal(
-      unified()
-        .use(remarkParse)
-        .use(remarkHtml, {sanitize: false})
-        .stringify({
-          type: 'alpha',
-          // @ts-expect-error: unknown node.
-          children: [{type: 'text', value: 'bravo'}],
-          data: {
-            hName: 'i',
-            hProperties: {className: 'charlie'},
-            hChildren: [{type: 'text', value: 'delta'}]
-          }
-        }),
-      '<i class="charlie">delta</i>'
-    )
-  })
+  await t.test(
+    'should stringify unknown nodes w/ data fields',
+    async function () {
+      assert.equal(
+        unified()
+          .use(remarkParse)
+          .use(remarkHtml, {sanitize: false})
+          .stringify({
+            // @ts-expect-error: check how an unknown node is handled.
+            type: 'alpha',
+            children: [{type: 'text', value: 'bravo'}],
+            data: {
+              hName: 'i',
+              hProperties: {className: 'charlie'},
+              hChildren: [{type: 'text', value: 'delta'}]
+            }
+          }),
+        '<i class="charlie">delta</i>'
+      )
+    }
+  )
 
-  await t.test('should allow overriding handlers', async function () {
+  await t.test('should support handlers', async function () {
     assert.equal(
       String(
         await unified()
           .use(remarkParse)
           .use(remarkHtml, {
-            sanitize: false,
             handlers: {
               /** @param {Paragraph} node */
               paragraph(state, node) {
@@ -108,35 +117,51 @@ test('remarkHtml', async function (t) {
       String(
         await unified()
           .use(remarkParse)
-          .use(
-            /** @type {import('unified').Plugin<void[], Root>} */
-            () => (ast) => {
-              // @ts-expect-error: assume it exists.
-              ast.children[0].children[0].data = {
+          .use(function () {
+            /**
+             * @param {Root} tree
+             *   Tree.
+             * @returns {undefined}
+             *   Nothing.
+             */
+            return function (tree) {
+              const paragraph = tree.children[0]
+              assert(paragraph.type === 'paragraph')
+              const image = paragraph.children[0]
+              assert(image.type === 'image')
+              image.data = {
                 hProperties: {title: 'overwrite'}
               }
             }
-          )
-          .use(remarkHtml, {sanitize: false})
+          })
+          .use(remarkHtml)
           .process('![hello](example.jpg "overwritten")')
       ),
       '<p><img src="example.jpg" alt="hello" title="overwrite"></p>\n'
     )
   })
 
-  await t.test('should overwrite a tag-name', async function () {
+  await t.test('should overwrite a tag name', async function () {
     assert.equal(
       String(
         await unified()
           .use(remarkParse)
-          .use(
-            /** @type {import('unified').Plugin<void[], Root>} */
-            () => (ast) => {
-              // @ts-expect-error: assume it exists.
-              ast.children[0].children[0].data = {hName: 'b'}
+          .use(function () {
+            /**
+             * @param {Root} tree
+             *   Tree.
+             * @returns {undefined}
+             *   Nothing.
+             */
+            return function (tree) {
+              const paragraph = tree.children[0]
+              assert(paragraph.type === 'paragraph')
+              const strong = paragraph.children[0]
+              assert(strong.type === 'strong')
+              strong.data = {hName: 'b'}
             }
-          )
-          .use(remarkHtml, {sanitize: false})
+          })
+          .use(remarkHtml)
           .process('**Bold!**')
       ),
       '<p><b>Bold!</b></p>\n'
@@ -148,24 +173,30 @@ test('remarkHtml', async function (t) {
       String(
         await unified()
           .use(remarkParse)
-          .use(
-            /** @type {import('unified').Plugin<void[], Root>} */
-            () => (ast) => {
-              // @ts-expect-error: assume it exists.
-              const code = ast.children[0].children[0]
-
-              code.data = {
+          .use(function () {
+            /**
+             * @param {Root} tree
+             *   Tree.
+             * @returns {undefined}
+             *   Nothing.
+             */
+            return function (tree) {
+              const paragraph = tree.children[0]
+              assert(paragraph.type === 'paragraph')
+              const inlineCode = paragraph.children[0]
+              assert(inlineCode.type === 'inlineCode')
+              inlineCode.data = {
                 hChildren: [
                   {
                     type: 'element',
                     tagName: 'span',
                     properties: {className: ['token']},
-                    children: [{type: 'text', value: code.value}]
+                    children: [{type: 'text', value: inlineCode.value}]
                   }
                 ]
               }
             }
-          )
+          })
           .use(remarkHtml, {sanitize: false})
           .process('`var`')
       ),
@@ -173,52 +204,60 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test(
-    'should not overwrite content in `sanitize` mode',
-    async function () {
-      assert.equal(
-        String(
-          await unified()
-            .use(remarkParse)
-            .use(
-              /** @type {import('unified').Plugin<void[], Root>} */
-              () => (ast) => {
-                // @ts-expect-error: assume it exists.
-                const code = ast.children[0].children[0]
-
-                code.data = {
-                  hChildren: [
-                    {
-                      type: 'element',
-                      tagName: 'output',
-                      properties: {className: ['token']},
-                      children: [{type: 'text', value: code.value}]
-                    }
-                  ]
-                }
+  await t.test('should sanitize overwriten content', async function () {
+    assert.equal(
+      String(
+        await unified()
+          .use(remarkParse)
+          .use(function () {
+            /**
+             * @param {Root} tree
+             *   Tree.
+             * @returns {undefined}
+             *   Nothing.
+             */
+            return function (tree) {
+              const paragraph = tree.children[0]
+              assert(paragraph.type === 'paragraph')
+              const inlineCode = paragraph.children[0]
+              assert(inlineCode.type === 'inlineCode')
+              inlineCode.data = {
+                hChildren: [
+                  {
+                    type: 'element',
+                    tagName: 'span',
+                    properties: {className: ['token']},
+                    children: [{type: 'text', value: inlineCode.value}]
+                  }
+                ]
               }
-            )
-            .use(remarkHtml, {sanitize: true})
-            .process('`var`')
-        ),
-        '<p><code>var</code></p>\n'
-      )
-    }
-  )
+            }
+          })
+          .use(remarkHtml, {sanitize: true})
+          .process('`var`')
+      ),
+      '<p><code><span>var</span></code></p>\n'
+    )
+  })
 
   await t.test('should overwrite classes on code', async function () {
     assert.equal(
       String(
         await unified()
           .use(remarkParse)
-          .use(
-            /** @type {import('unified').Plugin<void[], Root>} */
-            () => (ast) => {
-              ast.children[0].data = {
-                hProperties: {className: 'foo'}
-              }
+          .use(function () {
+            /**
+             * @param {Root} tree
+             *   Tree.
+             * @returns {undefined}
+             *   Nothing.
+             */
+            return function (tree) {
+              const code = tree.children[0]
+              assert(code.type === 'code')
+              code.data = {hProperties: {className: 'foo'}}
             }
-          )
+          })
           .use(remarkHtml, {sanitize: false})
           .process('```js\nvar\n```\n')
       ),
@@ -226,7 +265,7 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should be `sanitation: true` by default', async function () {
+  await t.test('should be `sanitize: true` by default', async function () {
     assert.equal(
       String(
         await unified()
@@ -238,7 +277,7 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should support sanitation: true', async function () {
+  await t.test('should support `sanitize: true`', async function () {
     assert.equal(
       String(
         await unified()
@@ -250,7 +289,7 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should support sanitation: null', async function () {
+  await t.test('should support `sanitize: null`', async function () {
     assert.equal(
       String(
         await unified()
@@ -262,7 +301,7 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should support sanitation: false', async function () {
+  await t.test('should support `sanitize: false`', async function () {
     assert.equal(
       String(
         await unified()
@@ -274,7 +313,7 @@ test('remarkHtml', async function (t) {
     )
   })
 
-  await t.test('should support sanitation schemas', async function () {
+  await t.test('should support sanitize schemas', async function () {
     assert.equal(
       String(
         await unified()
@@ -292,7 +331,7 @@ test('CommonMark', async function (t) {
   const skip = new Set()
   let start = 0
   let index = -1
-  /** @type {string|undefined} */
+  /** @type {string | undefined} */
   let section
 
   while (++index < commonmark.length) {
@@ -355,11 +394,7 @@ test('fixtures', async function (t) {
       } catch {}
 
       const actual = String(
-        await unified()
-          .use(remarkParse)
-          // @ts-expect-error: to do.
-          .use(remarkHtml, config)
-          .process(input)
+        await unified().use(remarkParse).use(remarkHtml, config).process(input)
       )
 
       try {
@@ -386,8 +421,7 @@ test('integrations', async function (t) {
     gfm: remarkGfm,
     github: remarkGithub,
     toc: [
-      // @ts-expect-error: legacy.
-      // To do: remove?
+      // @ts-expect-error: legacy; to do: remove?
       remarkSlug,
       remarkToc
     ]
@@ -410,7 +444,7 @@ test('integrations', async function (t) {
       const actual = String(
         await unified()
           .use(remarkParse)
-          // @ts-expect-error: to do.
+          // @ts-expect-error: fine.
           .use(integrationMap[folder])
           .use(remarkHtml, {sanitize: false})
           .process(new VFile({path: folder + '.md', value: input}))

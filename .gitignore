@@ -4,3 +4,4 @@ node_modules/
 *.d.ts
 *.log
 yarn.lock
+!/index.d.ts
