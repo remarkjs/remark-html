@@ -74,14 +74,14 @@ npm install remark-html
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import remarkHtml from 'https://esm.sh/remark-html@15'
+import remarkHtml from 'https://esm.sh/remark-html@16'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import remarkHtml from 'https://esm.sh/remark-html@15?bundle'
+  import remarkHtml from 'https://esm.sh/remark-html@16?bundle'
 </script>
 ```
 
