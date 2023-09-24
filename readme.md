@@ -18,6 +18,7 @@
 *   [Use](#use)
 *   [API](#api)
     *   [`unified().use(remarkHtml[, options])`](#unifieduseremarkhtml-options)
+    *   [`Options`](#options)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Security](#security)
@@ -30,19 +31,11 @@
 This package is a [unified][] ([remark][]) plugin that compiles markdown to
 HTML.
 
-**unified** is a project that transforms content with abstract syntax trees
-(ASTs).
-**remark** adds support for markdown to unified.
-**rehype** adds support for HTML to unified.
-**mdast** is the markdown AST that remark uses.
-**hast** is the HTML AST that rehype uses.
-This is a remark plugin that adds a compiler to compile mdast to hast and then
-to a string.
-
 ## When should I use this?
 
 This plugin is useful when you want to turn markdown into HTML.
-It’s a shortcut for `.use(remarkRehype).use(rehypeStringify)`.
+It’s a shortcut for
+`.use(remarkRehype).use(rehypeSanitize).use(rehypeStringify)`.
 
 The reason that there are different ecosystems for markdown and HTML is that
 turning markdown into HTML is, while frequently needed, not the only purpose of
@@ -71,8 +64,8 @@ For example, you can [minify HTML][rehype-minify], [format HTML][rehype-format],
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c).
-In Node.js (version 12.20+, 14.14+, or 16.0+), install with [npm][]:
+This package is [ESM only][esm].
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install remark-html
@@ -97,100 +90,101 @@ In browsers with [`esm.sh`][esmsh]:
 Say we have the following file `example.md`:
 
 ```markdown
-# Hello & World
+# Pluto
 
-> A block quote.
-
-* Some _emphasis_, **importance**, and `code`.
+**Pluto** (minor-planet designation: **134340 Pluto**) is a
+[dwarf planet](https://en.wikipedia.org/wiki/Dwarf_planet) in the
+[Kuiper belt](https://en.wikipedia.org/wiki/Kuiper_belt).
 ```
 
-And our module `example.js` looks as follows:
+…and a module `example.js`:
 
 ```js
+import remarkHtml from 'remark-html'
+import remarkParse from 'remark-parse'
 import {read} from 'to-vfile'
 import {unified} from 'unified'
-import remarkParse from 'remark-parse'
-import remarkHtml from 'remark-html'
 
-main()
+const file = await unified()
+  .use(remarkParse)
+  .use(remarkHtml)
+  .process(await read('example.md'))
 
-async function main() {
-  const file = await unified()
-    .use(remarkParse)
-    .use(remarkHtml)
-    .process(await read('example.md'))
-
-  console.log(String(file))
-}
+console.log(String(file))
 ```
 
-Now running `node example.js` yields:
+…then running `node example.js` yields:
 
 ```html
-<h1>Hello &#x26; World</h1>
-<blockquote>
-<p>A block quote.</p>
-</blockquote>
-<ul>
-<li>Some <em>emphasis</em>, <strong>importance</strong>, and <code>code</code>.</li>
-</ul>
+<h1>Pluto</h1>
+<p><strong>Pluto</strong> (minor-planet designation: <strong>134340 Pluto</strong>) is a
+<a href="https://en.wikipedia.org/wiki/Dwarf_planet">dwarf planet</a> in the
+<a href="https://en.wikipedia.org/wiki/Kuiper_belt">Kuiper belt</a>.</p>
 ```
 
 ## API
 
 This package exports no identifiers.
-The default export is `remarkHtml`.
+The default export is [`remarkHtml`][api-remark-html].
 
 ### `unified().use(remarkHtml[, options])`
 
-Add support for serializing HTML.
+Serialize markdown as HTML.
 
-##### `options`
+###### Parameters
 
-Configuration (optional).
-All options other than `sanitize` and `handlers` are passed to
-[`hast-util-to-html`][hast-util-to-html].
+*   `options` ([`Options`][api-options], optional)
+    — configuration
 
-###### `options.handlers`
+###### Returns
 
-This option is a bit advanced as it requires knowledge of ASTs, so we defer
-to the documentation available in
-[`mdast-util-to-hast`][mdast-util-to-hast].
+Transform ([`Transformer`][unified-transformer]).
 
-###### `options.sanitize`
+###### Notes
 
-How to sanitize the output (`Object` or `boolean`, default: `true`):
+Passing `sanitize: false` is dangerous.
+It allows arbitrary HTML and does not sanitize elements.
 
-*   `false`
-    — output is not sanitized, dangerous raw HTML persists
-*   `true`
-    — output is sanitized according to [GitHub’s sanitation rules][github],
-    dangerous raw HTML is dropped
-*   `Object`
-    — `schema` that defines how to sanitize output with
-    [`hast-util-sanitize`][sanitize], dangerous raw HTML is dropped
+### `Options`
+
+Configuration (TypeScript type).
+
+###### Fields
+
+*   `handlers` ([`Handlers` from
+    `mdast-util-to-hast`][mdast-util-to-hast-handlers], optional)
+    — how to turn mdast nodes into hast nodes
+*   `sanitize` ([`Schema` from
+    `hast-util-sanitize`][hast-util-sanitize-schema] or `boolean`, default:
+    `true`)
+    — sanitize the output, and how
+*   `...toHtmlOptions` ([`Options` from
+    `hast-util-to-html`][hast-util-to-html-options], optional)
+    — other options are passed to `hast-util-to-html`
 
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports an `Options` type, which specifies the interface of the accepted
-options.
+It exports the additional type [`Options`][api-options].
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, and 16.0+.
-Our projects sometimes work with older versions, but this is not guaranteed.
 
-This plugin works with `unified` version 6+ and `remark` version 7+.
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line, `remark-html@^15`,
+compatible with Node.js 12.
+
+This plugin works with `unified` version 6+ and `remark` version 15+.
 
 ## Security
 
-Use of `remark-html` is **unsafe** by default and opens you up to
-[cross-site scripting (XSS)][xss] attacks.
-Pass `sanitize: true` to prevent attacks.
-Setting `sanitize` to anything else can be unsafe.
+Use of `remark-html` is safe by default.
+Passing `sanitize: false` is unsafe and opens you up to
+[cross-site scripting (XSS)][wiki-xss] attacks.
+A safe schema is used by default, but passing an unsafe schema is unsafe.
 
 ## Related
 
@@ -227,9 +221,9 @@ abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/remark-html
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/remark-html.svg
+[size-badge]: https://img.shields.io/bundlejs/size/remark-html
 
-[size]: https://bundlephobia.com/result?p=remark-html
+[size]: https://bundlejs.com/?q=remark-html
 
 [sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
 
@@ -242,6 +236,8 @@ abide by its terms.
 [chat]: https://github.com/remarkjs/remark/discussions
 
 [npm]: https://docs.npmjs.com/cli/install
+
+[esm]: https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c
 
 [esmsh]: https://esm.sh
 
@@ -257,19 +253,11 @@ abide by its terms.
 
 [author]: https://wooorm.com
 
-[unified]: https://github.com/unifiedjs/unified
+[hast-util-sanitize-schema]: https://github.com/syntax-tree/hast-util-sanitize#schema
 
-[remark]: https://github.com/remarkjs/remark
+[hast-util-to-html-options]: https://github.com/syntax-tree/hast-util-to-html#options
 
-[github]: https://github.com/syntax-tree/hast-util-sanitize#schema
-
-[xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
-
-[typescript]: https://www.typescriptlang.org
-
-[remark-rehype]: https://github.com/remarkjs/remark-rehype
-
-[rehype-minify]: https://github.com/rehypejs/rehype-minify
+[mdast-util-to-hast-handlers]: https://github.com/syntax-tree/mdast-util-to-hast#handlers
 
 [rehype-format]: https://github.com/rehypejs/rehype-format
 
@@ -277,10 +265,22 @@ abide by its terms.
 
 [rehype-meta]: https://github.com/rehypejs/rehype-meta
 
+[rehype-minify]: https://github.com/rehypejs/rehype-minify
+
 [rehype-stringify]: https://github.com/rehypejs/rehype/tree/main/packages/rehype-stringify
 
-[sanitize]: https://github.com/syntax-tree/hast-util-sanitize
+[remark]: https://github.com/remarkjs/remark
 
-[hast-util-to-html]: https://github.com/syntax-tree/hast-util-to-html
+[remark-rehype]: https://github.com/remarkjs/remark-rehype
 
-[mdast-util-to-hast]: https://github.com/syntax-tree/mdast-util-to-hast
+[typescript]: https://www.typescriptlang.org
+
+[unified]: https://github.com/unifiedjs/unified
+
+[unified-transformer]: https://github.com/unifiedjs/unified#transformer
+
+[wiki-xss]: https://en.wikipedia.org/wiki/Cross-site_scripting
+
+[api-options]: #options
+
+[api-remark-html]: #unifieduseremarkhtml-options
