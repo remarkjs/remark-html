@@ -2,8 +2,8 @@
  * @typedef {import('hast').Element} Element
  * @typedef {import('mdast').Paragraph} Paragraph
  * @typedef {import('mdast').Root} Root
+ * @typedef {import('remark-html').Options} Options
  * @typedef {import('unified').Pluggable} Pluggable
- * @typedef {import('../index.js').Options} Options
  */
 
 import assert from 'node:assert/strict'
@@ -16,16 +16,16 @@ import {toHtml} from 'hast-util-to-html'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import remarkGithub from 'remark-github'
+import remarkHtml from 'remark-html'
 import remarkParse from 'remark-parse'
 import remarkSlug from 'remark-slug'
 import remarkToc from 'remark-toc'
 import {unified} from 'unified'
 import {VFile} from 'vfile'
-import remarkHtml from '../index.js'
 
 test('remarkHtml', async function (t) {
   await t.test('should expose the public api', async function () {
-    assert.deepEqual(Object.keys(await import('../index.js')).sort(), [
+    assert.deepEqual(Object.keys(await import('remark-html')).sort(), [
       'default'
     ])
   })
