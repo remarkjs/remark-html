@@ -174,8 +174,8 @@ versions of Node.js.
 
 When we cut a new major release, we drop support for unmaintained versions of
 Node.
-This means we try to keep the current release line, `remark-html@^15`,
-compatible with Node.js 12.
+This means we try to keep the current release line, `remark-html@^16`,
+compatible with Node.js 16.
 
 This plugin works with `unified` version 6+ and `remark` version 15+.
 
